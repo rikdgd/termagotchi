@@ -5,6 +5,10 @@ use chrono::Utc;
 use std::fs::OpenOptions;
 use std::io::{Read, Write};
 
+
+const SAVE_FILE_PATH: &str = "./save-file.txt";
+
+
 #[derive(Debug, Serialize, Deserialize)]
 pub struct GameState {
     friend: Friend<CreatureShapes>,
@@ -20,7 +24,7 @@ impl GameState {
             .create(true)
             .write(true)
             .truncate(true)
-            .open("./save-file.txt")?;
+            .open(SAVE_FILE_PATH)?;
         
         save_file.set_len(0)?;
         save_file.write_all(serialized.as_bytes())?;
@@ -32,7 +36,7 @@ impl GameState {
     pub fn read_from_file() -> std::io::Result<Self> {
         let mut save_file = OpenOptions::new()
             .read(true)
-            .open("./save-file.txt")?;
+            .open(SAVE_FILE_PATH)?;
         
         let mut save_buffer = String::new();
         save_file.read_to_string(&mut save_buffer)?;

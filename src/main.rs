@@ -74,6 +74,6 @@ fn friend_widget() -> Canvas<'static, fn(&mut Context)> {
                 height: 10.0,
                 color: Color::Red,
             });
-            ctx.draw(&DuckShape::new(Color::Cyan))
+            //ctx.draw(&DuckShape::new(Color::Cyan))
         })
 }
