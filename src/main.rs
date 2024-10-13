@@ -13,8 +13,21 @@ use ratatui::{
     Frame,
 };
 use shapes::creatures::CreatureShapes;
+use crate::friend::Friend;
+use crate::game_state::GameState;
 
 fn main() -> std::io::Result<()> {
+    let game_state = match GameState::file_exists() {
+        true => {
+            GameState::read_from_file()?
+        },
+        false => {
+            // TODO: 'Randomly' select the creatures shape and color.
+            let friend = Friend::new("waldo", CreatureShapes::Duck);
+            GameState::new(friend)
+        }
+    };
+    
     let mut terminal = ratatui::init();
 
     loop {

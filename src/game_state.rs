@@ -10,10 +10,17 @@ const SAVE_FILE_PATH: &str = "./save-file.txt";
 #[derive(Debug, Serialize, Deserialize)]
 pub struct GameState {
     friend: Friend<CreatureShapes>,
-    exit_time: String,
+    last_update_time: i64,
 }
 
 impl GameState {
+    pub fn new(friend: Friend<CreatureShapes>) -> Self {
+        Self {
+            friend,
+            last_update_time: Utc::now().timestamp_millis(),
+        }
+    }
+
     pub fn store_to_file(&mut self) -> std::io::Result<()> {
         self.update();
         let serialized = serde_json::to_string(&self)?;
@@ -42,8 +49,12 @@ impl GameState {
         Ok(state)
     }
 
+    pub fn file_exists() -> bool {
+        std::path::Path::new(SAVE_FILE_PATH).is_file()
+    }
+
     pub fn update(&mut self) {
-        self.exit_time = format!("{}", Utc::now());
+        self.last_update_time = Utc::now().timestamp_millis();
         self.friend.update_state();
     }
 }
