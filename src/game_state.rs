@@ -10,7 +10,7 @@ const SAVE_FILE_PATH: &str = "./save-file.txt";
 #[derive(Debug, Serialize, Deserialize)]
 pub struct GameState {
     friend: Friend<CreatureShapes>,
-    current_time: String,
+    exit_time: String,
 }
 
 impl GameState {
@@ -43,7 +43,7 @@ impl GameState {
     }
 
     pub fn update(&mut self) {
-        self.current_time = format!("{}", Utc::now());
+        self.exit_time = format!("{}", Utc::now());
         self.friend.update_state();
     }
 }

@@ -2,7 +2,7 @@ mod food;
 mod friend;
 mod game_state;
 mod shapes;
-mod structs;
+mod utils;
 
 use ratatui::widgets::canvas::*;
 use ratatui::{

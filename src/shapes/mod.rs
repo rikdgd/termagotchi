@@ -1,2 +1,4 @@
 pub mod creatures;
-pub mod pixel_image;
+mod pixel_image;
+
+pub use pixel_image::PixelImage;

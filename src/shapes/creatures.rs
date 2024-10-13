@@ -1,5 +1,5 @@
-use crate::shapes::pixel_image::PixelImage;
-use crate::structs::Pixel;
+use crate::shapes::PixelImage;
+use crate::utils::Pixel;
 use image::load_from_memory;
 use ratatui::prelude::Color;
 use ratatui::widgets::canvas::{Painter, Shape};
