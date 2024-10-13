@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 use crate::friend::Friend;
-use crate::shapes::{creatures::CreatureShapes, pixel_image::PixelImage};
+use crate::shapes::creatures::CreatureShapes;
 use chrono::Utc;
 use std::fs::OpenOptions;
 use std::io::{Read, Write};
@@ -19,7 +19,7 @@ impl GameState {
     pub fn store_to_file(&mut self) -> std::io::Result<()> {
         self.update();
         let serialized = serde_json::to_string(&self)?;
-
+        
         let mut save_file = OpenOptions::new()
             .create(true)
             .write(true)
