@@ -1,9 +1,12 @@
-use serde::{Deserialize, Serialize};
 use crate::food::Food;
-use crate::shapes::pixel_image::PixelImage;
+use ratatui::widgets::canvas::Shape;
+use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Serialize, Deserialize)]
-pub struct Friend<T> where T: PixelImage {
+pub struct Friend<T>
+where
+    T: Shape,
+{
     name: String,
     hunger: Stat,
     joy: Stat,
@@ -13,7 +16,10 @@ pub struct Friend<T> where T: PixelImage {
     alive: bool,
 }
 
-impl<T> Friend<T> where T: PixelImage, {
+impl<T> Friend<T>
+where
+    T: Shape,
+{
     pub fn new(
         name: String,
         hunger: Stat,
@@ -33,7 +39,7 @@ impl<T> Friend<T> where T: PixelImage, {
             alive,
         }
     }
-    
+
     /// Updates this Friend's status for one second passed
     pub fn update_state(&mut self) {
         todo!()

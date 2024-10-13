@@ -1,9 +1,10 @@
-use crate::shapes::pixel_image::{Pixel, PixelImage};
-use ratatui::prelude::Color;
-use serde::{Deserialize, Serialize};
+use crate::shapes::pixel_image::PixelImage;
+use crate::structs::Pixel;
 use image::load_from_memory;
-use std::error::Error;
+use ratatui::prelude::Color;
 use ratatui::widgets::canvas::{Painter, Shape};
+use serde::{Deserialize, Serialize};
+use std::error::Error;
 
 #[derive(Debug, Serialize, Deserialize)]
 pub enum CreatureShapes {
@@ -13,11 +14,7 @@ pub enum CreatureShapes {
 impl Shape for CreatureShapes {
     fn draw(&self, painter: &mut Painter) {
         for pixel in self.pixels() {
-            painter.paint(
-                pixel.x as usize,
-                pixel.y as usize,
-                pixel.color,
-            );
+            painter.paint(pixel.x as usize, pixel.y as usize, pixel.color);
         }
     }
 }
@@ -28,19 +25,15 @@ impl PixelImage for CreatureShapes {
             CreatureShapes::Duck => {
                 let duck_sprite = include_bytes!("../../assets/duck.png");
                 load_sprite(duck_sprite, Color::Cyan).unwrap()
-            },
+            }
         }
     }
 }
 
 fn load_sprite(image_bytes: &[u8], color: Color) -> std::io::Result<Vec<Pixel>> {
     let mut pixels = Vec::new();
-    let black_pixel_cords = get_black_pixel_coordinates(image_bytes).map_err(|_| {
-        std::io::Error::new(
-            std::io::ErrorKind::NotFound, 
-            "Sprite image not found"
-        )
-    })?;
+    let black_pixel_cords = get_black_pixel_coordinates(image_bytes)
+        .map_err(|_| std::io::Error::new(std::io::ErrorKind::NotFound, "Sprite image not found"))?;
 
     for cords in black_pixel_cords {
         pixels.push(Pixel {
@@ -52,7 +45,6 @@ fn load_sprite(image_bytes: &[u8], color: Color) -> std::io::Result<Vec<Pixel>> 
 
     Ok(pixels)
 }
-
 
 /// Returns the coordinates of each black pixel in a vector.
 fn get_black_pixel_coordinates(image_bytes: &[u8]) -> Result<Vec<(u32, u32)>, Box<dyn Error>> {
@@ -66,7 +58,7 @@ fn get_black_pixel_coordinates(image_bytes: &[u8]) -> Result<Vec<(u32, u32)>, Bo
             buffer.push(cords);
         }
     }
-    
+
     Ok(buffer)
 }
 

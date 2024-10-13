@@ -1,2 +1,2 @@
-pub mod pixel_image;
 pub mod creatures;
+pub mod pixel_image;

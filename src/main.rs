@@ -2,6 +2,7 @@ mod food;
 mod friend;
 mod game_state;
 mod shapes;
+mod structs;
 
 use ratatui::widgets::canvas::*;
 use ratatui::{
@@ -12,7 +13,6 @@ use ratatui::{
     Frame,
 };
 use shapes::creatures::CreatureShapes;
-use crate::shapes::pixel_image::PixelImage;
 
 fn main() -> std::io::Result<()> {
     let mut terminal = ratatui::init();
