@@ -11,7 +11,8 @@ use ratatui::{
     widgets::Block,
     Frame,
 };
-
+use shapes::creatures::CreatureShapes;
+use crate::shapes::pixel_image::PixelImage;
 
 fn main() -> std::io::Result<()> {
     let mut terminal = ratatui::init();
@@ -73,6 +74,6 @@ fn friend_widget() -> Canvas<'static, fn(&mut Context)> {
                 height: 10.0,
                 color: Color::Red,
             });
-            //ctx.draw(&DuckShape::new(Color::Cyan))
+            ctx.draw(&CreatureShapes::Duck)
         })
 }
