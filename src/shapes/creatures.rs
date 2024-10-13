@@ -1,8 +1,12 @@
 use crate::shapes::pixel_image::{Pixel, PixelImage};
 use ratatui::prelude::Color;
 use serde::{Deserialize, Serialize};
-use image::{GenericImageView, ImageReader};
+use image::ImageReader;
 use std::error::Error;
+
+
+const DUCK_SPRITE_PATH: &str = "../assets/duck.png";
+
 
 #[derive(Debug, Serialize, Deserialize)]
 pub enum CreatureShapes {
@@ -12,25 +16,37 @@ pub enum CreatureShapes {
 impl PixelImage for CreatureShapes {
     fn pixels(&self) -> Vec<Pixel> {
         match self {
-            CreatureShapes::Duck => {
-                vec![
-                    Pixel { x: 2, y: 2, color: Color::Cyan},
-                    Pixel { x: 2, y: 3, color: Color::Cyan},
-                    Pixel { x: 2, y: 4, color: Color::Cyan}
-                ]
-            }
+            CreatureShapes::Duck => load_sprite(DUCK_SPRITE_PATH, Color::Cyan).unwrap(),
         }
     }
 }
 
+fn load_sprite(path: &str, color: Color) -> std::io::Result<Vec<Pixel>> {
+    let mut pixels = Vec::new();
+    let img_data = load_image_data(DUCK_SPRITE_PATH).map_err(|_| {
+        std::io::Error::new(std::io::ErrorKind::NotFound, "Sprite image not found")
+    })?;
 
+    for cords in img_data {
+        pixels.push(Pixel {
+            x: cords.0,
+            y: cords.1,
+            color,
+        });
+    }
+    
+    Ok(pixels)
+}
+
+
+/// Returns the coordinates of each black pixel in a vector.
 fn load_image_data(path: &str) -> Result<Vec<(u32, u32)>, Box<dyn Error>> {
     let image = ImageReader::open(path)?.decode()?.to_luma8();
     let dimensions = image.dimensions();
     let mut buffer: Vec<(u32, u32)> = Vec::new();
     
     for (pixel_index, pixel) in image.pixels().enumerate() {
-        if pixel.0[0] == 255 {
+        if pixel.0[0] == 0 {
             let cords = get_pixel_coordinates(pixel_index, dimensions);
             buffer.push(cords);
         }
