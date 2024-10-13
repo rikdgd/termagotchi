@@ -12,7 +12,6 @@ use ratatui::{
     Frame,
 };
 
-use shapes::duck::DuckShape;
 
 fn main() -> std::io::Result<()> {
     let mut terminal = ratatui::init();
