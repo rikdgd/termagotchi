@@ -11,13 +11,14 @@ where
     T: Shape,
 {
     name: String,
-    hunger: Stat,
+    food: Stat,
     joy: Stat,
     energy: Stat,
     waste_level: Stat,
-    last_time_lower_hunger: i64,
+    last_time_lower_food: i64,
     last_time_lower_joy: i64,
     last_time_lower_energy: i64,
+    last_time_increase_waste: i64,
     shape: T,
     asleep: bool,
     alive: bool,
@@ -31,13 +32,14 @@ where
         let now = Utc::now().timestamp_millis();
         Self {
             name: String::from(name),
-            hunger: Stat::new(50).unwrap(),
+            food: Stat::new(50).unwrap(),
             joy: Stat::new(50).unwrap(),
             energy: Stat::new(50).unwrap(),
             waste_level: Stat::new(50).unwrap(),
-            last_time_lower_hunger: now,
+            last_time_lower_food: now,
             last_time_lower_joy: now,
             last_time_lower_energy: now,
+            last_time_increase_waste: now,
             shape,
             asleep: false,
             alive: true,
@@ -47,16 +49,36 @@ where
     /// Updates this Friend's status for one second passed
     pub fn update_state(&mut self) {
         let now = Utc::now().timestamp_millis();
-        if now - self.last_time_lower_hunger >= 1000 * 60 {
-            self.hunger.subtract(1);
-        }
-        // TODO: same if statement for the other stats
+        let minute_millis = 1000 * 60;
         
-        todo!()
+        // Use while loops instead of if statements to account for loading from file, 
+        // when we might have been away for more than a single minute.
+        while now - self.last_time_lower_food >= minute_millis {
+            self.food.subtract(1);
+            self.last_time_lower_food += minute_millis;
+        }
+
+        while now - self.last_time_lower_energy >= minute_millis {
+            match self.asleep {
+                true => self.energy.add(1),
+                false => self.energy.subtract(1),
+            }
+            self.last_time_lower_energy += minute_millis;
+        }
+        
+        while now - self.last_time_lower_joy >= minute_millis {
+            self.joy.subtract(1);
+            self.last_time_lower_joy += minute_millis;
+        }
+        
+        while now - self.last_time_increase_waste >= minute_millis {
+            self.waste_level.add(1);
+            self.last_time_increase_waste += minute_millis;
+        }
     }
 
     fn update_alive_status(&mut self) {
-        if self.hunger.value() == 0 {
+        if self.food.value() == 0 {
             self.alive = false;
         }
 
@@ -74,7 +96,7 @@ where
     }
 
     pub fn eat(&mut self, food: Food) {
-        self.hunger.subtract(food.points());
+        self.food.subtract(food.points());
     }
 
     pub fn sleep(&mut self) {
