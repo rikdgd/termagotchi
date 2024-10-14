@@ -3,12 +3,12 @@ mod friend;
 mod game_state;
 mod shapes;
 mod utils;
+mod widgets;
 
 use ratatui::widgets::canvas::*;
 use ratatui::{
     crossterm::event::{self, Event, KeyCode, KeyEventKind},
     layout::{Constraint, Layout},
-    style::Color,
     widgets::Block,
     Frame,
 };
@@ -16,6 +16,7 @@ use shapes::creatures::CreatureShapes;
 use crate::friend::Friend;
 use crate::game_state::GameState;
 use crate::utils::ColorWrapper;
+use widgets::{friend_widget, stats_widget};
 
 fn main() -> std::io::Result<()> {
     let mut game_state = match GameState::file_exists() {
@@ -56,46 +57,19 @@ fn main() -> std::io::Result<()> {
 }
 
 fn draw(frame: &mut Frame) {
+    let frame_area = frame.area();
     let [left_area, middle_area, right_area] = Layout::horizontal([
         Constraint::Percentage(15),
         Constraint::Percentage(70),
         Constraint::Percentage(15),
     ])
-    .areas(frame.area());
-
-    frame.render_widget(Block::bordered().title("Left"), left_area);
+    .areas(frame_area);
+    
+    let stats_widget = stats_widget(&frame_area);
+    for gauge in stats_widget {
+        frame.render_widget(gauge.0, gauge.1);
+    }
+    
     frame.render_widget(friend_widget(), middle_area);
     frame.render_widget(Block::bordered().title("Right"), right_area);
-}
-
-fn friend_widget() -> Canvas<'static, fn(&mut Context)> {
-    let friend_widget_x_bounds = [-180.0, 180.0];
-    let friend_widget_y_bounds = [-90.0, 90.0];
-
-    Canvas::default()
-        .block(Block::bordered().title("Friend"))
-        .x_bounds(friend_widget_x_bounds)
-        .y_bounds(friend_widget_y_bounds)
-        .paint(|ctx| {
-            ctx.draw(&Map {
-                resolution: MapResolution::High,
-                color: Color::White,
-            });
-            ctx.layer();
-            ctx.draw(&Line {
-                x1: 0.0,
-                y1: 10.0,
-                x2: 10.0,
-                y2: 10.0,
-                color: Color::White,
-            });
-            ctx.draw(&Rectangle {
-                x: 10.0,
-                y: 20.0,
-                width: 10.0,
-                height: 10.0,
-                color: Color::Red,
-            });
-            ctx.draw(&CreatureShapes::Duck)
-        })
 }
