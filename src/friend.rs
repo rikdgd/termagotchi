@@ -1,9 +1,8 @@
 use crate::food::Food;
-use crate::utils::Stat;
+use crate::utils::{ColorWrapper, Stat};
 use ratatui::widgets::canvas::Shape;
 use serde::{Deserialize, Serialize};
 use chrono::Utc;
-
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Friend<T>
@@ -20,6 +19,7 @@ where
     last_time_lower_energy: i64,
     last_time_increase_waste: i64,
     shape: T,
+    color: ColorWrapper,
     asleep: bool,
     alive: bool,
 }
@@ -28,7 +28,7 @@ impl<T> Friend<T>
 where
     T: Shape,
 {
-    pub fn new(name: &str, shape: T) -> Self {
+    pub fn new(name: &str, shape: T, color: ColorWrapper) -> Self {
         let now = Utc::now().timestamp_millis();
         Self {
             name: String::from(name),
@@ -41,12 +41,13 @@ where
             last_time_lower_energy: now,
             last_time_increase_waste: now,
             shape,
+            color,
             asleep: false,
             alive: true,
         }
     }
 
-    /// Updates this Friend's state for one minute passed
+    /// Updates this Friend's state for each minute passed since last update <br>
     pub fn update_state(&mut self) {
         let now = Utc::now().timestamp_millis();
         let minute_millis = 1000 * 60;

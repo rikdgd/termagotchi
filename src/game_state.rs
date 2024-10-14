@@ -22,7 +22,7 @@ impl GameState {
     }
 
     pub fn store_to_file(&mut self) -> std::io::Result<()> {
-        self.update();
+        self.update(); // Update so we store the latest changes.
         let serialized = serde_json::to_string(&self)?;
 
         let mut save_file = OpenOptions::new()

@@ -15,15 +15,19 @@ use ratatui::{
 use shapes::creatures::CreatureShapes;
 use crate::friend::Friend;
 use crate::game_state::GameState;
+use crate::utils::ColorWrapper;
 
 fn main() -> std::io::Result<()> {
-    let game_state = match GameState::file_exists() {
+    let mut game_state = match GameState::file_exists() {
         true => {
             GameState::read_from_file()?
         },
         false => {
-            // TODO: 'Randomly' select the creatures shape and color.
-            let friend = Friend::new("waldo", CreatureShapes::Duck);
+            let friend = Friend::new(
+                "Waldo", 
+                CreatureShapes::Duck, 
+                ColorWrapper::Cyan
+            );
             GameState::new(friend)
         }
     };
@@ -31,6 +35,8 @@ fn main() -> std::io::Result<()> {
     let mut terminal = ratatui::init();
 
     loop {
+        game_state.update();
+        
         terminal.draw(|mut frame| {
             draw(&mut frame);
         })?;
@@ -43,6 +49,8 @@ fn main() -> std::io::Result<()> {
     }
 
     ratatui::restore();
+    game_state.store_to_file()?;
+    
     Ok(())
 }
 
