@@ -23,6 +23,7 @@ fn main() -> std::io::Result<()> {
             GameState::read_from_file()?
         },
         false => {
+            // TODO: Randomize shape and color.
             let friend = Friend::new(
                 "Waldo", 
                 CreatureShapes::Duck, 
