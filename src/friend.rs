@@ -46,7 +46,7 @@ where
         }
     }
 
-    /// Updates this Friend's status for one second passed
+    /// Updates this Friend's state for one minute passed
     pub fn update_state(&mut self) {
         let now = Utc::now().timestamp_millis();
         let minute_millis = 1000 * 60;
