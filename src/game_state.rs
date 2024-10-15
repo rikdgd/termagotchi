@@ -57,4 +57,8 @@ impl GameState {
         self.last_update_time = Utc::now().timestamp_millis();
         self.friend.update_state();
     }
+
+    pub fn friend(&self) -> &Friend<CreatureShapes> {
+        &self.friend
+    }
 }

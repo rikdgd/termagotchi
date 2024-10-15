@@ -40,7 +40,7 @@ fn main() -> std::io::Result<()> {
         game_state.update();
         
         terminal.draw(|mut frame| {
-            draw(&mut frame);
+            draw(&mut frame, game_state.friend());
         })?;
 
         if let Event::Key(key) = event::read()? {
@@ -56,7 +56,9 @@ fn main() -> std::io::Result<()> {
     Ok(())
 }
 
-fn draw(frame: &mut Frame) {
+fn draw<T>(frame: &mut Frame, friend: &Friend<T>) 
+    where T: Shape 
+{
     let frame_area = frame.area();
     let [left_area, middle_area, right_area] = Layout::horizontal([
         Constraint::Percentage(15),
@@ -65,7 +67,7 @@ fn draw(frame: &mut Frame) {
     ])
     .areas(frame_area);
     
-    let stats_widget = stats_widget(&frame_area);
+    let stats_widget = stats_widget(&frame_area, friend);
     for gauge in stats_widget {
         frame.render_widget(gauge.0, gauge.1);
     }

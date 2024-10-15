@@ -111,4 +111,20 @@ where
     pub fn poop(&mut self) {
         self.waste_level.subtract(50);
     }
+
+    pub fn food(&self) -> &Stat {
+        &self.food
+    }
+
+    pub fn joy(&self) -> &Stat {
+        &self.joy
+    }
+
+    pub fn energy(&self) -> &Stat {
+        &self.energy
+    }
+
+    pub fn waste_level(&self) -> &Stat {
+        &self.waste_level
+    }
 }
