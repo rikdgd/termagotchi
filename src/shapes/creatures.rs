@@ -8,6 +8,7 @@ use std::error::Error;
 
 #[derive(Debug, Serialize, Deserialize)]
 pub enum CreatureShapes {
+    Egg,
     Duck,
 }
 
@@ -22,10 +23,14 @@ impl Shape for CreatureShapes {
 impl PixelImage for CreatureShapes {
     fn pixels(&self) -> Vec<Pixel> {
         match self {
+            CreatureShapes::Egg => {
+                let egg_sprite = include_bytes!("../../assets/egg.png");
+                load_sprite(egg_sprite, Color::White).unwrap()
+            },
             CreatureShapes::Duck => {
                 let duck_sprite = include_bytes!("../../assets/duck.png");
                 load_sprite(duck_sprite, Color::Cyan).unwrap()
-            }
+            },
         }
     }
 }
