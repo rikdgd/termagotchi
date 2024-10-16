@@ -5,9 +5,10 @@ mod shapes;
 mod utils;
 mod widgets;
 
+use std::time::Duration;
 use ratatui::widgets::canvas::*;
 use ratatui::{
-    crossterm::event::{self, Event, KeyCode, KeyEventKind},
+    crossterm::event::{self, Event, KeyCode, KeyEventKind, poll},
     layout::{Constraint, Layout},
     widgets::Block,
     Frame,
@@ -43,9 +44,11 @@ fn main() -> std::io::Result<()> {
             draw(&mut frame, game_state.friend());
         })?;
 
-        if let Event::Key(key) = event::read()? {
-            if key.kind == KeyEventKind::Press && key.code == KeyCode::Char('q') {
-                break;
+        if poll(Duration::from_millis(100))? {
+            if let Event::Key(key) = event::read()? {
+                if key.kind == KeyEventKind::Press && key.code == KeyCode::Char('q') {
+                    break;
+                }
             }
         }
     }
@@ -67,11 +70,11 @@ fn draw<T>(frame: &mut Frame, friend: &Friend<T>)
     ])
     .areas(frame_area);
     
-    let stats_widget = stats_widget(&frame_area, friend);
+    let stats_widget = stats_widget(&left_area, friend);
     for gauge in stats_widget {
         frame.render_widget(gauge.0, gauge.1);
     }
-    
+        
     frame.render_widget(friend_widget(), middle_area);
     frame.render_widget(Block::bordered().title("Right"), right_area);
 }
