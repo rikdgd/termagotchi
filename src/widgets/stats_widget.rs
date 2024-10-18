@@ -23,7 +23,7 @@ fn layout(area: &Rect) -> [Rect; 4] {
         Constraint::Percentage(25),
         Constraint::Percentage(25),
     ])
-        .areas(area.clone())
+        .areas(*area)
 }
 
 fn food_gauge(food_stat: &Stat) -> Gauge<'static> {

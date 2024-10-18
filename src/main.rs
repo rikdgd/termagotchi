@@ -42,8 +42,8 @@ fn main() -> std::io::Result<()> {
     loop {
         game_state.update();
         
-        terminal.draw(|mut frame| {
-            draw(&mut frame, game_state.friend(), &mut actions_widget_state);
+        terminal.draw(|frame| {
+            draw(frame, game_state.friend(), &mut actions_widget_state);
         })?;
 
         if poll(Duration::from_millis(100))? {
@@ -56,7 +56,7 @@ fn main() -> std::io::Result<()> {
                         KeyCode::Down => actions_widget_state.select_next(),
                         KeyCode::Enter => {
                             if let Some(action) = actions_widget_state.selected() {
-                                let action = widgets::actions_widget::ITEMS[action];
+                                let action = actions_widget::ITEMS[action];
                                 // TODO: update friends state accordingly
                             }
                         },

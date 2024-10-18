@@ -10,7 +10,7 @@ impl Stat {
 
     pub fn new(value: u32) -> Result<Self, std::io::Error> {
         if value <= 100 {
-            return Ok(Stat { 0: value });
+            return Ok(Stat(value));
         }
 
         Err(std::io::Error::new(
