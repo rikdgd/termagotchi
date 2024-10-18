@@ -13,11 +13,12 @@ use ratatui::{
     widgets::Block,
     Frame,
 };
+use ratatui::widgets::ListState;
 use shapes::creatures::CreatureShapes;
 use crate::friend::Friend;
 use crate::game_state::GameState;
 use crate::utils::ColorWrapper;
-use widgets::{friend_widget, stats_widget};
+use widgets::{friend_widget, stats_widget, actions_widget};
 
 fn main() -> std::io::Result<()> {
     let mut game_state = match GameState::file_exists() {
@@ -36,20 +37,34 @@ fn main() -> std::io::Result<()> {
     };
     
     let mut terminal = ratatui::init();
+    let mut actions_widget_state = ListState::default();
 
     loop {
         game_state.update();
         
         terminal.draw(|mut frame| {
-            draw(&mut frame, game_state.friend());
+            draw(&mut frame, game_state.friend(), &mut actions_widget_state);
         })?;
 
         if poll(Duration::from_millis(100))? {
             if let Event::Key(key) = event::read()? {
-                if key.kind == KeyEventKind::Press && key.code == KeyCode::Char('q') {
-                    break;
+                if key.kind == KeyEventKind::Press {
+                    match key.code {
+                        KeyCode::Char('q') => break,
+                        
+                        KeyCode::Up => actions_widget_state.select_previous(),
+                        KeyCode::Down => actions_widget_state.select_next(),
+                        KeyCode::Enter => {
+                            if let Some(action) = actions_widget_state.selected() {
+                                let action = widgets::actions_widget::ITEMS[action];
+                                // TODO: update friends state accordingly
+                            }
+                        },
+                        _ => ()
+                    }
                 }
             }
+            
         }
     }
 
@@ -59,7 +74,7 @@ fn main() -> std::io::Result<()> {
     Ok(())
 }
 
-fn draw<T>(frame: &mut Frame, friend: &Friend<T>) 
+fn draw<T>(frame: &mut Frame, friend: &Friend<T>, actions_widget_state: &mut ListState) 
     where T: Shape 
 {
     let frame_area = frame.area();
@@ -76,5 +91,5 @@ fn draw<T>(frame: &mut Frame, friend: &Friend<T>)
     }
         
     frame.render_widget(friend_widget(), middle_area);
-    frame.render_widget(Block::bordered().title("Right"), right_area);
+    frame.render_stateful_widget(actions_widget(), right_area, actions_widget_state);
 }
