@@ -101,7 +101,7 @@ where
     }
 
     pub fn sleep(&mut self) {
-        self.asleep = true;
+        self.asleep = !self.asleep;
     }
 
     pub fn play(&mut self) {
