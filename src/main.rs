@@ -58,8 +58,8 @@ fn main() -> std::io::Result<()> {
                         KeyCode::Enter => {
                             if let Some(action) = actions_widget_state.selected() {
                                 let action = actions_widget::ITEMS[action];
-                                // TODO: update friends state accordingly
                                 match action {
+                                    // TODO: Eat the user provided food, instead of defaulting to Burger
                                     "Eat" => game_state.friend().eat(Food::Burger),
                                     "Play" => game_state.friend().play(),
                                     "Sleep" => game_state.friend().sleep(),
