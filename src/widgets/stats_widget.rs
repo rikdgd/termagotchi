@@ -9,10 +9,10 @@ where T: Shape
     let layout = layout(area);
     
     [
-        (food_gauge(friend.food()), layout[0]),
-        (food_gauge(friend.joy()), layout[1]),
-        (food_gauge(friend.energy()), layout[2]),
-        (food_gauge(friend.waste_level()), layout[3]),
+        (stat_gauge(friend.food(), "Food", Color::Red), layout[0]),
+        (stat_gauge(friend.joy(),"Joy", Color::Yellow), layout[1]),
+        (stat_gauge(friend.energy(), "energy", Color::Blue), layout[2]),
+        (stat_gauge(friend.waste_level(), "Poop", Color::Magenta), layout[3]),
     ]
 }
 
@@ -26,14 +26,14 @@ fn layout(area: &Rect) -> [Rect; 4] {
         .areas(*area)
 }
 
-fn food_gauge(food_stat: &Stat) -> Gauge<'static> {
+fn stat_gauge(stat: &Stat, title: &'static str, color: Color) -> Gauge<'static> {
     Gauge::default()
-        .block(Block::new().title("Food"))
+        .block(Block::new().title(title))
         .gauge_style(
             Style::default()
-                .fg(Color::White)
-                .bg(Color::Black)
+                .fg(color)
+                // .bg(Color::Black)
                 .add_modifier(Modifier::ITALIC),
         )
-        .percent(food_stat.value() as u16)
+        .percent(stat.value() as u16)
 }
