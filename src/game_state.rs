@@ -58,7 +58,7 @@ impl GameState {
         self.friend.update_state();
     }
 
-    pub fn friend(&self) -> &Friend<CreatureShapes> {
-        &self.friend
+    pub fn friend(&mut self) -> &mut Friend<CreatureShapes> {
+        &mut self.friend
     }
 }

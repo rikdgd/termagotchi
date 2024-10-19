@@ -19,6 +19,7 @@ use crate::friend::Friend;
 use crate::game_state::GameState;
 use crate::utils::ColorWrapper;
 use widgets::{friend_widget, stats_widget, actions_widget};
+use crate::food::Food;
 
 fn main() -> std::io::Result<()> {
     let mut game_state = match GameState::file_exists() {
@@ -58,6 +59,13 @@ fn main() -> std::io::Result<()> {
                             if let Some(action) = actions_widget_state.selected() {
                                 let action = actions_widget::ITEMS[action];
                                 // TODO: update friends state accordingly
+                                match action {
+                                    "Eat" => game_state.friend().eat(Food::Burger),
+                                    "Play" => game_state.friend().play(),
+                                    "Sleep" => game_state.friend().sleep(),
+                                    "Poop" => game_state.friend().poop(),
+                                    _ => ()
+                                }
                             }
                         },
                         _ => ()

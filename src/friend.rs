@@ -97,7 +97,7 @@ where
     }
 
     pub fn eat(&mut self, food: Food) {
-        self.food.subtract(food.points());
+        self.food.add(food.points());
     }
 
     pub fn sleep(&mut self) {
