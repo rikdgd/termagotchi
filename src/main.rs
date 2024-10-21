@@ -10,7 +10,6 @@ use ratatui::widgets::canvas::*;
 use ratatui::{
     crossterm::event::{self, Event, KeyCode, KeyEventKind, poll},
     layout::{Constraint, Layout},
-    widgets::Block,
     Frame,
 };
 use ratatui::widgets::ListState;
@@ -30,8 +29,7 @@ fn main() -> std::io::Result<()> {
             // TODO: Randomize shape and color.
             let friend = Friend::new(
                 "Waldo", 
-                CreatureShapes::Duck, 
-                ColorWrapper::Cyan
+                CreatureShapes::Duck(ColorWrapper::Cyan), 
             );
             GameState::new(friend)
         }
@@ -82,8 +80,7 @@ fn main() -> std::io::Result<()> {
     Ok(())
 }
 
-fn draw<T>(frame: &mut Frame, friend: &Friend<T>, actions_widget_state: &mut ListState) 
-    where T: Shape 
+fn draw(frame: &mut Frame, friend: &Friend, actions_widget_state: &mut ListState) 
 {
     let frame_area = frame.area();
     let [left_area, middle_area, right_area] = Layout::horizontal([

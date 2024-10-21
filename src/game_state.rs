@@ -9,12 +9,12 @@ const SAVE_FILE_PATH: &str = "./save-file.txt";
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct GameState {
-    friend: Friend<CreatureShapes>,
+    friend: Friend,
     last_update_time: i64,
 }
 
 impl GameState {
-    pub fn new(friend: Friend<CreatureShapes>) -> Self {
+    pub fn new(friend: Friend) -> Self {
         Self {
             friend,
             last_update_time: Utc::now().timestamp_millis(),
@@ -58,7 +58,7 @@ impl GameState {
         self.friend.update_state();
     }
 
-    pub fn friend(&mut self) -> &mut Friend<CreatureShapes> {
+    pub fn friend(&mut self) -> &mut Friend {
         &mut self.friend
     }
 }

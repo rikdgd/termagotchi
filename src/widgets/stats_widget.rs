@@ -1,11 +1,8 @@
 use ratatui::{prelude::*, widgets::*};
 use crate::friend::Friend;
 use crate::utils::Stat;
-use ratatui::widgets::canvas::Shape;
 
-pub fn stats_widget<T>(area: &Rect, friend: &Friend<T>) -> [(Gauge<'static>, Rect); 4] 
-where T: Shape
-{
+pub fn stats_widget(area: &Rect, friend: &Friend) -> [(Gauge<'static>, Rect); 4] {
     let layout = layout(area);
     
     [

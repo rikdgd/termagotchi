@@ -3,9 +3,10 @@ use crate::utils::{ColorWrapper, Stat};
 use ratatui::widgets::canvas::Shape;
 use serde::{Deserialize, Serialize};
 use chrono::Utc;
+use crate::shapes::creatures::CreatureShapes;
 
 #[derive(Debug, Serialize, Deserialize)]
-pub struct Friend<T: Shape> {
+pub struct Friend {
     name: String,
     food: Stat,
     joy: Stat,
@@ -15,14 +16,13 @@ pub struct Friend<T: Shape> {
     last_time_lower_joy: i64,
     last_time_lower_energy: i64,
     last_time_increase_waste: i64,
-    shape: T,
-    color: ColorWrapper,
+    shape: CreatureShapes,
     asleep: bool,
     alive: bool,
 }
 
-impl<T: Shape> Friend<T> {
-    pub fn new(name: &str, shape: T, color: ColorWrapper) -> Self {
+impl Friend {
+    pub fn new(name: &str, shape: CreatureShapes) -> Self {
         let now = Utc::now().timestamp_millis();
         Self {
             name: String::from(name),
@@ -35,7 +35,6 @@ impl<T: Shape> Friend<T> {
             last_time_lower_energy: now,
             last_time_increase_waste: now,
             shape,
-            color,
             asleep: false,
             alive: true,
         }
@@ -122,11 +121,7 @@ impl<T: Shape> Friend<T> {
         &self.waste_level
     }
     
-    pub fn shape(&self) -> &T {
+    pub fn shape(&self) -> &CreatureShapes {
         &self.shape
-    }
-    
-    pub fn color(&self) -> &ColorWrapper {
-        &self.color
     }
 }
