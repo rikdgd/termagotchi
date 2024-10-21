@@ -5,10 +5,7 @@ use serde::{Deserialize, Serialize};
 use chrono::Utc;
 
 #[derive(Debug, Serialize, Deserialize)]
-pub struct Friend<T>
-where
-    T: Shape,
-{
+pub struct Friend<T: Shape> {
     name: String,
     food: Stat,
     joy: Stat,
@@ -24,10 +21,7 @@ where
     alive: bool,
 }
 
-impl<T> Friend<T>
-where
-    T: Shape,
-{
+impl<T: Shape> Friend<T> {
     pub fn new(name: &str, shape: T, color: ColorWrapper) -> Self {
         let now = Utc::now().timestamp_millis();
         Self {
@@ -126,5 +120,13 @@ where
 
     pub fn waste_level(&self) -> &Stat {
         &self.waste_level
+    }
+    
+    pub fn shape(&self) -> &T {
+        &self.shape
+    }
+    
+    pub fn color(&self) -> &ColorWrapper {
+        &self.color
     }
 }
