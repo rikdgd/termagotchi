@@ -1,5 +1,5 @@
 use crate::shapes::PixelImage;
-use crate::utils::Pixel;
+use crate::utils::{ColorWrapper, Pixel};
 use image::load_from_memory;
 use ratatui::prelude::Color;
 use ratatui::widgets::canvas::{Painter, Shape};
@@ -8,8 +8,8 @@ use std::error::Error;
 
 #[derive(Debug, Serialize, Deserialize)]
 pub enum CreatureShapes {
-    Egg,
-    Duck,
+    Egg(ColorWrapper),
+    Duck(ColorWrapper),
 }
 
 impl Shape for CreatureShapes {
@@ -23,13 +23,13 @@ impl Shape for CreatureShapes {
 impl PixelImage for CreatureShapes {
     fn pixels(&self) -> Vec<Pixel> {
         match self {
-            CreatureShapes::Egg => {
+            CreatureShapes::Egg(color) => {
                 let egg_sprite = include_bytes!("../../assets/egg.png");
-                load_sprite(egg_sprite, Color::White).unwrap()
+                load_sprite(egg_sprite, color.get_ratatui_color()).unwrap()
             },
-            CreatureShapes::Duck => {
+            CreatureShapes::Duck(color) => {
                 let duck_sprite = include_bytes!("../../assets/duck.png");
-                load_sprite(duck_sprite, Color::Cyan).unwrap()
+                load_sprite(duck_sprite, color.get_ratatui_color()).unwrap()
             },
         }
     }
