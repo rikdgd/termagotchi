@@ -1,6 +1,5 @@
 use crate::food::Food;
-use crate::utils::{ColorWrapper, Stat};
-use ratatui::widgets::canvas::Shape;
+use crate::utils::Stat;
 use serde::{Deserialize, Serialize};
 use chrono::Utc;
 use crate::shapes::creatures::CreatureShapes;

@@ -1,5 +1,4 @@
 use crate::friend::Friend;
-use crate::shapes::creatures::CreatureShapes;
 use chrono::Utc;
 use serde::{Deserialize, Serialize};
 use std::fs::OpenOptions;

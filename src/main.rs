@@ -6,7 +6,6 @@ mod utils;
 mod widgets;
 
 use std::time::Duration;
-use ratatui::widgets::canvas::*;
 use ratatui::{
     crossterm::event::{self, Event, KeyCode, KeyEventKind, poll},
     layout::{Constraint, Layout},
