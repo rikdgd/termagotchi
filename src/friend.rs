@@ -87,6 +87,10 @@ impl Friend {
             self.alive = false;
         }
     }
+    
+    pub fn name(&self) -> &str {
+        &self.name
+    }
 
     pub fn eat(&mut self, food: Food) {
         self.food.add(food.points());

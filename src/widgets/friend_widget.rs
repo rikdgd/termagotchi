@@ -17,7 +17,7 @@ impl<'a> FriendWidget<'a> {
         let friend_widget_y_bounds = [-90.0, 90.0];
 
         Canvas::default()
-            .block(Block::bordered().title("Friend"))
+            .block(Block::bordered().title(self.friend.name()))
             .x_bounds(friend_widget_x_bounds)
             .y_bounds(friend_widget_y_bounds)
             .paint(|ctx| {
