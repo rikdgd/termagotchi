@@ -16,8 +16,9 @@ use shapes::creatures::CreatureShapes;
 use crate::friend::Friend;
 use crate::game_state::GameState;
 use crate::utils::ColorWrapper;
-use widgets::{friend_widget, stats_widget, actions_widget};
+use widgets::{stats_widget, actions_widget};
 use crate::food::Food;
+use crate::widgets::FriendWidget;
 
 fn main() -> std::io::Result<()> {
     let mut game_state = match GameState::file_exists() {
@@ -27,8 +28,8 @@ fn main() -> std::io::Result<()> {
         false => {
             // TODO: Randomize shape and color.
             let friend = Friend::new(
-                "Waldo", 
-                CreatureShapes::Duck(ColorWrapper::Cyan), 
+                "Wally", 
+                CreatureShapes::Egg(ColorWrapper::Red), 
             );
             GameState::new(friend)
         }
@@ -41,7 +42,7 @@ fn main() -> std::io::Result<()> {
         game_state.update();
         
         terminal.draw(|frame| {
-            draw(frame, game_state.friend(), &mut actions_widget_state);
+            draw(frame, game_state.friend_mut(), &mut actions_widget_state);
         })?;
 
         if poll(Duration::from_millis(100))? {
@@ -57,10 +58,10 @@ fn main() -> std::io::Result<()> {
                                 let action = actions_widget::ITEMS[action];
                                 match action {
                                     // TODO: Eat the user provided food, instead of defaulting to Burger
-                                    "Eat" => game_state.friend().eat(Food::Burger),
-                                    "Play" => game_state.friend().play(),
-                                    "Sleep" => game_state.friend().sleep(), // TODO: change background to night
-                                    "Poop" => game_state.friend().poop(),
+                                    "Eat" => game_state.friend_mut().eat(Food::Burger),
+                                    "Play" => game_state.friend_mut().play(),
+                                    "Sleep" => game_state.friend_mut().sleep(), // TODO: change background to night
+                                    "Poop" => game_state.friend_mut().poop(),
                                     _ => ()
                                 }
                             }
@@ -93,7 +94,8 @@ fn draw(frame: &mut Frame, friend: &Friend, actions_widget_state: &mut ListState
     for gauge in stats_widget {
         frame.render_widget(gauge.0, gauge.1);
     }
-        
-    frame.render_widget(friend_widget(), middle_area);
+    
+    let friend_widget = FriendWidget::new(friend, (0, 0));
+    frame.render_widget(friend_widget.get_widget(), middle_area);
     frame.render_stateful_widget(actions_widget(), right_area, actions_widget_state);
 }

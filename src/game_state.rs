@@ -57,7 +57,11 @@ impl GameState {
         self.friend.update_state();
     }
 
-    pub fn friend(&mut self) -> &mut Friend {
+    pub fn friend_mut(&mut self) -> &mut Friend {
         &mut self.friend
+    }
+    
+    pub fn friend(&self) -> &Friend {
+        &self.friend
     }
 }
