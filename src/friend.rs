@@ -68,22 +68,13 @@ impl Friend {
             self.waste_level.add(1);
             self.last_time_increase_waste += minute_millis;
         }
+        
+        self.update_alive_status();
     }
 
     fn update_alive_status(&mut self) {
-        if self.food.value() == 0 {
-            self.alive = false;
-        }
-
-        if self.joy.value() == 0 {
-            self.alive = false;
-        }
-
-        if self.energy.value() == 0 {
-            self.alive = false;
-        }
-
-        if self.waste_level.value() >= 100 {
+        let stats_sum = self.food.value() + self.joy.value() + self.energy.value();
+        if stats_sum < 20 {
             self.alive = false;
         }
     }
@@ -126,5 +117,9 @@ impl Friend {
     
     pub fn shape(&self) -> &CreatureShapes {
         &self.shape
+    }
+    
+    pub fn alive(&self) -> &bool {
+        &self.alive
     }
 }

@@ -56,12 +56,12 @@ impl GameState {
         self.last_update_time = Utc::now().timestamp_millis();
         self.friend.update_state();
     }
-
-    pub fn friend_mut(&mut self) -> &mut Friend {
-        &mut self.friend
-    }
     
     pub fn friend(&self) -> &Friend {
         &self.friend
+    }
+
+    pub fn friend_mut(&mut self) -> &mut Friend {
+        &mut self.friend
     }
 }
