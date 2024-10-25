@@ -16,7 +16,7 @@ use shapes::creatures::CreatureShapes;
 use crate::friend::Friend;
 use crate::game_state::GameState;
 use crate::utils::ColorWrapper;
-use widgets::{stats_widget, actions_widget};
+use widgets::{stats_widget, actions_widget, new_friend_widget};
 use crate::food::Food;
 use crate::widgets::FriendWidget;
 
@@ -26,7 +26,7 @@ fn main() -> std::io::Result<()> {
         game_state = state;
         
     } else {
-        // TODO: Randomize shape and color.
+        // TODO: Also perform guided friend creation here
         let friend = Friend::new(
             "Waldo",
             CreatureShapes::Egg(ColorWrapper::Red),
@@ -106,7 +106,7 @@ fn draw_main(frame: &mut Frame, friend: &Friend, actions_widget_state: &mut List
 /// Draws the widget that allows the user to create a new GameState, for example when their friend has died. <br>
 /// Updates the old GameState to the new one using a mutable reference _old_state_.
 fn draw_new_game_state(frame: &mut Frame, old_state: &mut GameState) {
-    
+    frame.render_widget(new_friend_widget(), frame.area());
     
     todo!()
 }
