@@ -21,28 +21,32 @@ use crate::food::Food;
 use crate::widgets::FriendWidget;
 
 fn main() -> std::io::Result<()> {
-    let mut game_state = match GameState::file_exists() {
-        true => {
-            GameState::read_from_file()?
-        },
-        false => {
-            // TODO: Randomize shape and color.
-            let friend = Friend::new(
-                "Wally", 
-                CreatureShapes::Egg(ColorWrapper::Red), 
-            );
-            GameState::new(friend)
-        }
-    };
+    let mut game_state: GameState;
+    if let Ok(state) = GameState::read_from_file() {
+        game_state = state;
+        
+    } else {
+        // TODO: Randomize shape and color.
+        let friend = Friend::new(
+            "Waldo",
+            CreatureShapes::Egg(ColorWrapper::Red),
+        );
+        game_state = GameState::new(friend);
+    }
     
     let mut terminal = ratatui::init();
     let mut actions_widget_state = ListState::default();
 
     loop {
         game_state.update();
+        while !game_state.friend().alive() {
+            terminal.draw(|frame| {
+                draw_new_game_state(frame, &mut game_state);
+            })?;
+        }
         
         terminal.draw(|frame| {
-            draw(frame, game_state.friend_mut(), &mut actions_widget_state);
+            draw_main(frame, game_state.friend_mut(), &mut actions_widget_state);
         })?;
 
         if poll(Duration::from_millis(100))? {
@@ -70,7 +74,6 @@ fn main() -> std::io::Result<()> {
                     }
                 }
             }
-            
         }
     }
 
@@ -80,8 +83,8 @@ fn main() -> std::io::Result<()> {
     Ok(())
 }
 
-fn draw(frame: &mut Frame, friend: &Friend, actions_widget_state: &mut ListState) 
-{
+/// Draws the main screen of the application, which allows for users to interact with their friend.
+fn draw_main(frame: &mut Frame, friend: &Friend, actions_widget_state: &mut ListState) {
     let frame_area = frame.area();
     let [left_area, middle_area, right_area] = Layout::horizontal([
         Constraint::Percentage(15),
@@ -98,4 +101,12 @@ fn draw(frame: &mut Frame, friend: &Friend, actions_widget_state: &mut ListState
     let friend_widget = FriendWidget::new(friend, (0, 0));
     frame.render_widget(friend_widget.get_widget(), middle_area);
     frame.render_stateful_widget(actions_widget(), right_area, actions_widget_state);
+}
+
+/// Draws the widget that allows the user to create a new GameState, for example when their friend has died. <br>
+/// Updates the old GameState to the new one using a mutable reference _old_state_.
+fn draw_new_game_state(frame: &mut Frame, old_state: &mut GameState) {
+    
+    
+    todo!()
 }
