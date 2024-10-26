@@ -6,11 +6,7 @@ mod utils;
 mod widgets;
 
 use std::time::Duration;
-use ratatui::{
-    crossterm::event::{self, Event, KeyCode, KeyEventKind, poll},
-    layout::{Constraint, Layout},
-    Frame,
-};
+use ratatui::{crossterm::event::{self, Event, KeyCode, KeyEventKind, poll}, layout::{Constraint, Layout}, DefaultTerminal, Frame};
 use ratatui::widgets::ListState;
 use shapes::creatures::CreatureShapes;
 use crate::friend::Friend;
@@ -39,10 +35,8 @@ fn main() -> std::io::Result<()> {
 
     loop {
         game_state.update();
-        while !game_state.friend().alive() {
-            terminal.draw(|frame| {
-                draw_new_game_state(frame, &mut game_state);
-            })?;
+        if !game_state.friend().alive() {
+            draw_new_game_state(&mut terminal, &mut game_state)?;
         }
         
         terminal.draw(|frame| {
@@ -105,8 +99,23 @@ fn draw_main(frame: &mut Frame, friend: &Friend, actions_widget_state: &mut List
 
 /// Draws the widget that allows the user to create a new GameState, for example when their friend has died. <br>
 /// Updates the old GameState to the new one using a mutable reference _old_state_.
-fn draw_new_game_state(frame: &mut Frame, old_state: &mut GameState) {
-    frame.render_widget(new_friend_widget(), frame.area());
+fn draw_new_game_state(terminal: &mut DefaultTerminal, old_state: &mut GameState) -> std::io::Result<()> {
+    loop {
+        terminal.draw(|frame| {
+            //
+        })?;
+
+        if poll(Duration::from_millis(100))? {
+            if let Event::Key(key) = event::read()? {
+                if key.kind == KeyEventKind::Press {
+                    match key.code {
+                        KeyCode::Char('q') => break,
+                        _ => (),
+                    }
+                }
+            }
+        }
+    }
     
-    todo!()
+    Ok(())
 }
