@@ -12,7 +12,8 @@ use shapes::creatures::CreatureShapes;
 use crate::friend::Friend;
 use crate::game_state::GameState;
 use crate::utils::ColorWrapper;
-use widgets::{stats_widget, actions_widget, new_friend_widget};
+use widgets::{stats_widget, actions_widget};
+use widgets::new_friend_widget::{new_friend_dialog, new_friend_name_input};
 use crate::food::Food;
 use crate::widgets::FriendWidget;
 
@@ -100,22 +101,46 @@ fn draw_main(frame: &mut Frame, friend: &Friend, actions_widget_state: &mut List
 /// Draws the widget that allows the user to create a new GameState, for example when their friend has died. <br>
 /// Updates the old GameState to the new one using a mutable reference _old_state_.
 fn draw_new_game_state(terminal: &mut DefaultTerminal, old_state: &mut GameState) -> std::io::Result<()> {
+    let mut new_name_input = String::new();
+    
     loop {
         terminal.draw(|frame| {
-            //
+            let frame_area = frame.area();
+
+            let [dialog_area, input_area] = Layout::vertical([
+                Constraint::Percentage(60),
+                Constraint::Percentage(40),
+            ])
+                .areas(frame_area);
+            
+            frame.render_widget(new_friend_dialog(), dialog_area);
+            frame.render_widget(new_friend_name_input(&mut new_name_input), input_area);
         })?;
 
         if poll(Duration::from_millis(100))? {
             if let Event::Key(key) = event::read()? {
                 if key.kind == KeyEventKind::Press {
                     match key.code {
-                        KeyCode::Char('q') => break,
+                        KeyCode::Char(input) => new_name_input.push(input),
+                        KeyCode::Backspace => {
+                            let _ = new_name_input.remove(new_name_input.len() -1);
+                        },
+                        
+                        KeyCode::Enter => break,
                         _ => (),
                     }
                 }
             }
         }
     }
+    
+    // TODO: random shape generation
+    *old_state = GameState::new(
+        Friend::new(
+            &new_name_input, 
+            CreatureShapes::Duck(ColorWrapper::LightMagenta)
+        )
+    );
     
     Ok(())
 }
