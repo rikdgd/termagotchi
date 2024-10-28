@@ -4,40 +4,37 @@ mod game_state;
 mod shapes;
 mod utils;
 mod widgets;
+mod layouts;
 
 use std::time::Duration;
-use ratatui::{crossterm::event::{self, Event, KeyCode, KeyEventKind, poll}, layout::{Constraint, Layout}, DefaultTerminal, Frame};
+use ratatui::{crossterm::event::{self, Event, KeyCode, KeyEventKind, poll}, layout::{Constraint, Layout}, Frame};
 use ratatui::widgets::ListState;
 use shapes::creatures::CreatureShapes;
 use crate::friend::Friend;
 use crate::game_state::GameState;
 use crate::utils::ColorWrapper;
 use widgets::{stats_widget, actions_widget};
-use widgets::new_friend_widget::{new_friend_dialog, new_friend_name_input};
 use crate::food::Food;
 use crate::widgets::FriendWidget;
 
 fn main() -> std::io::Result<()> {
+    let mut terminal = ratatui::init();
+    let mut actions_widget_state = ListState::default();
+    
     let mut game_state: GameState;
     if let Ok(state) = GameState::read_from_file() {
         game_state = state;
         
     } else {
-        // TODO: Also perform guided friend creation here
-        let friend = Friend::new(
-            "Waldo",
-            CreatureShapes::Egg(ColorWrapper::Red),
-        );
-        game_state = GameState::new(friend);
+        let friend = Friend::new("temp friend", CreatureShapes::Egg(ColorWrapper::Red));
+        game_state = GameState::new(friend);    // Create a temporary GameState, this will never be used.
+        layouts::draw_new_friend_layout(&mut terminal, &mut game_state)?;
     }
     
-    let mut terminal = ratatui::init();
-    let mut actions_widget_state = ListState::default();
-
     loop {
         game_state.update();
         if !game_state.friend().alive() {
-            draw_new_game_state(&mut terminal, &mut game_state)?;
+            layouts::draw_new_friend_layout(&mut terminal, &mut game_state)?;
         }
         
         terminal.draw(|frame| {
@@ -96,51 +93,4 @@ fn draw_main(frame: &mut Frame, friend: &Friend, actions_widget_state: &mut List
     let friend_widget = FriendWidget::new(friend, (0, 0));
     frame.render_widget(friend_widget.get_widget(), middle_area);
     frame.render_stateful_widget(actions_widget(), right_area, actions_widget_state);
-}
-
-/// Draws the widget that allows the user to create a new GameState, for example when their friend has died. <br>
-/// Updates the old GameState to the new one using a mutable reference _old_state_.
-fn draw_new_game_state(terminal: &mut DefaultTerminal, old_state: &mut GameState) -> std::io::Result<()> {
-    let mut new_name_input = String::new();
-    
-    loop {
-        terminal.draw(|frame| {
-            let frame_area = frame.area();
-
-            let [dialog_area, input_area] = Layout::vertical([
-                Constraint::Percentage(60),
-                Constraint::Percentage(40),
-            ])
-                .areas(frame_area);
-            
-            frame.render_widget(new_friend_dialog(), dialog_area);
-            frame.render_widget(new_friend_name_input(&mut new_name_input), input_area);
-        })?;
-
-        if poll(Duration::from_millis(100))? {
-            if let Event::Key(key) = event::read()? {
-                if key.kind == KeyEventKind::Press {
-                    match key.code {
-                        KeyCode::Char(input) => new_name_input.push(input),
-                        KeyCode::Backspace => {
-                            let _ = new_name_input.remove(new_name_input.len() -1);
-                        },
-                        
-                        KeyCode::Enter => break,
-                        _ => (),
-                    }
-                }
-            }
-        }
-    }
-    
-    // TODO: random shape generation
-    *old_state = GameState::new(
-        Friend::new(
-            &new_name_input, 
-            CreatureShapes::Duck(ColorWrapper::LightMagenta)
-        )
-    );
-    
-    Ok(())
 }
