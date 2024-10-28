@@ -90,6 +90,10 @@ impl Friend {
     pub fn sleep(&mut self) {
         self.asleep = !self.asleep;
     }
+    
+    pub fn is_asleep(&self) -> bool {
+        self.asleep
+    }
 
     pub fn play(&mut self) {
         self.joy.add(20);

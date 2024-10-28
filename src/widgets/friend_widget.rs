@@ -15,8 +15,8 @@ impl<'a> FriendWidget<'a> {
     pub fn get_widget(&self) -> impl Widget + '_ {
         let friend_widget_x_bounds = [-180.0, 180.0];
         let friend_widget_y_bounds = [-90.0, 90.0];
-
-        Canvas::default()
+        
+        let canvas = Canvas::default()
             .block(Block::bordered().title(self.friend.name()))
             .x_bounds(friend_widget_x_bounds)
             .y_bounds(friend_widget_y_bounds)
@@ -27,6 +27,11 @@ impl<'a> FriendWidget<'a> {
                 });
                 ctx.layer();
                 ctx.draw(self.friend.shape())
-            })
+            });
+        
+        match self.friend.is_asleep() {
+            true => canvas.background_color(Color::Black),
+            false => canvas.background_color(Color::Reset),
+        }
     }
 }
