@@ -5,6 +5,9 @@ use ratatui::prelude::Color;
 use ratatui::widgets::canvas::{Painter, Shape};
 use serde::{Deserialize, Serialize};
 use std::error::Error;
+use rand::Rng;
+
+const NUM_SHAPES: u32 = 2;
 
 #[derive(Debug, Serialize, Deserialize)]
 pub enum CreatureShapes {
@@ -31,6 +34,19 @@ impl PixelImage for CreatureShapes {
                 let duck_sprite = include_bytes!("../../assets/duck.png");
                 load_sprite(duck_sprite, color.get_ratatui_color()).unwrap()
             },
+        }
+    }
+}
+
+impl CreatureShapes {
+    pub fn new_random() -> Self {
+        let color = ColorWrapper::new_random();
+        let mut rng = rand::thread_rng();
+        
+        match rng.gen_range(0..NUM_SHAPES) {
+            0 => CreatureShapes::Egg(color),
+            1 => CreatureShapes::Duck(color),
+            _ => CreatureShapes::Duck(color),
         }
     }
 }

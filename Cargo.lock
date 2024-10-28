@@ -1218,6 +1218,7 @@ version = "0.2.0"
 dependencies = [
  "chrono",
  "image",
+ "rand",
  "ratatui",
  "serde",
  "serde_json",

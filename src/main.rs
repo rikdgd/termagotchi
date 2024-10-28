@@ -4,13 +4,10 @@ mod game_state;
 mod shapes;
 mod utils;
 mod widgets;
+mod layouts;
 
 use std::time::Duration;
-use ratatui::{
-    crossterm::event::{self, Event, KeyCode, KeyEventKind, poll},
-    layout::{Constraint, Layout},
-    Frame,
-};
+use ratatui::{crossterm::event::{self, Event, KeyCode, KeyEventKind, poll}, layout::{Constraint, Layout}, Frame};
 use ratatui::widgets::ListState;
 use shapes::creatures::CreatureShapes;
 use crate::friend::Friend;
@@ -21,28 +18,27 @@ use crate::food::Food;
 use crate::widgets::FriendWidget;
 
 fn main() -> std::io::Result<()> {
-    let mut game_state = match GameState::file_exists() {
-        true => {
-            GameState::read_from_file()?
-        },
-        false => {
-            // TODO: Randomize shape and color.
-            let friend = Friend::new(
-                "Wally", 
-                CreatureShapes::Egg(ColorWrapper::Red), 
-            );
-            GameState::new(friend)
-        }
-    };
-    
     let mut terminal = ratatui::init();
     let mut actions_widget_state = ListState::default();
-
+    
+    let mut game_state: GameState;
+    if let Ok(state) = GameState::read_from_file() {
+        game_state = state;
+        
+    } else {
+        let friend = Friend::new("temp friend", CreatureShapes::Egg(ColorWrapper::Red));
+        game_state = GameState::new(friend);    // Create a temporary GameState, this will never be used.
+        layouts::draw_new_friend_layout(&mut terminal, &mut game_state)?;
+    }
+    
     loop {
         game_state.update();
+        if !game_state.friend().alive() {
+            layouts::draw_new_friend_layout(&mut terminal, &mut game_state)?;
+        }
         
         terminal.draw(|frame| {
-            draw(frame, game_state.friend_mut(), &mut actions_widget_state);
+            draw_main(frame, game_state.friend_mut(), &mut actions_widget_state);
         })?;
 
         if poll(Duration::from_millis(100))? {
@@ -70,7 +66,6 @@ fn main() -> std::io::Result<()> {
                     }
                 }
             }
-            
         }
     }
 
@@ -80,8 +75,8 @@ fn main() -> std::io::Result<()> {
     Ok(())
 }
 
-fn draw(frame: &mut Frame, friend: &Friend, actions_widget_state: &mut ListState) 
-{
+/// Draws the main screen of the application, which allows for users to interact with their friend.
+fn draw_main(frame: &mut Frame, friend: &Friend, actions_widget_state: &mut ListState) {
     let frame_area = frame.area();
     let [left_area, middle_area, right_area] = Layout::horizontal([
         Constraint::Percentage(15),
