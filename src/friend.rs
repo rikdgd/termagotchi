@@ -4,6 +4,29 @@ use serde::{Deserialize, Serialize};
 use chrono::Utc;
 use crate::shapes::creatures::CreatureShapes;
 
+
+#[derive(Debug, Copy, Clone, Serialize, Deserialize)]
+pub enum GrowthStage {
+    Egg,
+    Baby,
+    Kid,
+    Adult,
+}
+
+impl GrowthStage {
+    /// Upgrades self to the next logical growth stage.
+    pub fn next_stage(&mut self) {
+        match self {
+            GrowthStage::Egg => *self = GrowthStage::Baby,
+            GrowthStage::Baby => *self = GrowthStage::Kid,
+            GrowthStage::Kid => *self = GrowthStage::Adult,
+
+            GrowthStage::Adult => (),
+        }
+    }
+}
+
+
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Friend {
     name: String,
@@ -16,8 +39,10 @@ pub struct Friend {
     last_time_lower_energy: i64,
     last_time_increase_waste: i64,
     shape: CreatureShapes,
+    growth_stage: GrowthStage,
     asleep: bool,
     alive: bool,
+    time_created: i64,
 }
 
 impl Friend {
@@ -34,8 +59,10 @@ impl Friend {
             last_time_lower_energy: now,
             last_time_increase_waste: now,
             shape,
+            growth_stage: GrowthStage::Egg,
             asleep: false,
             alive: true,
+            time_created: now,
         }
     }
 
@@ -44,7 +71,7 @@ impl Friend {
         let now = Utc::now().timestamp_millis();
         let minute_millis = 1000 * 60;
         
-        // Use while loops instead of if statements to account for loading from file, 
+        // Use while loops instead of if statements to account for loading from file
         // when we might have been away for more than a single minute.
         while now - self.last_time_lower_food >= minute_millis {
             self.food.subtract(1);
@@ -78,7 +105,24 @@ impl Friend {
             self.alive = false;
         }
     }
-    
+
+    pub fn upgrade_growth_stage(&mut self) {
+        let now = Utc::now().timestamp_millis();
+        
+        let growth_delay = match self.growth_stage {
+            GrowthStage::Egg => Some(3600000),    // 1 hour
+            GrowthStage::Baby => Some(18000000),  // 5 hours
+            GrowthStage::Kid => Some(86400000),   // 24 hours
+            _ => None,
+        };
+        
+        if let Some(growth_delay) = growth_delay {
+            if now - self.time_created > growth_delay {
+                self.growth_stage.next_stage();
+            }
+        }
+    }
+
     pub fn name(&self) -> &str {
         &self.name
     }
