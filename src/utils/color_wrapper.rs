@@ -5,7 +5,7 @@ use rand::prelude::*;
 
 const NUM_COLORS: u32 = 7;
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub enum ColorWrapper {
     Cyan,
     LightMagenta,

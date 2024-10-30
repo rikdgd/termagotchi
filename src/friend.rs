@@ -97,6 +97,7 @@ impl Friend {
         }
         
         self.update_alive_status();
+        self.try_upgrade_growth_stage();
     }
 
     fn update_alive_status(&mut self) {
@@ -106,7 +107,7 @@ impl Friend {
         }
     }
 
-    pub fn upgrade_growth_stage(&mut self) {
+    fn try_upgrade_growth_stage(&mut self) {
         let now = Utc::now().timestamp_millis();
         
         let growth_delay = match self.growth_stage {
@@ -163,8 +164,12 @@ impl Friend {
         &self.waste_level
     }
     
-    pub fn shape(&self) -> &CreatureShapes {
-        &self.shape
+    pub fn shape(&self) -> CreatureShapes {
+        let color = self.shape.get_color();
+        match self.growth_stage {
+            GrowthStage::Egg => CreatureShapes::Egg(color),
+            _ => self.shape.clone(),
+        }
     }
     
     pub fn alive(&self) -> &bool {

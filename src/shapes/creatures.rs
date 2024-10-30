@@ -9,8 +9,8 @@ use rand::Rng;
 
 const NUM_SHAPES: u32 = 2;
 
-#[derive(Debug, Serialize, Deserialize)]
-pub enum CreatureShapes {
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub enum CreatureShapes {   // TODO: This enum should only contain the adult sprites
     Egg(ColorWrapper),
     Duck(ColorWrapper),
 }
@@ -47,6 +47,13 @@ impl CreatureShapes {
             0 => CreatureShapes::Egg(color),
             1 => CreatureShapes::Duck(color),
             _ => CreatureShapes::Duck(color),
+        }
+    }
+    
+    pub fn get_color(&self) -> ColorWrapper {
+        match self {
+            CreatureShapes::Egg(color) => color.clone(),
+            CreatureShapes::Duck(color) => color.clone(),
         }
     }
 }

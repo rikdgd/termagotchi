@@ -26,7 +26,7 @@ impl<'a> FriendWidget<'a> {
                     color: Color::White,
                 });
                 ctx.layer();
-                ctx.draw(self.friend.shape())
+                ctx.draw(&self.friend.shape())
             });
         
         match self.friend.is_asleep() {
