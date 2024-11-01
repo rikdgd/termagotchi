@@ -8,7 +8,7 @@ macro_rules! load_embedded_sprite {
     ($sprite_path:expr, $color:expr) => {
         {
             let sprite = include_bytes!($sprite_path);
-            load_sprite(sprite, $color.get_ratatui_color()).unwrap()
+            load_sprite(sprite, $color.get_ratatui_color()).expect("Failed to load sprite")
         }
     };
 }
@@ -26,7 +26,7 @@ impl PixelImage for GrowthStageShapes {
         match self {
             GrowthStageShapes::Egg(color) => load_embedded_sprite!("../../assets/egg.png", color),
             GrowthStageShapes::Baby(color) => load_embedded_sprite!("../../assets/baby.png", color),
-            GrowthStageShapes::Kid(color) => load_embedded_sprite!("../../assets/egg.png", color), // TODO: create kid shape and use that
+            GrowthStageShapes::Kid(color) => load_embedded_sprite!("../../assets/kid.png", color),
         }
     }
 }

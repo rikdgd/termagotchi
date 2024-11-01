@@ -26,7 +26,18 @@ impl<'a> FriendWidget<'a> {
                     color: Color::White,
                 });
                 ctx.layer();
-                ctx.draw(&self.friend.shape())
+
+                match self.friend.shape() {
+                    (None, Some(shape)) => {
+                        ctx.draw(&shape)
+                    },
+                    (Some(shape), None) => {
+                        ctx.draw(&shape)
+                    },
+                    _ => {
+                        panic!("Could not draw friends shape");
+                    }
+                }
             });
         
         match self.friend.is_asleep() {

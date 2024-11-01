@@ -3,6 +3,7 @@ use crate::utils::Stat;
 use serde::{Deserialize, Serialize};
 use chrono::Utc;
 use crate::shapes::creatures::CreatureShapes;
+use crate::shapes::GrowthStageShapes;
 
 
 #[derive(Debug, Copy, Clone, Serialize, Deserialize)]
@@ -164,15 +165,26 @@ impl Friend {
         &self.waste_level
     }
     
-    pub fn shape(&self) -> CreatureShapes {
+    /// returns a tuple with at max one of the options set to Some, to indicate which 
+    /// shape should be used when drawing the creature according to its growth stage. <br><br>
+    /// [CreatureShapes] will be returned when the creature is adult. <br>
+    /// [GrowthStageShapes] when not.
+    pub fn shape(&self) -> (Option<CreatureShapes>, Option<GrowthStageShapes>) {
         let color = self.shape.get_color();
         match self.growth_stage {
-            GrowthStage::Egg => CreatureShapes::Egg(color),
-            _ => self.shape.clone(),
+            GrowthStage::Egg => (None, Some(GrowthStageShapes::Egg(color))),
+            GrowthStage::Baby => (None, Some(GrowthStageShapes::Baby(color))),
+            GrowthStage::Kid => (None, Some(GrowthStageShapes::Kid(color))),
+            
+            GrowthStage::Adult => (Some(self.shape.clone()), None),
         }
     }
     
     pub fn alive(&self) -> &bool {
         &self.alive
+    }
+
+    pub fn growth_stage(&self) -> GrowthStage {
+        self.growth_stage
     }
 }
