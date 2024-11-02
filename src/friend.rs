@@ -183,8 +183,4 @@ impl Friend {
     pub fn alive(&self) -> &bool {
         &self.alive
     }
-
-    pub fn growth_stage(&self) -> GrowthStage {
-        self.growth_stage
-    }
 }

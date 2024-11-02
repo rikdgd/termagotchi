@@ -1,8 +1,8 @@
 use ratatui::{
     widgets::Widget,
     layout::Alignment,
-    style::{Style, Stylize},
-    text::{Line, Span},
+    style::Stylize,
+    text::Line,
     widgets::{Block, Paragraph, Wrap},
 };
 
