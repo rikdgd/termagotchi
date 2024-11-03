@@ -26,7 +26,7 @@ fn main() -> std::io::Result<()> {
         game_state = state;
         
     } else {
-        let friend = Friend::new("temp friend", CreatureShapes::Egg(ColorWrapper::Red));
+        let friend = Friend::new("temp friend", CreatureShapes::Duck(ColorWrapper::Red));
         game_state = GameState::new(friend);    // Create a temporary GameState, this will never be used.
         layouts::draw_new_friend_layout(&mut terminal, &mut game_state)?;
     }

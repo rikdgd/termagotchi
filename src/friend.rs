@@ -2,6 +2,7 @@ use crate::food::Food;
 use crate::utils::Stat;
 use serde::{Deserialize, Serialize};
 use chrono::Utc;
+use crate::friend::ShapeWrapper::Adult;
 use crate::shapes::creatures::CreatureShapes;
 use crate::shapes::GrowthStageShapes;
 
@@ -115,7 +116,7 @@ impl Friend {
             GrowthStage::Egg => Some(3600000),    // 1 hour
             GrowthStage::Baby => Some(18000000),  // 5 hours
             GrowthStage::Kid => Some(86400000),   // 24 hours
-            _ => None,
+            GrowthStage::Adult => None,
         };
         
         if let Some(growth_delay) = growth_delay {
@@ -165,22 +166,24 @@ impl Friend {
         &self.waste_level
     }
     
-    /// returns a tuple with at max one of the options set to Some, to indicate which 
-    /// shape should be used when drawing the creature according to its growth stage. <br><br>
-    /// [CreatureShapes] will be returned when the creature is adult. <br>
-    /// [GrowthStageShapes] when not.
-    pub fn shape(&self) -> (Option<CreatureShapes>, Option<GrowthStageShapes>) {
+    pub fn get_shape_wrapper(&self) -> ShapeWrapper {
         let color = self.shape.get_color();
         match self.growth_stage {
-            GrowthStage::Egg => (None, Some(GrowthStageShapes::Egg(color))),
-            GrowthStage::Baby => (None, Some(GrowthStageShapes::Baby(color))),
-            GrowthStage::Kid => (None, Some(GrowthStageShapes::Kid(color))),
-            
-            GrowthStage::Adult => (Some(self.shape.clone()), None),
+            GrowthStage::Egg => ShapeWrapper::Growing(GrowthStageShapes::Egg(color)),
+            GrowthStage::Baby => ShapeWrapper::Growing(GrowthStageShapes::Baby(color)),
+            GrowthStage::Kid => ShapeWrapper::Growing(GrowthStageShapes::Kid(color)),
+
+            GrowthStage::Adult => ShapeWrapper::Adult(self.shape.clone()),
         }
     }
     
     pub fn alive(&self) -> &bool {
         &self.alive
     }
+}
+
+#[derive(Debug, Clone)]
+pub enum ShapeWrapper {
+    Growing(GrowthStageShapes),
+    Adult(CreatureShapes),
 }
