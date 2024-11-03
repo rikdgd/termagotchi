@@ -2,7 +2,6 @@ use crate::food::Food;
 use crate::utils::Stat;
 use serde::{Deserialize, Serialize};
 use chrono::Utc;
-use crate::friend::ShapeWrapper::Adult;
 use crate::shapes::creatures::CreatureShapes;
 use crate::shapes::GrowthStageShapes;
 

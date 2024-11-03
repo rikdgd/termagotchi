@@ -56,7 +56,7 @@ fn main() -> std::io::Result<()> {
                                     // TODO: Eat the user provided food, instead of defaulting to Burger
                                     "Eat" => game_state.friend_mut().eat(Food::Burger),
                                     "Play" => game_state.friend_mut().play(),
-                                    "Sleep" => game_state.friend_mut().sleep(), // TODO: change background to night
+                                    "Sleep" => game_state.friend_mut().sleep(),
                                     "Poop" => game_state.friend_mut().poop(),
                                     _ => ()
                                 }
