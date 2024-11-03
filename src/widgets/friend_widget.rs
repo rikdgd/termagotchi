@@ -2,6 +2,7 @@ use ratatui::prelude::Color;
 use ratatui::widgets::{Widget, Block};
 use ratatui::widgets::canvas::{Canvas, Map, MapResolution};
 use crate::friend::Friend;
+use crate::friend::ShapeWrapper;
 
 pub struct FriendWidget<'a> {
     friend: &'a Friend,
@@ -26,7 +27,11 @@ impl<'a> FriendWidget<'a> {
                     color: Color::White,
                 });
                 ctx.layer();
-                ctx.draw(self.friend.shape())
+                
+                match self.friend.get_shape_wrapper() {
+                    ShapeWrapper::Growing(shape) => ctx.draw(&shape),
+                    ShapeWrapper::Adult(shape) => ctx.draw(&shape),
+                }
             });
         
         match self.friend.is_asleep() {

@@ -48,10 +48,6 @@ impl GameState {
         Ok(state)
     }
 
-    pub fn file_exists() -> bool {
-        std::path::Path::new(SAVE_FILE_PATH).is_file()
-    }
-
     pub fn update(&mut self) {
         self.last_update_time = Utc::now().timestamp_millis();
         self.friend.update_state();
