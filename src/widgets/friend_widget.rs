@@ -22,11 +22,12 @@ impl<'a> FriendWidget<'a> {
             .x_bounds(friend_widget_x_bounds)
             .y_bounds(friend_widget_y_bounds)
             .paint(|ctx| {
-                ctx.draw(&Map {
-                    resolution: MapResolution::High,
-                    color: Color::White,
-                });
-                ctx.layer();
+                // TODO: Create simple background
+                // ctx.draw(&Map {
+                //     resolution: MapResolution::High,
+                //     color: Color::White,
+                // });
+                // ctx.layer();
                 
                 match self.friend.get_shape_wrapper() {
                     ShapeWrapper::Growing(shape) => ctx.draw(&shape),

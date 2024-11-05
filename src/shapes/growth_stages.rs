@@ -14,7 +14,7 @@ macro_rules! load_embedded_sprite {
 }
 
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub enum GrowthStageShapes {
     Egg(ColorWrapper),
     Baby(ColorWrapper),
