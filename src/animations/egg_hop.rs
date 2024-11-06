@@ -29,7 +29,7 @@ impl EggHopAnimation {
             _ => {
                 Err(std::io::Error::new(
                     std::io::ErrorKind::InvalidInput,
-                    "The provided shape was not of type GrowthStageShapes::Egg"
+                    "The provided shape was not of type 'GrowthStageShapes::Egg'"
                 ))
             },
         }
@@ -38,7 +38,7 @@ impl EggHopAnimation {
 
 impl PixelAnimation for EggHopAnimation {
     fn next_frame(&self) -> Vec<Pixel> {
-        let state = self.state.borrow();
+        let mut state = self.state.borrow_mut();
         
         let pixels = state.egg_shape.pixels();
         if !state.is_grounded {
@@ -51,8 +51,8 @@ impl PixelAnimation for EggHopAnimation {
             pixel.y += 5;
             updated_pixels.push(pixel);
         }
-
-        self.state.borrow_mut().is_grounded = !state.is_grounded;
+        
+        state.is_grounded = !state.is_grounded;
         updated_pixels
     }
 }
