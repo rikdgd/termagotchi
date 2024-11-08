@@ -6,6 +6,7 @@ mod utils;
 mod widgets;
 mod layouts;
 mod animations;
+mod movements;
 
 use std::time::Duration;
 use ratatui::{crossterm::event::{self, Event, KeyCode, KeyEventKind, poll}, layout::{Constraint, Layout}, Frame};

@@ -1,8 +1,10 @@
 use ratatui::prelude::Color;
 use ratatui::widgets::{Widget, Block};
-use ratatui::widgets::canvas::Canvas;
+use ratatui::widgets::canvas::{Canvas, Context, Shape};
 use crate::friend::Friend;
 use crate::friend::ShapeWrapper;
+use crate::shapes::{PixelImage, move_pixel_image};
+use crate::movements::{Movement, Location, EggHopMovement};
 
 pub struct FriendWidget<'a> {
     friend: &'a Friend,
@@ -40,4 +42,8 @@ impl<'a> FriendWidget<'a> {
             false => canvas.background_color(Color::Reset),
         }
     }
+}
+
+fn draw_with_movement<S: PixelImage, T: Movement>(ctx: &mut Context, shape: &S, movement: T) {
+    let new_pixels = move_pixel_image(shape, (10, 10)); // TODO: use location from movement here
 }
