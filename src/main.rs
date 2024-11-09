@@ -92,7 +92,8 @@ fn draw_main(frame: &mut Frame, friend: &Friend, actions_widget_state: &mut List
         frame.render_widget(gauge.0, gauge.1);
     }
     
-    let friend_widget = FriendWidget::new(friend, (0, 0));
+    // TODO: Get friends location based on movement
+    let friend_widget = FriendWidget::new(friend, (40, 20));
     frame.render_widget(friend_widget.get_widget(), middle_area);
     frame.render_stateful_widget(actions_widget(), right_area, actions_widget_state);
 }

@@ -1,18 +1,21 @@
 use ratatui::prelude::Color;
 use ratatui::widgets::{Widget, Block};
-use ratatui::widgets::canvas::{Canvas, Context, Shape};
+use ratatui::widgets::canvas::{Canvas, Context};
 use crate::friend::Friend;
 use crate::friend::ShapeWrapper;
-use crate::shapes::{PixelImage, move_pixel_image};
-use crate::movements::{Movement, Location, EggHopMovement};
+use crate::shapes::{PixelImage, move_pixel_image, PixelVectorShape};
+use crate::movements::Location;
 
 pub struct FriendWidget<'a> {
     friend: &'a Friend,
-    friend_location: (u32, u32),
+    friend_location: Location,
 }
 impl<'a> FriendWidget<'a> {
     pub fn new(friend: &'a Friend, friend_location: (u32, u32)) -> Self {
-        Self { friend, friend_location }
+        Self { 
+            friend, 
+            friend_location: Location::new(friend_location.0, friend_location.1), 
+        }
     }
 
     pub fn get_widget(&self) -> impl Widget + '_ {
@@ -33,7 +36,7 @@ impl<'a> FriendWidget<'a> {
 
                 match self.friend.get_shape_wrapper() {
                     ShapeWrapper::Growing(shape) => ctx.draw(&shape),
-                    ShapeWrapper::Adult(shape) => ctx.draw(&shape),
+                    ShapeWrapper::Adult(shape) => draw_shape_at_location(ctx, &shape, &self.friend_location),
                 }
             });
         
@@ -44,6 +47,9 @@ impl<'a> FriendWidget<'a> {
     }
 }
 
-fn draw_with_movement<S: PixelImage, T: Movement>(ctx: &mut Context, shape: &S, movement: T) {
-    let new_pixels = move_pixel_image(shape, (10, 10)); // TODO: use location from movement here
+fn draw_shape_at_location<S: PixelImage>(ctx: &mut Context, shape: &S, location: &Location) {
+    let new_pixels = move_pixel_image(shape, (location.x, location.y));
+    let vec_image = PixelVectorShape::new(new_pixels);
+    
+    ctx.draw(&vec_image);
 }
