@@ -23,7 +23,7 @@ impl Movement for EggHopMovement {
             self.start_location.clone()
         } else {
             let mut location = self.start_location;
-            location.y += 10;
+            location.y += 1;
             location
         }
     }

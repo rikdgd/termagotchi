@@ -11,10 +11,10 @@ pub struct FriendWidget<'a> {
     friend_location: Location,
 }
 impl<'a> FriendWidget<'a> {
-    pub fn new(friend: &'a Friend, friend_location: (u32, u32)) -> Self {
+    pub fn new(friend: &'a Friend, friend_location: Location) -> Self {
         Self { 
             friend, 
-            friend_location: Location::new(friend_location.0, friend_location.1), 
+            friend_location, 
         }
     }
 
@@ -35,7 +35,7 @@ impl<'a> FriendWidget<'a> {
                 // ctx.layer();
 
                 match self.friend.get_shape_wrapper() {
-                    ShapeWrapper::Growing(shape) => ctx.draw(&shape),
+                    ShapeWrapper::Growing(shape) => draw_shape_at_location(ctx, &shape, &self.friend_location),
                     ShapeWrapper::Adult(shape) => draw_shape_at_location(ctx, &shape, &self.friend_location),
                 }
             });

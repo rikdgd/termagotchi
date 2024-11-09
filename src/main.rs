@@ -12,11 +12,12 @@ use std::time::Duration;
 use ratatui::{crossterm::event::{self, Event, KeyCode, KeyEventKind, poll}, layout::{Constraint, Layout}, Frame};
 use ratatui::widgets::ListState;
 use shapes::creatures::CreatureShapes;
-use crate::friend::Friend;
+use crate::friend::{Friend, GrowthStage};
 use crate::game_state::GameState;
 use crate::utils::ColorWrapper;
 use widgets::{stats_widget, actions_widget};
 use crate::food::Food;
+use crate::movements::{EggHopMovement, Location, Movement};
 use crate::widgets::FriendWidget;
 
 fn main() -> std::io::Result<()> {
@@ -32,6 +33,12 @@ fn main() -> std::io::Result<()> {
         game_state = GameState::new(friend);    // Create a temporary GameState, this will never be used.
         layouts::draw_new_friend_layout(&mut terminal, &mut game_state)?;
     }
+
+    let mut friend_movement = match game_state.friend().growth_stage() {
+        GrowthStage::Egg => EggHopMovement::new(Location::new(40, 20)),
+        _ => EggHopMovement::new(Location::new(40, 20)),
+    };
+    
     
     loop {
         game_state.update();
@@ -40,7 +47,7 @@ fn main() -> std::io::Result<()> {
         }
         
         terminal.draw(|frame| {
-            draw_main(frame, game_state.friend_mut(), &mut actions_widget_state);
+            draw_main(frame, game_state.friend_mut(), &mut friend_movement, &mut actions_widget_state);
         })?;
 
         if poll(Duration::from_millis(100))? {
@@ -78,7 +85,7 @@ fn main() -> std::io::Result<()> {
 }
 
 /// Draws the main screen of the application, which allows for users to interact with their friend.
-fn draw_main(frame: &mut Frame, friend: &Friend, actions_widget_state: &mut ListState) {
+fn draw_main<T: Movement>(frame: &mut Frame, friend: &Friend, friend_movement: &mut T, actions_widget_state: &mut ListState) {
     let frame_area = frame.area();
     let [left_area, middle_area, right_area] = Layout::horizontal([
         Constraint::Percentage(15),
@@ -92,8 +99,7 @@ fn draw_main(frame: &mut Frame, friend: &Friend, actions_widget_state: &mut List
         frame.render_widget(gauge.0, gauge.1);
     }
     
-    // TODO: Get friends location based on movement
-    let friend_widget = FriendWidget::new(friend, (40, 20));
+    let friend_widget = FriendWidget::new(friend, friend_movement.next_position());
     frame.render_widget(friend_widget.get_widget(), middle_area);
     frame.render_stateful_widget(actions_widget(), right_area, actions_widget_state);
 }
