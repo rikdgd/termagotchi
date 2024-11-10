@@ -3,6 +3,16 @@ use image::load_from_memory;
 use ratatui::prelude::Color;
 use crate::utils::Pixel;
 
+#[macro_export]
+macro_rules! load_embedded_sprite {
+    ($sprite_path:expr, $color:expr) => {
+        {
+            let sprite = include_bytes!($sprite_path);
+            load_sprite(sprite, $color.get_ratatui_color()).expect("Failed to load sprite")
+        }
+    };
+}
+
 
 pub fn load_sprite(image_bytes: &[u8], color: Color) -> std::io::Result<Vec<Pixel>> {
     let mut pixels = Vec::new();

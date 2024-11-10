@@ -2,16 +2,7 @@ use ratatui::widgets::canvas::{Painter, Shape};
 use serde::{Deserialize, Serialize};
 use crate::shapes::PixelImage;
 use crate::utils::{ColorWrapper, Pixel, sprite_management::load_sprite};
-
-
-macro_rules! load_embedded_sprite {
-    ($sprite_path:expr, $color:expr) => {
-        {
-            let sprite = include_bytes!($sprite_path);
-            load_sprite(sprite, $color.get_ratatui_color()).expect("Failed to load sprite")
-        }
-    };
-}
+use crate::load_embedded_sprite;
 
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
