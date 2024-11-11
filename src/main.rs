@@ -17,7 +17,7 @@ use crate::game_state::GameState;
 use crate::utils::ColorWrapper;
 use widgets::{stats_widget, actions_widget};
 use crate::food::Food;
-use crate::movements::{EggHopMovement, Location, Movement};
+use crate::movements::{EggHopMovement, SmallStepsMovement, Location, Movement, MovementWrapper};
 use crate::widgets::FriendWidget;
 
 fn main() -> std::io::Result<()> {
@@ -35,8 +35,9 @@ fn main() -> std::io::Result<()> {
     }
 
     let mut friend_movement = match game_state.friend().growth_stage() {
-        GrowthStage::Egg => EggHopMovement::new(Location::new(40, 20)),
-        _ => EggHopMovement::new(Location::new(40, 20)),
+        GrowthStage::Egg => MovementWrapper::EggHop(EggHopMovement::new(Location::new(40, 20))),
+        GrowthStage::Baby => MovementWrapper::SmallSteps(SmallStepsMovement::new(Location::new(40, 20))),
+        _ => MovementWrapper::SmallSteps(SmallStepsMovement::new(Location::new(40, 20))),
     };
     
     
@@ -98,7 +99,7 @@ fn draw_main<T: Movement>(frame: &mut Frame, friend: &Friend, friend_movement: &
     for gauge in stats_widget {
         frame.render_widget(gauge.0, gauge.1);
     }
-    
+
     let friend_widget = FriendWidget::new(friend, friend_movement.next_position());
     frame.render_widget(friend_widget.get_widget(), middle_area);
     frame.render_stateful_widget(actions_widget(), right_area, actions_widget_state);

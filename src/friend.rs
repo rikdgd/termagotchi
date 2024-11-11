@@ -6,7 +6,7 @@ use crate::shapes::creatures::CreatureShapes;
 use crate::shapes::GrowthStageShapes;
 
 
-#[derive(Debug, Copy, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub enum GrowthStage {
     Egg,
     Baby,

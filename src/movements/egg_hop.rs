@@ -38,8 +38,4 @@ impl Movement for EggHopMovement {
             location
         }
     }
-
-    fn frame_count(&self) -> u32 {
-        2
-    }
 }
