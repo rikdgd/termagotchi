@@ -8,6 +8,7 @@ mod layouts;
 mod animations;
 mod movements;
 
+use std::cmp::PartialEq;
 use std::time::Duration;
 use ratatui::{crossterm::event::{self, Event, KeyCode, KeyEventKind, poll}, layout::{Constraint, Layout}, Frame};
 use ratatui::widgets::ListState;
@@ -33,19 +34,26 @@ fn main() -> std::io::Result<()> {
         game_state = GameState::new(friend);    // Create a temporary GameState, this will never be used.
         layouts::draw_new_friend_layout(&mut terminal, &mut game_state)?;
     }
-
+    
+    let mut previous_growth_stage = game_state.friend_clone().growth_stage();
+    
     let mut friend_movement = match game_state.friend().growth_stage() {
         GrowthStage::Egg => MovementWrapper::EggHop(EggHopMovement::new(Location::new(40, 20))),
         GrowthStage::Baby => MovementWrapper::SmallSteps(SmallStepsMovement::new(Location::new(40, 20))),
         _ => MovementWrapper::SmallSteps(SmallStepsMovement::new(Location::new(40, 20))),
     };
     
-    
     loop {
         game_state.update();
         if !game_state.friend().alive() {
             layouts::draw_new_friend_layout(&mut terminal, &mut game_state)?;
         }
+        
+        if previous_growth_stage != game_state.friend().growth_stage() {
+            previous_growth_stage = game_state.friend_clone().growth_stage();
+            update_friend_movement(&mut friend_movement, game_state.friend());
+        }
+        
         
         terminal.draw(|frame| {
             draw_main(frame, game_state.friend_mut(), &mut friend_movement, &mut actions_widget_state);
@@ -103,4 +111,17 @@ fn draw_main<T: Movement>(frame: &mut Frame, friend: &Friend, friend_movement: &
     let friend_widget = FriendWidget::new(friend, friend_movement.next_position());
     frame.render_widget(friend_widget.get_widget(), middle_area);
     frame.render_stateful_widget(actions_widget(), right_area, actions_widget_state);
+}
+
+/// updates the movement of the creature based on its growth stage
+/// 
+/// ## parameters
+/// * `movement` - The movement that should be modified.
+/// * `friend` - The friend that will be used to check the growth stage.
+fn update_friend_movement(movement: &mut MovementWrapper, friend: &Friend) {
+    *movement = match friend.growth_stage() {
+        GrowthStage::Egg => MovementWrapper::EggHop(EggHopMovement::new(Location::new(40, 20))),
+        GrowthStage::Baby => MovementWrapper::SmallSteps(SmallStepsMovement::new(Location::new(40, 20))),
+        _ => MovementWrapper::SmallSteps(SmallStepsMovement::new(Location::new(40, 20))),
+    };
 }

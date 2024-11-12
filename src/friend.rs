@@ -28,7 +28,7 @@ impl GrowthStage {
 }
 
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Friend {
     name: String,
     food: Stat,
@@ -178,8 +178,8 @@ impl Friend {
         &self.waste_level
     }
     
-    pub fn growth_stage(&self) -> &GrowthStage {
-        &self.growth_stage
+    pub fn growth_stage(&self) -> GrowthStage {
+        self.growth_stage
     }
     
     pub fn get_shape_wrapper(&self) -> ShapeWrapper {

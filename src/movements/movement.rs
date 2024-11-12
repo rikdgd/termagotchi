@@ -6,6 +6,7 @@ pub trait Movement {
 }
 
 
+#[derive(Debug, Clone, PartialEq)]
 pub enum MovementWrapper {
     EggHop(EggHopMovement),
     SmallSteps(SmallStepsMovement),
