@@ -1,4 +1,9 @@
-use super::{EggHopMovement, SmallStepsMovement};
+use super::{
+    EggHopMovement, 
+    SmallStepsMovement, 
+    DvdBounceMovement
+};
+
 
 pub trait Movement {
     /// Updates the state of the movement and returns the new location.
@@ -10,12 +15,14 @@ pub trait Movement {
 pub enum MovementWrapper {
     EggHop(EggHopMovement),
     SmallSteps(SmallStepsMovement),
+    DvdBounce(DvdBounceMovement),
 }
 impl Movement for MovementWrapper {
     fn next_position(&mut self) -> Location {
         match self {
             MovementWrapper::EggHop(movement) => movement.next_position(),
             MovementWrapper::SmallSteps(movement) => movement.next_position(),
+            MovementWrapper::DvdBounce(movement) => movement.next_position(),
         }
     }
 }

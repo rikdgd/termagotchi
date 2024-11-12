@@ -8,7 +8,6 @@ mod layouts;
 mod animations;
 mod movements;
 
-use std::cmp::PartialEq;
 use std::time::Duration;
 use ratatui::{crossterm::event::{self, Event, KeyCode, KeyEventKind, poll}, layout::{Constraint, Layout}, Frame};
 use ratatui::widgets::ListState;
@@ -18,7 +17,7 @@ use crate::game_state::GameState;
 use crate::utils::ColorWrapper;
 use widgets::{stats_widget, actions_widget};
 use crate::food::Food;
-use crate::movements::{EggHopMovement, SmallStepsMovement, Location, Movement, MovementWrapper};
+use crate::movements::{EggHopMovement, SmallStepsMovement, Location, Movement, MovementWrapper, DvdBounceMovement};
 use crate::widgets::FriendWidget;
 
 fn main() -> std::io::Result<()> {
@@ -37,11 +36,7 @@ fn main() -> std::io::Result<()> {
     
     let mut previous_growth_stage = game_state.friend_clone().growth_stage();
     
-    let mut friend_movement = match game_state.friend().growth_stage() {
-        GrowthStage::Egg => MovementWrapper::EggHop(EggHopMovement::new(Location::new(40, 20))),
-        GrowthStage::Baby => MovementWrapper::SmallSteps(SmallStepsMovement::new(Location::new(40, 20))),
-        _ => MovementWrapper::SmallSteps(SmallStepsMovement::new(Location::new(40, 20))),
-    };
+    let mut friend_movement = get_movement_wrapper(&game_state.friend().growth_stage());
     
     loop {
         game_state.update();
@@ -119,9 +114,13 @@ fn draw_main<T: Movement>(frame: &mut Frame, friend: &Friend, friend_movement: &
 /// * `movement` - The movement that should be modified.
 /// * `friend` - The friend that will be used to check the growth stage.
 fn update_friend_movement(movement: &mut MovementWrapper, friend: &Friend) {
-    *movement = match friend.growth_stage() {
+    *movement = get_movement_wrapper(&friend.growth_stage());
+}
+
+fn get_movement_wrapper(growth_stage: &GrowthStage) -> MovementWrapper {
+    match growth_stage {
         GrowthStage::Egg => MovementWrapper::EggHop(EggHopMovement::new(Location::new(40, 20))),
         GrowthStage::Baby => MovementWrapper::SmallSteps(SmallStepsMovement::new(Location::new(40, 20))),
-        _ => MovementWrapper::SmallSteps(SmallStepsMovement::new(Location::new(40, 20))),
-    };
+        _ => MovementWrapper::DvdBounce(DvdBounceMovement::new(Location::new(23, 11))),
+    }
 }
