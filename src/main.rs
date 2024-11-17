@@ -121,8 +121,19 @@ fn draw_main<T: Movement>(frame: &mut Frame, friend: &Friend, friend_movement: &
     for gauge in stats_widget {
         frame.render_widget(gauge.0, gauge.1);
     }
+
+    let friend_widget = if !friend.is_asleep() { 
+        FriendWidget::new(friend, friend_movement.next_position())
+    } else {
+        let friend_area = get_main_areas(frame.area())[1]; // index 1, because the center area is where our friend 'lives'.
+        let location = Location::new(
+            friend_area.width as u32 / 2,
+            friend_area.height as u32 / 2,
+        );
+        FriendWidget::new(friend, location)
+    };
     
-    let friend_widget = FriendWidget::new(friend, friend_movement.next_position());
+    
     frame.render_widget(friend_widget.get_widget(), middle_area);
     frame.render_stateful_widget(actions_widget(), right_area, actions_widget_state);
 }
