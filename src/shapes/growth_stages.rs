@@ -5,7 +5,7 @@ use crate::utils::{ColorWrapper, Pixel, sprite_management::load_sprite};
 use crate::load_embedded_sprite;
 
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub enum GrowthStageShapes {
     Egg(ColorWrapper),
     Baby(ColorWrapper),

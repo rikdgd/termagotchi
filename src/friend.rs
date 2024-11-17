@@ -6,7 +6,7 @@ use crate::shapes::creatures::CreatureShapes;
 use crate::shapes::GrowthStageShapes;
 
 
-#[derive(Debug, Copy, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub enum GrowthStage {
     Egg,
     Baby,
@@ -28,7 +28,7 @@ impl GrowthStage {
 }
 
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Friend {
     name: String,
     food: Stat,
@@ -176,6 +176,10 @@ impl Friend {
 
     pub fn waste_level(&self) -> &Stat {
         &self.waste_level
+    }
+    
+    pub fn growth_stage(&self) -> GrowthStage {
+        self.growth_stage
     }
     
     pub fn get_shape_wrapper(&self) -> ShapeWrapper {
