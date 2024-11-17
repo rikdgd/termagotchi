@@ -1,7 +1,7 @@
 use serde::{Deserialize, Serialize};
 
 /// A managed u32 that always remains in range: _0 <= X <= 100_
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Copy, Clone, Serialize, Deserialize)]
 pub struct Stat(u32);
 impl Stat {
     pub fn value(&self) -> u32 {
