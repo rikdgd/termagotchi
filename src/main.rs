@@ -9,7 +9,7 @@ mod animations;
 mod movements;
 
 use std::time::Duration;
-use ratatui::{crossterm::event::{self, Event, KeyCode, KeyEventKind, poll}, layout::{Constraint, Layout}, DefaultTerminal, Frame, Terminal};
+use ratatui::{crossterm::event::{self, Event, KeyCode, KeyEventKind, poll}, layout::{Constraint, Layout}, DefaultTerminal, Frame};
 use ratatui::layout::Rect;
 use ratatui::widgets::ListState;
 use shapes::creatures::CreatureShapes;
