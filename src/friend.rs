@@ -134,7 +134,7 @@ impl Friend {
         &self.name
     }
 
-    pub fn eat(&mut self, food: Food) {
+    pub fn eat(&mut self, food: &Food) {
         if self.growth_stage != GrowthStage::Egg {
             self.food.add(food.points());
         }

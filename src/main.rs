@@ -73,18 +73,19 @@ fn main() -> std::io::Result<()> {
                                     // TODO: Eat the user provided food, instead of defaulting to Burger
                                     "Eat" => {
                                         if !game_state.friend().is_asleep() {
-                                            game_state.friend_mut().eat(Food::Burger)
+                                            let food = Food::new_random();
+                                            game_state.friend_mut().eat(&food);
                                         }
                                     },
                                     "Play" => {
                                         if !game_state.friend().is_asleep() {
-                                            game_state.friend_mut().play()
+                                            game_state.friend_mut().play();
                                         }
                                     },
                                     "Sleep" => game_state.friend_mut().sleep(),
                                     "Poop" => {
                                         if !game_state.friend().is_asleep() {
-                                            game_state.friend_mut().poop()
+                                            game_state.friend_mut().poop();
                                         }
                                     },
                                     _ => ()
