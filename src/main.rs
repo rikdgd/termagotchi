@@ -70,7 +70,6 @@ fn main() -> std::io::Result<()> {
                             if let Some(action) = actions_widget_state.selected() {
                                 let action = actions_widget::ITEMS[action];
                                 match action {
-                                    // TODO: Eat the user provided food, instead of defaulting to Burger
                                     "Eat" => {
                                         if !game_state.friend().is_asleep() {
                                             let food = Food::new_random();
