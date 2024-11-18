@@ -71,10 +71,22 @@ fn main() -> std::io::Result<()> {
                                 let action = actions_widget::ITEMS[action];
                                 match action {
                                     // TODO: Eat the user provided food, instead of defaulting to Burger
-                                    "Eat" => game_state.friend_mut().eat(Food::Burger),
-                                    "Play" => game_state.friend_mut().play(),
+                                    "Eat" => {
+                                        if !game_state.friend().is_asleep() {
+                                            game_state.friend_mut().eat(Food::Burger)
+                                        }
+                                    },
+                                    "Play" => {
+                                        if !game_state.friend().is_asleep() {
+                                            game_state.friend_mut().play()
+                                        }
+                                    },
                                     "Sleep" => game_state.friend_mut().sleep(),
-                                    "Poop" => game_state.friend_mut().poop(),
+                                    "Poop" => {
+                                        if !game_state.friend().is_asleep() {
+                                            game_state.friend_mut().poop()
+                                        }
+                                    },
                                     _ => ()
                                 }
                             }
