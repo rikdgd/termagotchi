@@ -8,7 +8,7 @@ pub fn stats_widget(area: &Rect, friend: &Friend) -> [(Gauge<'static>, Rect); 4]
     [
         (stat_gauge(friend.food(), "Food", Color::Red), layout[0]),
         (stat_gauge(friend.joy(),"Joy", Color::Yellow), layout[1]),
-        (stat_gauge(friend.energy(), "energy", Color::Blue), layout[2]),
+        (stat_gauge(friend.energy(), "Energy", Color::Blue), layout[2]),
         (stat_gauge(friend.waste_level(), "Poop", Color::Magenta), layout[3]),
     ]
 }

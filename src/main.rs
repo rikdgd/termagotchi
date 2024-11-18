@@ -50,8 +50,8 @@ fn main() -> std::io::Result<()> {
         if previous_growth_stage != game_state.friend().growth_stage() {
             previous_growth_stage = game_state.friend_clone().growth_stage();
             
-            let friend_constraints = get_friend_boundaries(&mut terminal);
-            update_friend_movement(&mut friend_movement, game_state.friend(), friend_constraints);
+            let friend_boundaries = get_friend_boundaries(&mut terminal);
+            update_friend_movement(&mut friend_movement, game_state.friend(), friend_boundaries);
         }
         
         terminal.draw(|frame| {
