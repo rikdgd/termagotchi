@@ -73,7 +73,7 @@ fn main() -> std::io::Result<()> {
                                     "Eat" => {
                                         if !game_state.friend().is_asleep() {
                                             let food = Food::new_random();
-                                            game_state.friend_mut().eat(&food);
+                                            game_state.friend_mut().eat(food);
                                         }
                                     },
                                     "Play" => {
