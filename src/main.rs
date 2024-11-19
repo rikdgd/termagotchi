@@ -12,14 +12,16 @@ use std::time::Duration;
 use ratatui::{crossterm::event::{self, Event, KeyCode, KeyEventKind, poll}, layout::{Constraint, Layout}, DefaultTerminal, Frame};
 use ratatui::layout::Rect;
 use ratatui::widgets::ListState;
-use shapes::creatures::CreatureShapes;
+use crate::shapes::creatures::CreatureShapes;
 use crate::friend::{Friend, GrowthStage};
 use crate::game_state::GameState;
 use crate::utils::ColorWrapper;
-use widgets::{stats_widget, actions_widget};
+use crate::widgets::{stats_widget, actions_widget};
 use crate::food::Food;
 use crate::movements::{EggHopMovement, SmallStepsMovement, Location, Movement, MovementWrapper, DvdBounceMovement};
 use crate::widgets::FriendWidget;
+
+use crate::animations::{PopupAnimation, EatAnimation};
 
 fn main() -> std::io::Result<()> {
     let mut terminal = ratatui::init();
@@ -148,6 +150,9 @@ fn draw_main<T: Movement>(frame: &mut Frame, friend: &Friend, friend_movement: &
     
     frame.render_widget(friend_widget.get_widget(), middle_area);
     frame.render_stateful_widget(actions_widget(), right_area, actions_widget_state);
+    
+    let mut animation = EatAnimation::new(Food::Soup);
+    animation.render(frame);
 }
 
 /// updates the movement of the creature based on its growth stage
