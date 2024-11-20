@@ -1,12 +1,26 @@
 use ratatui::Frame;
 use ratatui::layout::Rect;
+use crate::animations::EatAnimation;
 
 pub trait PopupAnimation {
     fn render(&mut self, frame: &mut Frame);
 }
 
+#[derive(Debug, Copy, Clone, PartialEq)]
+pub enum PopupAnimationWrapper {
+    EatAnimation(EatAnimation),
+}
 
-/// Returns a rectangle that has 1/3 the width and height of 
+impl PopupAnimation for PopupAnimationWrapper {
+    fn render(&mut self, frame: &mut Frame) {
+        match self {
+            PopupAnimationWrapper::EatAnimation(animation) => animation.render(frame),
+        }
+    }
+}
+
+
+/// Returns a rectangle that has 1/3 the width and height of
 /// the given frame, which is also centered in the frame.
 ///
 /// ## parameters:

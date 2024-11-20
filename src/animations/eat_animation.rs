@@ -3,6 +3,7 @@ use crate::animations::popup_animation::PopupAnimation;
 use crate::Food;
 use super::get_popup_rect;
 
+#[derive(Debug, Copy, Clone, PartialEq)]
 pub struct EatAnimation {
     food: Food,
 }
