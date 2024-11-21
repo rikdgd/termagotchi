@@ -1,7 +1,6 @@
 mod popup_animation;
-mod eat_animation;
+mod animation;
+mod food_animations;
 
-pub use popup_animation::{PopupAnimation, PopupAnimationWrapper};
-use popup_animation::get_popup_rect;
-
-pub use eat_animation::EatAnimation;
+pub use animation::Animation;
+pub use popup_animation::PopupAnimation;

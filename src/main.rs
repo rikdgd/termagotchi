@@ -21,7 +21,7 @@ use crate::food::Food;
 use crate::movements::{EggHopMovement, SmallStepsMovement, Location, Movement, MovementWrapper, DvdBounceMovement};
 use crate::widgets::FriendWidget;
 
-use crate::animations::{PopupAnimation, PopupAnimationWrapper, EatAnimation};
+use crate::animations::{PopupAnimation};
 
 fn main() -> std::io::Result<()> {
     let mut terminal = ratatui::init();
@@ -36,8 +36,6 @@ fn main() -> std::io::Result<()> {
         game_state = GameState::new(friend);    // Create a temporary GameState, this will never be used.
         layouts::draw_new_friend_layout(&mut terminal, &mut game_state)?;
     }
-    
-    let mut current_animation: Option<PopupAnimationWrapper> = None;
     
     let mut previous_growth_stage = game_state.friend_clone().growth_stage();
     let mut friend_movement = get_movement_wrapper(
@@ -152,9 +150,6 @@ fn draw_main<T: Movement>(frame: &mut Frame, friend: &Friend, friend_movement: &
     
     frame.render_widget(friend_widget.get_widget(), middle_area);
     frame.render_stateful_widget(actions_widget(), right_area, actions_widget_state);
-    
-    let mut animation = EatAnimation::new(Food::Soup);
-    animation.render(frame);
 }
 
 /// updates the movement of the creature based on its growth stage
