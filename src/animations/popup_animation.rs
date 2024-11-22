@@ -1,4 +1,3 @@
-use crate::utils::Pixel;
 use ratatui::{widgets::{Block, Clear}, Frame};
 use ratatui::layout::Rect;
 use ratatui::widgets::canvas::Canvas;
