@@ -1,21 +1,41 @@
+use crate::utils::Pixel;
 use ratatui::{widgets::{Block, Clear}, Frame};
 use ratatui::layout::Rect;
 use ratatui::widgets::canvas::Canvas;
+use crate::shapes::PixelVectorShape;
 use super::animation::Animation;
 
+/// ## PopupAnimation
+/// PopupAnimations can be used to display a short little animation 
+/// in a small popup that covers the rest of the UI. They are for example used 
+/// for the eating/playing/sleeping animations.
 #[derive(Debug, Copy, Clone, PartialEq)]
 pub struct PopupAnimation<T: Animation> {
+    is_running: bool,
     animation: T,
 }
 
 impl<T: Animation> PopupAnimation<T> {
     pub fn new(animation: T) -> Self {
-        Self { animation }
+        Self {
+            is_running: true,
+            animation, 
+        }
     }
-
+    
+    /// Renders the PopupAnimation on the `ratatui::Frame`. 
+    /// This method automatically updates the animations state.
+    /// ## parameters: 
+    /// * `frame` - The `ratatui::Frame` to render the PopupAnimation on
     pub fn render(&mut self, frame: &mut Frame) {
         let area = self.get_popup_rect(frame);
-        let next_frame = self.animation.next_frame();
+        let next_frame = 
+            if let Some(frame) = self.animation.next_frame() {
+                frame
+            } else {
+                self.is_running = false;
+                PixelVectorShape::new(Vec::new())
+            };
 
         let canvas = Canvas::default()
             .block(Block::bordered())
@@ -25,6 +45,12 @@ impl<T: Animation> PopupAnimation<T> {
 
         frame.render_widget(Clear, area); // Clear out the background behind the popup.
         frame.render_widget(canvas, area);
+    }
+    
+    /// Returns if the animation is still running, can be used to 
+    /// decide when to close the PopupAnimation.
+    pub fn is_running(&self) -> bool {
+        self.is_running
     }
     
     /// Returns a rectangle that has 1/3 the width and height of
