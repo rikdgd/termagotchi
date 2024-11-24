@@ -1,8 +1,12 @@
+use std::fmt::{format, Debug};
 use ratatui::{widgets::{Block, Clear}, Frame};
 use ratatui::layout::Rect;
 use ratatui::widgets::canvas::Canvas;
 use crate::shapes::PixelVectorShape;
 use super::animation::Animation;
+
+use std::fs::OpenOptions;
+use std::io::Write;
 
 /// ## PopupAnimation
 /// PopupAnimations can be used to display a short little animation 
@@ -28,9 +32,16 @@ impl<T: Animation> PopupAnimation<T> {
     /// * `frame` - The `ratatui::Frame` to render the PopupAnimation on
     pub fn render(&mut self, frame: &mut Frame) {
         let area = self.get_popup_rect(frame);
-        let next_frame = 
-            if let Some(frame) = self.animation.next_frame() {
-                frame
+        let next_animation_frame = 
+            if let Some(mut animation_frame) = self.animation.next_frame() {
+                let area = self.get_popup_rect(frame);
+                
+                animation_frame.move_shape(
+                    area.width as u32 / 2, 
+                    area.height as u32 / 2,
+                );
+
+                animation_frame
             } else {
                 self.is_running = false;
                 PixelVectorShape::new(Vec::new())
@@ -38,9 +49,9 @@ impl<T: Animation> PopupAnimation<T> {
 
         let canvas = Canvas::default()
             .block(Block::bordered())
-            // .x_bounds(friend_widget_x_bounds)
-            // .y_bounds(friend_widget_y_bounds)
-            .paint(|ctx| { ctx.draw(&next_frame) });
+            .paint(|ctx| { 
+                ctx.draw(&next_animation_frame) 
+            });
 
         frame.render_widget(Clear, area); // Clear out the background behind the popup.
         frame.render_widget(canvas, area);
@@ -70,5 +81,3 @@ impl<T: Animation> PopupAnimation<T> {
         Rect::new(popup_x, popup_y, popup_width, popup_height)
     }
 }
-
-
