@@ -1,12 +1,10 @@
-use std::fmt::{format, Debug};
+use std::fmt::Debug;
 use ratatui::{widgets::{Block, Clear}, Frame};
 use ratatui::layout::Rect;
 use ratatui::widgets::canvas::Canvas;
 use crate::shapes::PixelVectorShape;
 use super::animation::Animation;
 
-use std::fs::OpenOptions;
-use std::io::Write;
 
 /// ## PopupAnimation
 /// PopupAnimations can be used to display a short little animation 
