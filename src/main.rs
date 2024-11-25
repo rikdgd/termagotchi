@@ -22,7 +22,7 @@ use crate::movements::{EggHopMovement, SmallStepsMovement, Location, Movement, M
 use crate::widgets::FriendWidget;
 
 use crate::animations::{PopupAnimation};
-use crate::animations::food_animations::{FoodAnimationWrapper, BurgerAnimation};
+use crate::animations::food_animations::{FoodAnimation, FoodAnimationFrames};
 
 fn main() -> std::io::Result<()> {
     let mut terminal = ratatui::init();
@@ -45,7 +45,7 @@ fn main() -> std::io::Result<()> {
     );
     
     let mut popup_test = PopupAnimation::new(
-        FoodAnimationWrapper::Burger(BurgerAnimation::new())
+        FoodAnimation::new(FoodAnimationFrames::Burger)
     );
     
     loop {

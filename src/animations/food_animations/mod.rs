@@ -1,8 +1,6 @@
 use super::Animation;
 
 
-mod burger_animation;
-mod food_animation_wrapper;
+mod food_animation;
 
-pub use food_animation_wrapper::FoodAnimationWrapper;
-pub use burger_animation::BurgerAnimation;
+pub use food_animation::{FoodAnimation, FoodAnimationFrames};
