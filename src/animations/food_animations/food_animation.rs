@@ -57,8 +57,18 @@ pub enum FoodAnimationFrames {
 impl FoodAnimationFrames {
     pub fn frames(&self) -> [Vec<Pixel>; FRAME_COUNT as usize] {
         match self {
-            FoodAnimationFrames::Soup => todo!(),
-            FoodAnimationFrames::Fries => todo!(),
+            FoodAnimationFrames::Soup => [
+                load_embedded_sprite!("../../../assets/food/soup.png", ColorWrapper::White),
+                load_embedded_sprite!("../../../assets/food/soup1.png", ColorWrapper::White),
+                load_embedded_sprite!("../../../assets/food/soup2.png", ColorWrapper::White),
+                load_embedded_sprite!("../../../assets/food/soup3.png", ColorWrapper::White),
+            ],
+            FoodAnimationFrames::Fries => [
+                load_embedded_sprite!("../../../assets/food/fries.png", ColorWrapper::White),
+                load_embedded_sprite!("../../../assets/food/fries1.png", ColorWrapper::White),
+                load_embedded_sprite!("../../../assets/food/fries2.png", ColorWrapper::White),
+                load_embedded_sprite!("../../../assets/food/fries3.png", ColorWrapper::White),
+            ],
             FoodAnimationFrames::Burger => [
                 load_embedded_sprite!("../../../assets/food/burger.png", ColorWrapper::White),
                 load_embedded_sprite!("../../../assets/food/burger1.png", ColorWrapper::White),
