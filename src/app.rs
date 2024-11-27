@@ -103,7 +103,7 @@ impl App {
                                         "Eat" => {
                                             if !self.game_state.friend().is_asleep() {
                                                 let food = Food::new_random();
-                                                self.game_state.friend_mut().eat(&food);
+                                                self.game_state.friend_mut().eat(food);
                                             }
                                         },
                                         "Play" => {
