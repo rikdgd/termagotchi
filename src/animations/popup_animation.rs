@@ -10,14 +10,13 @@ use super::animation::Animation;
 /// PopupAnimations can be used to display a short little animation 
 /// in a small popup that covers the rest of the UI. They are for example used 
 /// for the eating/playing/sleeping animations.
-#[derive(Debug, Copy, Clone, PartialEq)]
-pub struct PopupAnimation<T: Animation> {
+pub struct PopupAnimation<> {
     is_running: bool,
-    animation: T,
+    animation: Box<dyn Animation>,
 }
 
-impl<T: Animation> PopupAnimation<T> {
-    pub fn new(animation: T) -> Self {
+impl PopupAnimation {
+    pub fn new(animation: Box<dyn Animation>) -> Self {
         Self {
             is_running: true,
             animation, 

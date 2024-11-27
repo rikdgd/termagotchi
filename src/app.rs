@@ -15,6 +15,8 @@ use crate::food::Food;
 use crate::shapes::creatures::CreatureShapes;
 use crate::utils::ColorWrapper;
 
+use crate::animations::{PopupAnimation, food_animations::{FoodAnimation, FoodAnimationFrames}};
+
 /// This struct holds most logic for actually running the app. It is able to run the Termagotchi app
 /// using a `ratatui::DefaultTerminal` and keeps track of: game state, widget states, movements and animations.
 /// 
@@ -36,6 +38,7 @@ pub struct App {
     actions_widget_state: ListState,
     previous_growth_stage: GrowthStage,
     friend_movement: MovementWrapper,
+    popup_animation: Option<PopupAnimation>
 }
 
 impl App {
@@ -63,6 +66,7 @@ impl App {
             actions_widget_state,
             previous_growth_stage,
             friend_movement,
+            popup_animation: None,
         })
     }
     
@@ -86,6 +90,15 @@ impl App {
 
             terminal.draw(|frame| {
                 self.draw_main(frame);
+                
+                // Check if a popup animation should be displayed, or hidden when it has finished.
+                if let Some(popup_animation) = &mut self.popup_animation {
+                    if popup_animation.is_running() {
+                        popup_animation.render(frame);
+                    } else {
+                        self.popup_animation = None;
+                    }
+                }
             })?;
 
             if poll(Duration::from_millis(100))? {
@@ -104,6 +117,7 @@ impl App {
                                             if !self.game_state.friend().is_asleep() {
                                                 let food = Food::new_random();
                                                 self.game_state.friend_mut().eat(food);
+                                                self.popup_animation = Some(PopupAnimation::new(Box::new(FoodAnimation::new(FoodAnimationFrames::Burger))))
                                             }
                                         },
                                         "Play" => {
@@ -160,6 +174,10 @@ impl App {
 
         frame.render_widget(friend_widget.get_widget(), middle_area);
         frame.render_stateful_widget(actions_widget(), right_area, &mut self.actions_widget_state);
+    }
+    
+    fn set_food_animation(&mut self, food: &Food) {
+        todo!()
     }
 }
 
