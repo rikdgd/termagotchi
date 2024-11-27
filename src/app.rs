@@ -11,11 +11,26 @@ use crate::friend::Friend;
 use crate::widgets::{stats_widget, FriendWidget, actions_widget};
 use crate::movements::Location;
 use crate::layouts;
-use crate::Food;
+use crate::food::Food;
 use crate::shapes::creatures::CreatureShapes;
 use crate::utils::ColorWrapper;
 
-
+/// This struct holds most logic for actually running the app. It is able to run the Termagotchi app
+/// using a `ratatui::DefaultTerminal` and keeps track of: game state, widget states, movements and animations.
+/// 
+/// ## example:
+/// ```
+/// fn main() -> std::io::Result<()> {
+///     let mut terminal = ratatui::init();
+///     let mut app = App::new(&mut terminal)?;
+///     
+///     app.run(&mut terminal)?;
+///     app.save_game()?;
+///     ratatui::restore();
+///     
+///     Ok(())
+/// }
+/// ```
 pub struct App {
     game_state: GameState,
     actions_widget_state: ListState,
@@ -51,6 +66,10 @@ impl App {
         })
     }
     
+    /// Starts the main application loop and handles user input.
+    /// 
+    /// ## parameters:
+    /// * `terminal` - The ratatui terminal to draw the application on.
     pub fn run(&mut self, terminal: &mut DefaultTerminal) -> std::io::Result<()> {
         loop {
             self.game_state.update();
@@ -112,6 +131,7 @@ impl App {
         Ok(())
     }
     
+    /// Saves the game's state to a file by calling `GameState::store_to_file()`.
     pub fn save_game(&mut self) -> std::io::Result<()> {
         self.game_state.store_to_file()
     }
