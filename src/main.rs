@@ -9,7 +9,6 @@ mod animations;
 mod movements;
 mod app;
 
-use crate::food::Food;
 use crate::app::App;
 
 
