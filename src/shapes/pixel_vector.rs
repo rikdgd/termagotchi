@@ -10,6 +10,7 @@ impl PixelVectorShape {
         Self(vector)
     }
     
+    #[allow(unused)]
     pub fn from_pixel_image<T: PixelImage>(pixel_image: &T) -> Self {
         Self(pixel_image.pixels())
     }
