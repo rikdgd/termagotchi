@@ -21,8 +21,6 @@ use crate::food::Food;
 use crate::movements::{EggHopMovement, SmallStepsMovement, Location, Movement, MovementWrapper, DvdBounceMovement};
 use crate::widgets::FriendWidget;
 
-use crate::animations::{PopupAnimation};
-use crate::animations::food_animations::{FoodAnimation, FoodAnimationFrames};
 
 fn main() -> std::io::Result<()> {
     let mut terminal = ratatui::init();
@@ -44,10 +42,6 @@ fn main() -> std::io::Result<()> {
         get_friend_boundaries(&mut terminal),
     );
     
-    let mut popup_test = PopupAnimation::new(
-        FoodAnimation::new(FoodAnimationFrames::Burger)
-    );
-    
     loop {
         game_state.update();
         if !game_state.friend().alive() {
@@ -63,9 +57,6 @@ fn main() -> std::io::Result<()> {
         
         terminal.draw(|frame| {
             draw_main(frame, game_state.friend_mut(), &mut friend_movement, &mut actions_widget_state);
-            if popup_test.is_running() {
-                popup_test.render(frame);
-            }
         })?;
 
         if poll(Duration::from_millis(100))? {
