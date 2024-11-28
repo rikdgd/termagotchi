@@ -101,47 +101,49 @@ impl App {
                 }
             })?;
 
-            if poll(Duration::from_millis(100))? {
-                if let Event::Key(key) = event::read()? {
-                    if key.kind == KeyEventKind::Press {
-                        match key.code {
-                            KeyCode::Char('q') => break,
+            if let None = self.popup_animation {
+                if poll(Duration::from_millis(100))? {
+                    if let Event::Key(key) = event::read()? {
+                        if key.kind == KeyEventKind::Press {
+                            
+                            match key.code {
+                                KeyCode::Char('q') => break,
 
-                            KeyCode::Up => self.actions_widget_state.select_previous(),
-                            KeyCode::Down => self.actions_widget_state.select_next(),
-                            KeyCode::Enter => {
-                                if let Some(action) = self.actions_widget_state.selected() {
-                                    let action = actions_widget::ITEMS[action];
-                                    match action {
-                                        "Eat" => {
-                                            if !self.game_state.friend().is_asleep() {
-                                                let food = Food::new_random();
-                                                self.game_state.friend_mut().eat(food);
-                                                self.popup_animation = Some(PopupAnimation::new(Box::new(FoodAnimation::new(FoodAnimationFrames::Burger))))
-                                            }
-                                        },
-                                        "Play" => {
-                                            if !self.game_state.friend().is_asleep() {
-                                                self.game_state.friend_mut().play();
-                                            }
-                                        },
-                                        "Sleep" => self.game_state.friend_mut().sleep(),
-                                        "Poop" => {
-                                            if !self.game_state.friend().is_asleep() {
-                                                self.game_state.friend_mut().poop();
-                                            }
-                                        },
-                                        _ => ()
+                                KeyCode::Up => self.actions_widget_state.select_previous(),
+                                KeyCode::Down => self.actions_widget_state.select_next(),
+                                KeyCode::Enter => {
+                                    if let Some(action) = self.actions_widget_state.selected() {
+                                        let action = actions_widget::ITEMS[action];
+                                        match action {
+                                            "Eat" => {
+                                                if !self.game_state.friend().is_asleep() {
+                                                    let food = Food::new_random();
+                                                    self.game_state.friend_mut().eat(food);
+                                                    self.set_food_animation(food);
+                                                }
+                                            },
+                                            "Play" => {
+                                                if !self.game_state.friend().is_asleep() {
+                                                    self.game_state.friend_mut().play();
+                                                }
+                                            },
+                                            "Sleep" => self.game_state.friend_mut().sleep(),
+                                            "Poop" => {
+                                                if !self.game_state.friend().is_asleep() {
+                                                    self.game_state.friend_mut().poop();
+                                                }
+                                            },
+                                            _ => ()
+                                        }
                                     }
-                                }
-                            },
-                            _ => ()
+                                },
+                                _ => ()
+                            }
                         }
                     }
                 }
             }
         }
-        
         Ok(())
     }
     
@@ -175,9 +177,25 @@ impl App {
         frame.render_widget(friend_widget.get_widget(), middle_area);
         frame.render_stateful_widget(actions_widget(), right_area, &mut self.actions_widget_state);
     }
-    
-    fn set_food_animation(&mut self, food: &Food) {
-        todo!()
+
+    fn set_food_animation(&mut self, food: Food) {
+        match food {
+            Food::Soup => {
+                self.popup_animation = Some(PopupAnimation::new(Box::new(FoodAnimation::new(
+                    FoodAnimationFrames::Soup,
+                ))))
+            },
+            Food::Fries => {
+                self.popup_animation = Some(PopupAnimation::new(Box::new(FoodAnimation::new(
+                    FoodAnimationFrames::Fries,
+                ))))
+            },
+            Food::Burger => {
+                self.popup_animation = Some(PopupAnimation::new(Box::new(FoodAnimation::new(
+                    FoodAnimationFrames::Burger,
+                ))))
+            },
+        }
     }
 }
 
