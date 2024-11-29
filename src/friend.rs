@@ -108,6 +108,18 @@ impl Friend {
         if stats_sum < 20 {
             self.alive = false;
         }
+        
+        let mut counter: u8 = 0;
+        for stat in [self.food.value(), self.joy.value(), self.energy.value()] {
+            if stat == 0 {
+                counter += 1;
+            }
+        }
+        if counter >= 2 {
+            self.alive = false;
+        }
+        
+        // TODO: Should die when not going to the loo, when waste level is high
     }
 
     fn update_growth_stage(&mut self, now: i64) {
