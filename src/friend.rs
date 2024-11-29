@@ -84,27 +84,22 @@ impl Friend {
 
         // Use while loops instead of if statements to account for loading from file
         // when we might have been away for more than a single minute.
-        while now - self.last_time_lower_food >= minute_millis {
+        while now - self.last_time_lower_food >= 7 * minute_millis {
             self.food.subtract(1);
-            self.last_time_lower_food += minute_millis;
+            self.last_time_lower_food += 7 * minute_millis;
         }
 
-        while now - self.last_time_lower_energy >= minute_millis {
+        while now - self.last_time_lower_energy >= 6 * minute_millis {
             match self.asleep {
                 true => self.energy.add(1),
                 false => self.energy.subtract(1),
             }
-            self.last_time_lower_energy += minute_millis;
+            self.last_time_lower_energy += 6 * minute_millis;
         }
 
-        while now - self.last_time_lower_joy >= minute_millis {
+        while now - self.last_time_lower_joy >= 8 * minute_millis {
             self.joy.subtract(1);
-            self.last_time_lower_joy += minute_millis;
-        }
-
-        while now - self.last_time_increase_waste >= minute_millis {
-            self.waste_level.add(1);
-            self.last_time_increase_waste += minute_millis;
+            self.last_time_lower_joy += 8 * minute_millis;
         }
     }
 
@@ -135,9 +130,12 @@ impl Friend {
     }
 
     pub fn eat(&mut self, food: &Food) {
-        if self.growth_stage != GrowthStage::Egg {
-            self.food.add(food.points());
+        if self.growth_stage == GrowthStage::Egg {
+            return;
         }
+        
+        self.food.add(food.points());
+        self.waste_level.add(food.points() / 2);
     }
 
     pub fn sleep(&mut self) {
