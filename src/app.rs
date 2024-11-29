@@ -38,7 +38,9 @@ pub struct App {
     actions_widget_state: ListState,
     previous_growth_stage: GrowthStage,
     friend_movement: MovementWrapper,
-    popup_animation: Option<PopupAnimation>
+    popup_animation: Option<PopupAnimation>,
+    allow_inputs: bool,
+    is_running: bool,
 }
 
 impl App {
@@ -67,6 +69,8 @@ impl App {
             previous_growth_stage,
             friend_movement,
             popup_animation: None,
+            allow_inputs: true,
+            is_running: true,
         })
     }
     
@@ -75,7 +79,7 @@ impl App {
     /// ## parameters:
     /// * `terminal` - The ratatui terminal to draw the application on.
     pub fn run(&mut self, terminal: &mut DefaultTerminal) -> std::io::Result<()> {
-        loop {
+        while self.is_running {
             self.game_state.update();
             if !self.game_state.friend().alive() {
                 layouts::draw_new_friend_layout(terminal, &mut self.game_state)?;
@@ -93,56 +97,17 @@ impl App {
                 
                 // Check if a popup animation should be displayed, or hidden when it has finished.
                 if let Some(popup_animation) = &mut self.popup_animation {
+                    self.allow_inputs = false;
                     if popup_animation.is_running() {
                         popup_animation.render(frame);
                     } else {
                         self.popup_animation = None;
+                        self.allow_inputs = true;
                     }
                 }
             })?;
 
-            if let None = self.popup_animation {
-                if poll(Duration::from_millis(100))? {
-                    if let Event::Key(key) = event::read()? {
-                        if key.kind == KeyEventKind::Press {
-                            
-                            match key.code {
-                                KeyCode::Char('q') => break,
-
-                                KeyCode::Up => self.actions_widget_state.select_previous(),
-                                KeyCode::Down => self.actions_widget_state.select_next(),
-                                KeyCode::Enter => {
-                                    if let Some(action) = self.actions_widget_state.selected() {
-                                        let action = actions_widget::ITEMS[action];
-                                        match action {
-                                            "Eat" => {
-                                                if !self.game_state.friend().is_asleep() {
-                                                    let food = Food::new_random();
-                                                    self.game_state.friend_mut().eat(food);
-                                                    self.set_food_animation(food);
-                                                }
-                                            },
-                                            "Play" => {
-                                                if !self.game_state.friend().is_asleep() {
-                                                    self.game_state.friend_mut().play();
-                                                }
-                                            },
-                                            "Sleep" => self.game_state.friend_mut().sleep(),
-                                            "Poop" => {
-                                                if !self.game_state.friend().is_asleep() {
-                                                    self.game_state.friend_mut().poop();
-                                                }
-                                            },
-                                            _ => ()
-                                        }
-                                    }
-                                },
-                                _ => ()
-                            }
-                        }
-                    }
-                }
-            }
+            self.handle_inputs()?;
         }
         Ok(())
     }
@@ -177,6 +142,54 @@ impl App {
         frame.render_widget(friend_widget.get_widget(), middle_area);
         frame.render_stateful_widget(actions_widget(), right_area, &mut self.actions_widget_state);
     }
+    
+    
+    fn handle_inputs(&mut self) -> std::io::Result<()> {
+        if self.allow_inputs {
+            if poll(Duration::from_millis(100))? {
+                if let Event::Key(key) = event::read()? {
+                    if key.kind == KeyEventKind::Press {
+
+                        match key.code {
+                            KeyCode::Char('q') => self.is_running = false,
+
+                            KeyCode::Up => self.actions_widget_state.select_previous(),
+                            KeyCode::Down => self.actions_widget_state.select_next(),
+                            KeyCode::Enter => {
+                                if let Some(action) = self.actions_widget_state.selected() {
+                                    let action = actions_widget::ITEMS[action];
+                                    match action {
+                                        "Eat" => {
+                                            if !self.game_state.friend().is_asleep() {
+                                                let food = Food::new_random();
+                                                self.game_state.friend_mut().eat(food);
+                                                self.set_food_animation(food);
+                                            }
+                                        },
+                                        "Play" => {
+                                            if !self.game_state.friend().is_asleep() {
+                                                self.game_state.friend_mut().play();
+                                            }
+                                        },
+                                        "Sleep" => self.game_state.friend_mut().sleep(),
+                                        "Poop" => {
+                                            if !self.game_state.friend().is_asleep() {
+                                                self.game_state.friend_mut().poop();
+                                            }
+                                        },
+                                        _ => ()
+                                    }
+                                }
+                            },
+                            _ => ()
+                        }
+                    }
+                }
+            }
+        }
+        Ok(())
+    }
+    
 
     fn set_food_animation(&mut self, food: Food) {
         match food {
