@@ -39,6 +39,7 @@ pub struct Friend {
     last_time_lower_joy: i64,
     last_time_lower_energy: i64,
     last_time_increase_waste: i64,
+    full_waste_since: Option<i64>,
     shape: CreatureShapes,
     growth_stage: GrowthStage,
     asleep: bool,
@@ -59,6 +60,7 @@ impl Friend {
             last_time_lower_joy: now,
             last_time_lower_energy: now,
             last_time_increase_waste: now,
+            full_waste_since: None,
             shape,
             growth_stage: GrowthStage::Egg,
             asleep: false,
@@ -75,7 +77,7 @@ impl Friend {
         
         if self.growth_stage != GrowthStage::Egg {
             self.update_stats(now);
-            self.update_alive_status();
+            self.update_alive_status(now);
         }
     }
     
@@ -101,9 +103,16 @@ impl Friend {
             self.joy.subtract(1);
             self.last_time_lower_joy += 8 * minute_millis;
         }
+
+        if self.waste_level.value() >= 100 && self.full_waste_since == None {
+            self.full_waste_since = Some(now);
+        }
+        if self.waste_level.value() < 100 && self.full_waste_since != None {
+            self.full_waste_since = None;
+        }
     }
 
-    fn update_alive_status(&mut self) {
+    fn update_alive_status(&mut self, now: i64) {
         let stats_sum = self.food.value() + self.joy.value() + self.energy.value();
         if stats_sum < 20 {
             self.alive = false;
@@ -119,7 +128,12 @@ impl Friend {
             self.alive = false;
         }
         
-        // TODO: Should die when not going to the loo, when waste level is high
+        if let Some(time) = self.full_waste_since {
+            // If the waste level has been maxed out for 2 hours.
+            if self.waste_level.value() >= 100 && now - time > 1000 * 60 * 60 * 2 {
+                self.alive = false;
+            }
+        }
     }
 
     fn update_growth_stage(&mut self, now: i64) {
