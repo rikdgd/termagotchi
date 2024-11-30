@@ -114,7 +114,7 @@ impl Friend {
 
     fn update_alive_status(&mut self, now: i64) {
         let stats_sum = self.food.value() + self.joy.value() + self.energy.value();
-        if stats_sum < 20 {
+        if stats_sum < 15 {
             self.alive = false;
         }
         
