@@ -111,7 +111,7 @@ impl App {
                                                 self.game_state.friend_mut().play();
                                             }
                                         },
-                                        "Sleep" => self.game_state.friend_mut().sleep(),
+                                        "Sleep" => self.game_state.friend_mut().toggle_sleep(),
                                         "Poop" => {
                                             if !self.game_state.friend().is_asleep() {
                                                 self.game_state.friend_mut().poop();

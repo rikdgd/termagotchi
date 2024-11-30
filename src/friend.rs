@@ -150,7 +150,7 @@ impl Friend {
         self.waste_level.add(food.points() / 2);
     }
 
-    pub fn sleep(&mut self) {
+    pub fn toggle_sleep(&mut self) {
         if self.growth_stage != GrowthStage::Egg {
             self.asleep = !self.asleep;
         }
@@ -158,7 +158,7 @@ impl Friend {
     
     pub fn play(&mut self) {
         if self.growth_stage != GrowthStage::Egg {
-            self.joy.add(20);
+            self.joy.add(30);
         }
     }
 
