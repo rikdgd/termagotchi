@@ -11,9 +11,9 @@ pub enum Food {
 impl Food {
     pub fn points(&self) -> u32 {
         match self {
-            Food::Soup => 10,
-            Food::Fries => 15,
-            Food::Burger => 25,
+            Food::Soup => 20,
+            Food::Fries => 30,
+            Food::Burger => 40,
         }
     }
     

@@ -39,6 +39,7 @@ pub struct Friend {
     last_time_lower_joy: i64,
     last_time_lower_energy: i64,
     last_time_increase_waste: i64,
+    full_waste_since: Option<i64>,
     shape: CreatureShapes,
     growth_stage: GrowthStage,
     asleep: bool,
@@ -59,6 +60,7 @@ impl Friend {
             last_time_lower_joy: now,
             last_time_lower_energy: now,
             last_time_increase_waste: now,
+            full_waste_since: None,
             shape,
             growth_stage: GrowthStage::Egg,
             asleep: false,
@@ -75,7 +77,7 @@ impl Friend {
         
         if self.growth_stage != GrowthStage::Egg {
             self.update_stats(now);
-            self.update_alive_status();
+            self.update_alive_status(now);
         }
     }
     
@@ -84,34 +86,53 @@ impl Friend {
 
         // Use while loops instead of if statements to account for loading from file
         // when we might have been away for more than a single minute.
-        while now - self.last_time_lower_food >= minute_millis {
+        while now - self.last_time_lower_food >= 7 * minute_millis {
             self.food.subtract(1);
-            self.last_time_lower_food += minute_millis;
+            self.last_time_lower_food += 7 * minute_millis;
         }
 
-        while now - self.last_time_lower_energy >= minute_millis {
+        while now - self.last_time_lower_energy >= 6 * minute_millis {
             match self.asleep {
                 true => self.energy.add(1),
                 false => self.energy.subtract(1),
             }
-            self.last_time_lower_energy += minute_millis;
+            self.last_time_lower_energy += 6 * minute_millis;
         }
 
-        while now - self.last_time_lower_joy >= minute_millis {
+        while now - self.last_time_lower_joy >= 8 * minute_millis {
             self.joy.subtract(1);
-            self.last_time_lower_joy += minute_millis;
+            self.last_time_lower_joy += 8 * minute_millis;
         }
 
-        while now - self.last_time_increase_waste >= minute_millis {
-            self.waste_level.add(1);
-            self.last_time_increase_waste += minute_millis;
+        if self.waste_level.value() >= 100 && self.full_waste_since == None {
+            self.full_waste_since = Some(now);
+        }
+        if self.waste_level.value() < 100 && self.full_waste_since != None {
+            self.full_waste_since = None;
         }
     }
 
-    fn update_alive_status(&mut self) {
+    fn update_alive_status(&mut self, now: i64) {
         let stats_sum = self.food.value() + self.joy.value() + self.energy.value();
-        if stats_sum < 20 {
+        if stats_sum < 15 {
             self.alive = false;
+        }
+        
+        let mut counter: u8 = 0;
+        for stat in [self.food.value(), self.joy.value(), self.energy.value()] {
+            if stat == 0 {
+                counter += 1;
+            }
+        }
+        if counter >= 2 {
+            self.alive = false;
+        }
+        
+        if let Some(time) = self.full_waste_since {
+            // If the waste level has been maxed out for 2 hours.
+            if self.waste_level.value() >= 100 && now - time > 1000 * 60 * 60 * 2 {
+                self.alive = false;
+            }
         }
     }
 
@@ -135,12 +156,15 @@ impl Friend {
     }
 
     pub fn eat(&mut self, food: &Food) {
-        if self.growth_stage != GrowthStage::Egg {
-            self.food.add(food.points());
+        if self.growth_stage == GrowthStage::Egg {
+            return;
         }
+        
+        self.food.add(food.points());
+        self.waste_level.add(food.points() / 2);
     }
 
-    pub fn sleep(&mut self) {
+    pub fn toggle_sleep(&mut self) {
         if self.growth_stage != GrowthStage::Egg {
             self.asleep = !self.asleep;
         }
@@ -148,7 +172,7 @@ impl Friend {
     
     pub fn play(&mut self) {
         if self.growth_stage != GrowthStage::Egg {
-            self.joy.add(20);
+            self.joy.add(30);
         }
     }
 
