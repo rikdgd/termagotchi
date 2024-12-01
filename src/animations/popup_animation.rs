@@ -1,4 +1,3 @@
-use std::fmt::Debug;
 use ratatui::{widgets::{Block, Clear}, Frame};
 use ratatui::layout::Rect;
 use ratatui::widgets::canvas::Canvas;
@@ -10,7 +9,7 @@ use super::animation::Animation;
 /// PopupAnimations can be used to display a short little animation 
 /// in a small popup that covers the rest of the UI. They are for example used 
 /// for the eating/playing/sleeping animations.
-pub struct PopupAnimation<> {
+pub struct PopupAnimation {
     is_running: bool,
     animation: Box<dyn Animation>,
 }
