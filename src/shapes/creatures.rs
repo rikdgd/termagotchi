@@ -5,13 +5,14 @@ use serde::{Deserialize, Serialize};
 use rand::Rng;
 use crate::load_embedded_sprite;
 
-const NUM_SHAPES: u32 = 3;
+const NUM_SHAPES: u32 = 4;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub enum CreatureShapes {
     Duck(ColorWrapper),
     Turtle(ColorWrapper),
     Spider(ColorWrapper),
+    Snail(ColorWrapper),
 }
 
 impl Shape for CreatureShapes {
@@ -32,6 +33,7 @@ impl PixelImage for CreatureShapes {
             CreatureShapes::Duck(color) => load_embedded_sprite!("../../assets/duck.png", color),
             CreatureShapes::Turtle(color) => load_embedded_sprite!("../../assets/turtle.png", color),
             CreatureShapes::Spider(color) => load_embedded_sprite!("../../assets/spider.png", color),
+            CreatureShapes::Snail(color) => load_embedded_sprite!("../../assets/snail.png", color),
         }
     }
 }
@@ -45,7 +47,7 @@ impl CreatureShapes {
             0 => CreatureShapes::Duck(color),
             1 => CreatureShapes::Turtle(color),
             2 => CreatureShapes::Spider(color),
-            _ => CreatureShapes::Duck(color),
+            _ => CreatureShapes::Snail(color),
         }
     }
     
@@ -53,7 +55,8 @@ impl CreatureShapes {
         match self {
             CreatureShapes::Duck(color) => color.clone(),
             CreatureShapes::Turtle(color) => color.clone(),
-            CreatureShapes::Spider(color) => color.clone()
+            CreatureShapes::Spider(color) => color.clone(),
+            CreatureShapes::Snail(color) => color.clone(),
         }
     }
 }
