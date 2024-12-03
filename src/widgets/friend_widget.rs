@@ -1,3 +1,4 @@
+use chrono::Utc;
 use ratatui::prelude::Color;
 use ratatui::widgets::{Widget, Block};
 use ratatui::widgets::canvas::{Canvas, Context};
@@ -23,7 +24,7 @@ impl<'a> FriendWidget<'a> {
         let friend_widget_y_bounds = [-90.0, 90.0];
         
         let canvas = Canvas::default()
-            .block(Block::bordered().title(self.friend.name()))
+            .block(Block::bordered().title(self.title_string()))
             .x_bounds(friend_widget_x_bounds)
             .y_bounds(friend_widget_y_bounds)
             .paint(|ctx| {
@@ -44,6 +45,14 @@ impl<'a> FriendWidget<'a> {
             true => canvas.background_color(Color::Black),
             false => canvas.background_color(Color::Reset),
         }
+    }
+
+    fn title_string(&self) -> String {
+        let now = Utc::now().timestamp_millis();
+        let millis_alive = now - self.friend.time_created();
+        let hours_alive = millis_alive / 1000 / 60 / 60;
+        let name = self.friend.name();
+        format!("{name} - age: {hours_alive} hours")
     }
 }
 

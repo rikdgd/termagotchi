@@ -220,6 +220,8 @@ impl Friend {
     pub fn alive(&self) -> &bool {
         &self.alive
     }
+    
+    pub fn time_created(&self) -> i64 { self.time_created }
 }
 
 #[derive(Debug, Clone)]
