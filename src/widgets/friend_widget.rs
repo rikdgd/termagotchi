@@ -1,5 +1,6 @@
 use chrono::Utc;
 use ratatui::prelude::Color;
+use ratatui::symbols::Marker;
 use ratatui::widgets::{Widget, Block};
 use ratatui::widgets::canvas::{Canvas, Context};
 use crate::friend::Friend;
@@ -25,14 +26,12 @@ impl<'a> FriendWidget<'a> {
         
         let canvas = Canvas::default()
             .block(Block::bordered().title(self.title_string()))
+            .marker(Marker::Braille)
             .x_bounds(friend_widget_x_bounds)
             .y_bounds(friend_widget_y_bounds)
             .paint(|ctx| {
                 // TODO: Create simple background
-                // ctx.draw(&Map {
-                //     resolution: MapResolution::High,
-                //     color: Color::White,
-                // });
+                // ctx.draw(&background or something);
                 // ctx.layer();
 
                 match self.friend.get_shape_wrapper() {
