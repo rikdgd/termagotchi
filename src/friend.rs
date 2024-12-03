@@ -93,7 +93,7 @@ impl Friend {
 
         while now - self.last_time_lower_energy >= 6 * minute_millis {
             match self.asleep {
-                true => self.energy.add(1),
+                true => self.energy.add(3),
                 false => self.energy.subtract(1),
             }
             self.last_time_lower_energy += 6 * minute_millis;
