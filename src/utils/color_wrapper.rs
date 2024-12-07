@@ -29,17 +29,26 @@ impl ColorWrapper {
         }
     }
     
-    pub fn new_random() -> Self {
+    pub fn new_random(use_black_white: bool) -> Self {
         let mut rng = thread_rng();
-        match rng.gen_range(0..NUM_COLORS) {
-            0 => ColorWrapper::Cyan,
-            1 => ColorWrapper::LightMagenta,
-            2 => ColorWrapper::Red,
-            3 => ColorWrapper::Green,
-            4 => ColorWrapper::Blue,
-            5 => ColorWrapper::White,
-            6 => ColorWrapper::Black,
-            _ => ColorWrapper::White,
+        if use_black_white {
+            match rng.gen_range(0..NUM_COLORS) {
+                0 => ColorWrapper::Cyan,
+                1 => ColorWrapper::LightMagenta,
+                2 => ColorWrapper::Red,
+                3 => ColorWrapper::Green,
+                4 => ColorWrapper::Blue,
+                5 => ColorWrapper::Black,
+                _ => ColorWrapper::White,
+            }
+        } else {
+            match rng.gen_range(0..NUM_COLORS - 2) {
+                0 => ColorWrapper::Cyan,
+                1 => ColorWrapper::LightMagenta,
+                2 => ColorWrapper::Red,
+                3 => ColorWrapper::Green,
+                _ => ColorWrapper::Blue,
+            }
         }
     }
 }
