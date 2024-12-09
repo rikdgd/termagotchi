@@ -15,17 +15,6 @@ pub enum CreatureShapes {
     Snail(ColorWrapper),
 }
 
-impl Shape for CreatureShapes {
-    fn draw(&self, painter: &mut Painter) {
-        for pixel in self.pixels() {
-            painter.paint(
-                pixel.x as usize, 
-                pixel.y as usize, 
-                pixel.color
-            );
-        }
-    }
-}
 
 impl PixelImage for CreatureShapes {
     fn pixels(&self) -> Vec<Pixel> {

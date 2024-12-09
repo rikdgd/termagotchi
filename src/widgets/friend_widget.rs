@@ -2,10 +2,10 @@ use chrono::Utc;
 use ratatui::prelude::Color;
 use ratatui::symbols::Marker;
 use ratatui::widgets::{Widget, Block};
-use ratatui::widgets::canvas::{Canvas, Context, Rectangle};
+use ratatui::widgets::canvas::{Canvas, Context};
 use crate::friend::Friend;
 use crate::friend::ShapeWrapper;
-use crate::shapes::{PixelImage, move_pixel_image, PixelVectorShape};
+use crate::shapes::{PixelImage, PixelVectorShape};
 use crate::movements::Location;
 use ratatui::layout::Rect;
 
@@ -59,9 +59,9 @@ impl<'a> FriendWidget<'a> {
 }
 
 fn draw_shape_at_location<S: PixelImage>(ctx: &mut Context, shape: &S, location: &Location) {
-    let new_pixels = move_pixel_image(shape, (location.x, location.y));
-    let vec_image = PixelVectorShape::new(new_pixels);
+    let vec_shape = PixelVectorShape::from_pixel_image(shape)
+        .translate(location.x as i32, location.y as i32);
     
-    ctx.draw(&vec_image);
+    ctx.draw(&vec_shape);
 }
 
