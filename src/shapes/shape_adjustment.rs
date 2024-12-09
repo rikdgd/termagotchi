@@ -36,7 +36,6 @@ mod test {
     #[test]
     fn move_pixel_image_test() {
         let pixel_image = BasicShape;
-        let pixels = pixel_image.pixels();
         let movement = (10, 5);
         
         

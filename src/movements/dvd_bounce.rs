@@ -1,23 +1,22 @@
 use super::movement::{Movement, Location};
 use chrono::Utc;
+use ratatui::layout::Rect;
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct DvdBounceMovement {
     location: Location,
     x_direction_toggle: bool,
     y_direction_toggle: bool,
-    max_x: u32,
-    max_y: u32,
+    area: Rect,
     last_update: i64,
 }
 impl DvdBounceMovement {
-    pub fn new(start_location: Location, max_x: u32, max_y: u32) -> Self {
+    pub fn new(start_location: Location, area: Rect) -> Self {
         Self {
             location: start_location,
             x_direction_toggle: true,
             y_direction_toggle: true,
-            max_x,
-            max_y,
+            area,
             last_update: Utc::now().timestamp_millis(),
         }
     }
@@ -25,13 +24,18 @@ impl DvdBounceMovement {
     fn update_state(&mut self) {
         let now = Utc::now().timestamp_millis();
         
-        if now - self.last_update > 500 {
+        if now - self.last_update > 50 {
             self.last_update = now;
             
-            if self.location.x <= 0 || self.location.x >= self.max_x {
+            if self.location.x < self.area.left() as u32 
+                || self.location.x > self.area.right() as u32
+            {
                 self.x_direction_toggle = !self.x_direction_toggle;
             }
-            if self.location.y <= 0 || self.location.y >= self.max_y {
+            
+            if self.location.y < self.area.top() as u32 
+                || self.location.y > self.area.bottom() as u32
+            {
                 self.y_direction_toggle = !self.y_direction_toggle;
             }
 

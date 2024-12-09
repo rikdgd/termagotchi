@@ -36,11 +36,13 @@ pub struct App {
     actions_widget_state: ListState,
     previous_growth_stage: GrowthStage,
     friend_movement: MovementWrapper,
+    playground: Rect,
 }
 
 impl App {
     pub fn new(terminal: &mut DefaultTerminal) -> std::io::Result<Self> {
         let actions_widget_state = ListState::default();
+        let playground = Rect::new(0, 0, 150, 100);
 
         let mut game_state: GameState;
         if let Ok(state) = GameState::read_from_file() {
@@ -55,7 +57,7 @@ impl App {
         let previous_growth_stage = game_state.friend_clone().growth_stage();
         let friend_movement = get_movement_wrapper(
             &game_state.friend().growth_stage(),
-            get_friend_boundaries(terminal),
+            playground,
         );
         
         Ok(Self {
@@ -63,6 +65,7 @@ impl App {
             actions_widget_state,
             previous_growth_stage,
             friend_movement,
+            playground,
         })
     }
     
@@ -80,8 +83,7 @@ impl App {
             if self.previous_growth_stage != self.game_state.friend().growth_stage() {
                 self.previous_growth_stage = self.game_state.friend().growth_stage();
 
-                let friend_boundaries = get_friend_boundaries(terminal);
-                update_friend_movement(&mut self.friend_movement, self.game_state.friend(), friend_boundaries);
+                update_friend_movement(&mut self.friend_movement, self.game_state.friend(), self.playground);
             }
 
             terminal.draw(|frame| {
@@ -147,14 +149,14 @@ impl App {
         }
 
         let friend_widget = if !self.game_state.friend().is_asleep() {
-            FriendWidget::new(self.game_state.friend(), self.friend_movement.next_position())
+            FriendWidget::new(self.game_state.friend(), self.friend_movement.next_position(), self.playground)
         } else {
             let friend_area = get_main_areas(frame.area())[1]; // index 1, because the center area is where our friend 'lives'.
             let location = Location::new(
-                friend_area.width as u32 / 2,
-                friend_area.height as u32 / 2,
+                self.playground.width as u32 / 2,
+                self.playground.height as u32 / 2,
             );
-            FriendWidget::new(self.game_state.friend(), location)
+            FriendWidget::new(self.game_state.friend(), location, self.playground)
         };
 
 
@@ -190,8 +192,8 @@ fn get_main_areas(area: Rect) -> [Rect; 3] {
 /// ## parameters
 /// * `movement` - The movement that should be modified.
 /// * `friend` - The friend that will be used to check the growth stage.
-fn update_friend_movement(movement: &mut MovementWrapper, friend: &Friend, max_xy: (u32, u32)) {
-    *movement = get_movement_wrapper(&friend.growth_stage(), max_xy);
+fn update_friend_movement(movement: &mut MovementWrapper, friend: &Friend, area: Rect) {
+    *movement = get_movement_wrapper(&friend.growth_stage(), area);
 }
 
 /// Gets the width and height of the area the friend will move around in. The friend should always
@@ -202,16 +204,17 @@ fn update_friend_movement(movement: &mut MovementWrapper, friend: &Friend, max_x
 ///
 /// ## Returns:
 /// A `(u32, u32)` tuple where the width and height are ordered as: (width, height)
-fn get_friend_boundaries(terminal: &mut DefaultTerminal) -> (u32, u32) {
-    let frame_area = terminal.get_frame().area();
-    let [_, middle_area, _] = get_main_areas(frame_area);
-    (middle_area.width as u32, middle_area.height as u32)
-}
+// fn get_friend_boundaries(terminal: &mut DefaultTerminal) -> (u32, u32) {
+//     let frame_area = terminal.get_frame().area();
+//     let [_, middle_area, _] = get_main_areas(frame_area);
+//     // (middle_area.width as u32, middle_area.height as u32)
+//     (120, 70)
+// }
 
-fn get_movement_wrapper(growth_stage: &GrowthStage, max_xy: (u32, u32)) -> MovementWrapper {
+fn get_movement_wrapper(growth_stage: &GrowthStage, area: Rect) -> MovementWrapper {
     match growth_stage {
-        GrowthStage::Egg => MovementWrapper::EggHop(EggHopMovement::new(Location::new(40, 20))),
+        GrowthStage::Egg => MovementWrapper::EggHop(EggHopMovement::new(Location::new(60, 35))),
         GrowthStage::Baby => MovementWrapper::SmallSteps(SmallStepsMovement::new(Location::new(40, 20))),
-        _ => MovementWrapper::DvdBounce(DvdBounceMovement::new(Location::new(23, 11), max_xy.0, max_xy.1)),
+        _ => MovementWrapper::DvdBounce(DvdBounceMovement::new(Location::new(23, 11), area)),
     }
 }
