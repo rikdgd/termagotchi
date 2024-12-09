@@ -18,11 +18,9 @@ impl PixelVectorShape {
 impl Shape for PixelVectorShape {
     fn draw(&self, painter: &mut Painter) {
         for pixel in &self.0 {
-            painter.paint(
-                pixel.x as usize, 
-                pixel.y as usize, 
-                pixel.color,
-            );
+            if let Some((x, y)) = painter.get_point(f64::from(pixel.x), f64::from(pixel.y)) {
+                painter.paint(x, y, pixel.color);
+            }
         }
     }
 }
