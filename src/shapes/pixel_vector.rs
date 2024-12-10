@@ -35,11 +35,51 @@ impl PixelVectorShape {
     /// <br><br>
     /// This method consumes `self` and returns a new `PixelVectorShape`.
     pub fn prepare_for_pixel_canvas(mut self) -> Self {
+        let shape_height = self.get_height();
+        
         for pixel in &mut self.0 {
-            // Yes Rik, you need to do this yourself... 'image' crate does not transform images.
+            // We are mirroring over the x-axis, so we only need to adjust the pixels y coordinate.
+            
         }
         
         todo!()
+    }
+    
+    /// Get the height of the shape. Returns 0 if the shape doesn't have any pixels or on error.
+    fn get_height(&self) -> u32 {
+        if self.0.is_empty() {
+            return 0;
+        }
+        
+        let mut min_y_pos = None;
+        let mut max_y_pos = None;
+        
+        for pixel in &self.0 {
+            if let Some(min_pos) = min_y_pos {
+                if pixel.y < min_pos {
+                    min_y_pos = Some(pixel.y);
+                }
+            } else {
+                min_y_pos = Some(pixel.y)
+            }
+            
+            if let Some(max_pos) = max_y_pos {
+                if pixel.y > max_pos {
+                    max_y_pos = Some(pixel.y)
+                }
+            } else {
+                max_y_pos = Some(pixel.y)
+            }
+        }
+        
+        match (min_y_pos, max_y_pos) {
+            (Some(min_y), Some(max_y)) => {
+                // + 1 to account for the fact that whenever we have any pixel, the height is automatically 1.
+                // Typical of by 1 error.
+                max_y - min_y + 1
+            },
+            _ => 0,
+        }
     }
 }
 
@@ -58,6 +98,36 @@ mod tests {
     use ratatui::prelude::Color;
     use crate::shapes::PixelVectorShape;
     use crate::utils::Pixel;
+    
+    #[test]
+    fn get_height() {
+        let vertical_line = PixelVectorShape::new(vec![
+            Pixel { x: 1, y: 2, color: Color::Black },
+            Pixel { x: 1, y: 3, color: Color::Black },
+            Pixel { x: 1, y: 4, color: Color::Black },
+        ]);
+        let distributed_pixels = PixelVectorShape::new(vec![
+            Pixel { x: 1, y: 2, color: Color::Black },
+            Pixel { x: 100, y: 66, color: Color::Black },
+            Pixel { x: 12, y: 17, color: Color::Black },
+        ]);
+        let single_pixel = PixelVectorShape::new(vec![
+            Pixel { x: 55, y: 34, color: Color::Black}
+        ]);
+        let no_pixel_shape = PixelVectorShape::new(vec![]);
+        
+        
+        let vertical_res = vertical_line.get_height();
+        let distributed_res = distributed_pixels.get_height();
+        let single_pixel_res = single_pixel.get_height();
+        let no_pixel_res = no_pixel_shape.get_height();
+        
+        
+        assert_eq!(vertical_res, 3);
+        assert_eq!(distributed_res, 65);
+        assert_eq!(single_pixel_res, 1);
+        assert_eq!(no_pixel_res, 0);
+    }
 
     #[test]
     fn prepare_for_pixel_canvas_odd_height() {
