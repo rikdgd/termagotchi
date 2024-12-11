@@ -1,5 +1,6 @@
 use std::error::Error;
 use image::load_from_memory;
+use image::imageops::flip_vertical;
 use ratatui::prelude::Color;
 use crate::utils::Pixel;
 
@@ -35,8 +36,10 @@ fn get_black_pixel_coordinates(image_bytes: &[u8]) -> Result<Vec<(u32, u32)>, Bo
     let image = load_from_memory(image_bytes).unwrap().to_luma8();
     let dimensions = image.dimensions();
     let mut buffer: Vec<(u32, u32)> = Vec::new();
-
-    for (pixel_index, pixel) in image.pixels().enumerate() {
+    
+    // flip the image over the x-axis, since ratatui coordinates start at the BOTTOM left, not TOP left.
+    let flipped_image = flip_vertical(&image);
+    for (pixel_index, pixel) in flipped_image.pixels().enumerate() {
         if pixel.0[0] == 0 {
             let cords = get_pixel_coordinates(pixel_index, dimensions);
             buffer.push(cords);
