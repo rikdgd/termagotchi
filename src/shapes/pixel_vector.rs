@@ -1,5 +1,4 @@
 use ratatui::widgets::canvas::{Painter, Shape};
-use crate::movements::Location;
 use crate::shapes::PixelImage;
 use crate::utils::Pixel;
 
@@ -31,40 +30,68 @@ impl PixelVectorShape {
         self
     }
     
-    /// Get the height of the shape. Returns 0 if the shape doesn't have any pixels.
-    fn get_height(&self) -> u32 {
+    /// Get the dimensions of the shape as `(x, y)`. <br>
+    /// Returns `(0, 0)` if the shape doesn't have any pixels.
+    pub fn get_dimensions(&self) -> (u32, u32) {
         if self.0.is_empty() {
-            return 0;
+            return (0, 0);
         }
         
-        let mut min_y_pos = None;
-        let mut max_y_pos = None;
+        let (mut min_x_pos, mut max_x_pos) = (None, None);
+        let (mut min_y_pos, mut max_y_pos) = (None, None);
         
         for pixel in &self.0 {
-            if let Some(min_pos) = min_y_pos {
-                if pixel.y < min_pos {
-                    min_y_pos = Some(pixel.y);
-                }
-            } else {
-                min_y_pos = Some(pixel.y)
-            }
-            
-            if let Some(max_pos) = max_y_pos {
-                if pixel.y > max_pos {
-                    max_y_pos = Some(pixel.y)
-                }
-            } else {
-                max_y_pos = Some(pixel.y)
-            }
+            Self::check_min(&mut min_x_pos, pixel.x);
+            Self::check_max(&mut max_x_pos, pixel.x);
+
+            Self::check_min(&mut min_y_pos, pixel.y);
+            Self::check_max(&mut max_y_pos, pixel.y);
         }
         
-        match (min_y_pos, max_y_pos) {
-            (Some(min_y), Some(max_y)) => {
-                // + 1 to account for the fact that whenever we have any pixel, the height is automatically 1.
-                // Typical of by 1 error.
-                max_y - min_y + 1
+        match (min_x_pos, max_x_pos, min_y_pos, max_y_pos) {
+            (Some(min_x), Some(max_x), Some(min_y), Some(max_y)) => {
+                // + 1 to account for the fact that whenever we have any pixel, the width/height is automatically 1.
+                // Typical off by 1 error :)
+                (
+                    max_x - min_x + 1,
+                    max_y - min_y + 1,
+                )
             },
-            _ => 0,
+            _ => (0, 0),
+        }
+    }
+
+    /// Checks if the previously stored lowest x/y position is lower than the next position.
+    /// If `previous_min` ends up being higher than `new_pos`, `previous_min`'s value is set to 
+    /// that of `new_pos`.
+    /// <br>
+    /// ## parameters:
+    /// * `previous_min` - The stored lowest x/y position.
+    /// * `new_pos` - The new position to check the old one against.
+    fn check_min(previous_min: &mut Option<u32>, new_pos: u32) {
+        if let Some(pos) = previous_min {
+            if new_pos < *pos {
+                *previous_min = Some(new_pos);
+            }
+        } else {
+            *previous_min = Some(new_pos)
+        }
+    }
+
+    /// Checks if the previously stored highest x/y position is higher than the next position.
+    /// If `previous_max` ends up being lower than `new_pos`, `previous_max`'s value is set to 
+    /// that of `new_pos`.
+    /// <br>
+    /// ## parameters:
+    /// * `previous_max` - The stored highest x/y position.
+    /// * `new_pos` - The new position to check the old one against.
+    fn check_max(previous_max: &mut Option<u32>, new_pos: u32) {
+        if let Some(pos) = previous_max {
+            if new_pos > *pos {
+                *previous_max = Some(new_pos);
+            }
+        } else {
+            *previous_max = Some(new_pos)
         }
     }
 }
@@ -86,7 +113,7 @@ mod tests {
     use crate::utils::Pixel;
 
     #[test]
-    fn get_height() {
+    fn get_dimensions() {
         let vertical_line = PixelVectorShape::new(vec![
             Pixel { x: 1, y: 2, color: Color::Black },
             Pixel { x: 1, y: 3, color: Color::Black },
@@ -102,16 +129,21 @@ mod tests {
         ]);
         let no_pixel_shape = PixelVectorShape::new(vec![]);
 
+        let vertical_line_dimensions = (1, 3);
+        let distributed_pixels_dimensions = (100, 65);
+        let single_pixel_dimensions = (1, 1);
+        let no_pixel_dimensions = (0, 0);
 
-        let vertical_res = vertical_line.get_height();
-        let distributed_res = distributed_pixels.get_height();
-        let single_pixel_res = single_pixel.get_height();
-        let no_pixel_res = no_pixel_shape.get_height();
+
+        let vertical_res = vertical_line.get_dimensions();
+        let distributed_res = distributed_pixels.get_dimensions();
+        let single_pixel_res = single_pixel.get_dimensions();
+        let no_pixel_res = no_pixel_shape.get_dimensions();
 
 
-        assert_eq!(vertical_res, 3);
-        assert_eq!(distributed_res, 65);
-        assert_eq!(single_pixel_res, 1);
-        assert_eq!(no_pixel_res, 0);
+        assert_eq!(vertical_res, vertical_line_dimensions);
+        assert_eq!(distributed_res, distributed_pixels_dimensions);
+        assert_eq!(single_pixel_res, single_pixel_dimensions);
+        assert_eq!(no_pixel_res, no_pixel_dimensions);
     }
 }
