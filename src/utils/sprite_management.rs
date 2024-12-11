@@ -31,7 +31,11 @@ pub fn load_sprite(image_bytes: &[u8], color: Color) -> std::io::Result<Vec<Pixe
     Ok(pixels)
 }
 
-/// Returns the coordinates of each black pixel in a vector.
+/// Returns the coordinates of each black pixel in a vector. This also flips the image vertically since
+/// `ratatui`'s coordinate system goes from left to right, **BOTTOM** to **TOP**.
+/// <br>
+/// ## parameters:
+/// * `image_bytes` - A slice of the bytes for the image that should get used. 
 fn get_black_pixel_coordinates(image_bytes: &[u8]) -> Result<Vec<(u32, u32)>, Box<dyn Error>> {
     let image = load_from_memory(image_bytes).unwrap().to_luma8();
     let dimensions = image.dimensions();
