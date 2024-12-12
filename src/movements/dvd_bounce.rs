@@ -1,6 +1,7 @@
 use super::movement::{Movement, Location};
 use chrono::Utc;
 use ratatui::layout::Rect;
+use crate::shapes::PixelVectorShape;
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct DvdBounceMovement {
@@ -9,32 +10,36 @@ pub struct DvdBounceMovement {
     y_direction_toggle: bool,
     area: Rect,
     last_update: i64,
+    friend_shape: PixelVectorShape,
 }
 impl DvdBounceMovement {
-    pub fn new(start_location: Location, area: Rect) -> Self {
+    pub fn new(start_location: Location, area: Rect, friend_shape: PixelVectorShape) -> Self {
         Self {
             location: start_location,
             x_direction_toggle: true,
             y_direction_toggle: true,
             area,
             last_update: Utc::now().timestamp_millis(),
+            friend_shape,
         }
     }
 
     fn update_state(&mut self) {
+        let (shape_width, shape_height) = self.friend_shape.get_dimensions();
+
         let now = Utc::now().timestamp_millis();
-        
-        if now - self.last_update > 50 {
+
+        if now - self.last_update > 500 {
             self.last_update = now;
             
-            if self.location.x < self.area.left() as u32 
-                || self.location.x > self.area.right() as u32
+            if self.location.x <= self.area.left() as u32
+                || self.location.x > self.area.right() as u32 - shape_width
             {
                 self.x_direction_toggle = !self.x_direction_toggle;
             }
             
-            if self.location.y < self.area.top() as u32 
-                || self.location.y > self.area.bottom() as u32
+            if self.location.y <= self.area.top() as u32
+                || self.location.y > self.area.bottom() as u32 - shape_height
             {
                 self.y_direction_toggle = !self.y_direction_toggle;
             }

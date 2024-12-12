@@ -3,7 +3,7 @@ use crate::utils::Stat;
 use serde::{Deserialize, Serialize};
 use chrono::Utc;
 use crate::shapes::creatures::CreatureShapes;
-use crate::shapes::GrowthStageShapes;
+use crate::shapes::{GrowthStageShapes, PixelVectorShape};
 
 
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
@@ -214,6 +214,13 @@ impl Friend {
             GrowthStage::Kid => ShapeWrapper::Growing(GrowthStageShapes::Kid(color)),
 
             GrowthStage::Adult => ShapeWrapper::Adult(self.shape.clone()),
+        }
+    }
+    
+    pub fn get_pixel_vector(&self) -> PixelVectorShape {
+        match self.get_shape_wrapper() {
+            ShapeWrapper::Growing(shape) => PixelVectorShape::from_pixel_image(&shape),
+            ShapeWrapper::Adult(shape) => PixelVectorShape::from_pixel_image(&shape),
         }
     }
     

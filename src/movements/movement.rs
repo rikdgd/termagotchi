@@ -17,7 +17,7 @@ pub enum MovementWrapper {
     SmallSteps(SmallStepsMovement),
     DvdBounce(DvdBounceMovement),
 }
-impl Movement for MovementWrapper {
+impl<'a> Movement for MovementWrapper {
     fn next_position(&mut self) -> Location {
         match self {
             MovementWrapper::EggHop(movement) => movement.next_position(),

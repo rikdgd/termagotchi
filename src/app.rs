@@ -4,15 +4,15 @@ use ratatui::widgets::ListState;
 use ratatui::layout::{Constraint, Layout};
 use ratatui::layout::Rect;
 use ratatui::crossterm::event::{self, Event, KeyCode, KeyEventKind, poll};
-use crate::friend::GrowthStage;
 use crate::game_state::GameState;
 use crate::movements::{Movement, MovementWrapper, EggHopMovement, SmallStepsMovement, DvdBounceMovement};
-use crate::friend::Friend;
+use crate::friend::{Friend, GrowthStage};
 use crate::widgets::{stats_widget, FriendWidget, actions_widget};
 use crate::movements::Location;
 use crate::layouts;
 use crate::food::Food;
 use crate::shapes::creatures::CreatureShapes;
+use crate::shapes::PixelVectorShape;
 use crate::utils::ColorWrapper;
 
 /// This struct holds most logic for actually running the app. It is able to run the Termagotchi app
@@ -55,9 +55,11 @@ impl App {
         }
 
         let previous_growth_stage = game_state.friend_clone().growth_stage();
+
         let friend_movement = get_movement_wrapper(
             &game_state.friend().growth_stage(),
             playground,
+            game_state.friend().get_pixel_vector(),
         );
         
         Ok(Self {
@@ -193,28 +195,14 @@ fn get_main_areas(area: Rect) -> [Rect; 3] {
 /// * `movement` - The movement that should be modified.
 /// * `friend` - The friend that will be used to check the growth stage.
 fn update_friend_movement(movement: &mut MovementWrapper, friend: &Friend, area: Rect) {
-    *movement = get_movement_wrapper(&friend.growth_stage(), area);
+    let shape = friend.get_pixel_vector();
+    *movement = get_movement_wrapper(&friend.growth_stage(), area, shape);
 }
 
-/// Gets the width and height of the area the friend will move around in. The friend should always
-/// stay within these boundaries.
-///
-/// ## Parameters:
-/// * `terminal` - The `ratatui::DefaultTerminal` that should be used to draw the game to.
-///
-/// ## Returns:
-/// A `(u32, u32)` tuple where the width and height are ordered as: (width, height)
-// fn get_friend_boundaries(terminal: &mut DefaultTerminal) -> (u32, u32) {
-//     let frame_area = terminal.get_frame().area();
-//     let [_, middle_area, _] = get_main_areas(frame_area);
-//     // (middle_area.width as u32, middle_area.height as u32)
-//     (120, 70)
-// }
-
-fn get_movement_wrapper(growth_stage: &GrowthStage, area: Rect) -> MovementWrapper {
+fn get_movement_wrapper(growth_stage: &GrowthStage, area: Rect, friend_shape: PixelVectorShape) -> MovementWrapper {
     match growth_stage {
         GrowthStage::Egg => MovementWrapper::EggHop(EggHopMovement::new(Location::new(60, 35))),
         GrowthStage::Baby => MovementWrapper::SmallSteps(SmallStepsMovement::new(Location::new(40, 20))),
-        _ => MovementWrapper::DvdBounce(DvdBounceMovement::new(Location::new(23, 11), area)),
+        _ => MovementWrapper::DvdBounce(DvdBounceMovement::new(Location::new(23, 11), area, friend_shape)),
     }
 }
