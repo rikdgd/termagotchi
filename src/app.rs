@@ -153,17 +153,30 @@ impl App {
         let friend_widget = if !self.game_state.friend().is_asleep() {
             FriendWidget::new(self.game_state.friend(), self.friend_movement.next_position(), self.playground)
         } else {
-            let friend_area = get_main_areas(frame.area())[1]; // index 1, because the center area is where our friend 'lives'.
-            let location = Location::new(
-                self.playground.width as u32 / 2,
-                self.playground.height as u32 / 2,
-            );
-            FriendWidget::new(self.game_state.friend(), location, self.playground)
+            FriendWidget::new(self.game_state.friend(), self.sleep_drawing_location(), self.playground)
         };
 
 
         frame.render_widget(friend_widget.get_widget(), middle_area);
         frame.render_stateful_widget(actions_widget(), right_area, &mut self.actions_widget_state);
+    }
+    
+    fn sleep_drawing_location(&self) -> Location {
+        let mut center = Location {
+            x: self.playground.width as u32 / 2,
+            y: self.playground.height as u32 / 2,
+        };
+
+        let sprite_width = match self.game_state.friend().growth_stage() {
+            GrowthStage::Egg => 10,
+            GrowthStage::Baby => 10,
+            GrowthStage::Kid => 15,
+            GrowthStage::Adult => 25,
+        };
+
+        center.x -= sprite_width / 2;
+        center.y -= sprite_width / 2;
+        center
     }
 }
 
