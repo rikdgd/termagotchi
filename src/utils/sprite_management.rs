@@ -1,5 +1,6 @@
 use std::error::Error;
 use image::load_from_memory;
+use image::imageops::flip_vertical;
 use ratatui::prelude::Color;
 use crate::utils::Pixel;
 
@@ -30,13 +31,19 @@ pub fn load_sprite(image_bytes: &[u8], color: Color) -> std::io::Result<Vec<Pixe
     Ok(pixels)
 }
 
-/// Returns the coordinates of each black pixel in a vector.
+/// Returns the coordinates of each black pixel in a vector. This also flips the image vertically since
+/// `ratatui`'s coordinate system goes from left to right, **BOTTOM** to **TOP**.
+/// <br>
+/// ## parameters:
+/// * `image_bytes` - A slice of the bytes for the image that should get used. 
 fn get_black_pixel_coordinates(image_bytes: &[u8]) -> Result<Vec<(u32, u32)>, Box<dyn Error>> {
     let image = load_from_memory(image_bytes).unwrap().to_luma8();
     let dimensions = image.dimensions();
     let mut buffer: Vec<(u32, u32)> = Vec::new();
-
-    for (pixel_index, pixel) in image.pixels().enumerate() {
+    
+    // flip the image over the x-axis, since ratatui coordinates start at the BOTTOM left, not TOP left.
+    let flipped_image = flip_vertical(&image);
+    for (pixel_index, pixel) in flipped_image.pixels().enumerate() {
         if pixel.0[0] == 0 {
             let cords = get_pixel_coordinates(pixel_index, dimensions);
             buffer.push(cords);

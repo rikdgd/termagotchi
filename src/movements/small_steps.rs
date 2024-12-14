@@ -1,7 +1,6 @@
 use chrono::Utc;
-use crate::movements::{Location, Movement};
-
-
+use crate::movements::Movement;
+use crate::utils::location::Location;
 
 #[derive(Debug, Copy, Clone, PartialEq)]
 pub struct SmallStepsMovement {
@@ -15,8 +14,13 @@ pub struct SmallStepsMovement {
 
 impl SmallStepsMovement {
     pub fn new(initial_location: Location) -> Self {
+        let updated_location = Location {
+            x: initial_location.x - 7, // 7 for sprite dimensions (15x15)
+            y: initial_location.y - 7,
+        };
+        
         Self {
-            initial_location,
+            initial_location: updated_location,
             x_move: 0,
             y_move: 0,
             x_toggle: true,

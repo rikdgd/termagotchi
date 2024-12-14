@@ -5,24 +5,27 @@ use ratatui::widgets::{Widget, Block};
 use ratatui::widgets::canvas::{Canvas, Context};
 use crate::friend::Friend;
 use crate::friend::ShapeWrapper;
-use crate::shapes::{PixelImage, move_pixel_image, PixelVectorShape};
-use crate::movements::Location;
+use crate::shapes::{PixelImage, PixelVectorShape};
+use crate::utils::location::Location;
+use ratatui::layout::Rect;
 
 pub struct FriendWidget<'a> {
     friend: &'a Friend,
     friend_location: Location,
+    movement_area: Rect,
 }
 impl<'a> FriendWidget<'a> {
-    pub fn new(friend: &'a Friend, friend_location: Location) -> Self {
+    pub fn new(friend: &'a Friend, friend_location: Location, movement_area: Rect) -> Self {
         Self { 
             friend, 
-            friend_location, 
+            friend_location,
+            movement_area,
         }
     }
 
     pub fn get_widget(&self) -> impl Widget + '_ {
-        let friend_widget_x_bounds = [-180.0, 180.0];
-        let friend_widget_y_bounds = [-90.0, 90.0];
+        let friend_widget_x_bounds = [0.0, f64::from(self.movement_area.width)];
+        let friend_widget_y_bounds = [0.0, f64::from(self.movement_area.height)];
         
         let canvas = Canvas::default()
             .block(Block::bordered().title(self.title_string()))
@@ -56,8 +59,9 @@ impl<'a> FriendWidget<'a> {
 }
 
 fn draw_shape_at_location<S: PixelImage>(ctx: &mut Context, shape: &S, location: &Location) {
-    let new_pixels = move_pixel_image(shape, (location.x, location.y));
-    let vec_image = PixelVectorShape::new(new_pixels);
+    let vec_shape = PixelVectorShape::from_pixel_image(shape)
+        .translate(location.x as i32, location.y as i32);
     
-    ctx.draw(&vec_image);
+    ctx.draw(&vec_shape);
 }
+
