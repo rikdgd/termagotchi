@@ -205,6 +205,6 @@ fn get_movement_wrapper(growth_stage: &GrowthStage, area: Rect, friend_shape: Pi
     match growth_stage {
         GrowthStage::Egg => MovementWrapper::EggHop(EggHopMovement::new(center)),
         GrowthStage::Baby => MovementWrapper::SmallSteps(SmallStepsMovement::new(center)),
-        _ => MovementWrapper::DvdBounce(DvdBounceMovement::new(Location::new(23, 11), area, friend_shape)),
+        _ => MovementWrapper::DvdBounce(DvdBounceMovement::new(center, area, friend_shape)),
     }
 }

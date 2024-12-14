@@ -1,5 +1,7 @@
 use super::movement::Movement;
+use rand;
 use chrono::Utc;
+use rand::Rng;
 use ratatui::layout::Rect;
 use crate::shapes::PixelVectorShape;
 use crate::utils::location::Location;
@@ -15,8 +17,20 @@ pub struct DvdBounceMovement {
 }
 impl DvdBounceMovement {
     pub fn new(start_location: Location, area: Rect, friend_shape: PixelVectorShape) -> Self {
+        let mut rng = rand::thread_rng();
+        let x_rng = rng.gen_range(-30..=30);
+        let y_rng = rng.gen_range(-30..=30);
+        
+        let new_x = (start_location.x as i32 + x_rng) as u32;
+        let new_y = (start_location.y as i32 + y_rng) as u32;
+        
+        let location = Location {
+            x: new_x - 12, // -12 to account for sprite dimensions (25x25)
+            y: new_y - 12,
+        };
+        
         Self {
-            location: start_location,
+            location,
             x_direction_toggle: true,
             y_direction_toggle: true,
             area,
