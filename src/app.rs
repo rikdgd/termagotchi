@@ -4,15 +4,15 @@ use ratatui::widgets::ListState;
 use ratatui::layout::{Constraint, Layout};
 use ratatui::layout::Rect;
 use ratatui::crossterm::event::{self, Event, KeyCode, KeyEventKind, poll};
-use crate::friend::GrowthStage;
 use crate::game_state::GameState;
 use crate::movements::{Movement, MovementWrapper, EggHopMovement, SmallStepsMovement, DvdBounceMovement};
-use crate::friend::Friend;
+use crate::friend::{Friend, GrowthStage};
 use crate::widgets::{stats_widget, FriendWidget, actions_widget};
-use crate::movements::Location;
+use crate::utils::location::Location;
 use crate::layouts;
 use crate::food::Food;
 use crate::shapes::creatures::CreatureShapes;
+use crate::shapes::PixelVectorShape;
 use crate::utils::ColorWrapper;
 
 /// This struct holds most logic for actually running the app. It is able to run the Termagotchi app
@@ -36,11 +36,13 @@ pub struct App {
     actions_widget_state: ListState,
     previous_growth_stage: GrowthStage,
     friend_movement: MovementWrapper,
+    playground: Rect,
 }
 
 impl App {
     pub fn new(terminal: &mut DefaultTerminal) -> std::io::Result<Self> {
         let actions_widget_state = ListState::default();
+        let playground = Rect::new(0, 0, 150, 100);
 
         let mut game_state: GameState;
         if let Ok(state) = GameState::read_from_file() {
@@ -53,9 +55,11 @@ impl App {
         }
 
         let previous_growth_stage = game_state.friend_clone().growth_stage();
+
         let friend_movement = get_movement_wrapper(
             &game_state.friend().growth_stage(),
-            get_friend_boundaries(terminal),
+            playground,
+            game_state.friend().get_pixel_vector(),
         );
         
         Ok(Self {
@@ -63,6 +67,7 @@ impl App {
             actions_widget_state,
             previous_growth_stage,
             friend_movement,
+            playground,
         })
     }
     
@@ -80,8 +85,7 @@ impl App {
             if self.previous_growth_stage != self.game_state.friend().growth_stage() {
                 self.previous_growth_stage = self.game_state.friend().growth_stage();
 
-                let friend_boundaries = get_friend_boundaries(terminal);
-                update_friend_movement(&mut self.friend_movement, self.game_state.friend(), friend_boundaries);
+                update_friend_movement(&mut self.friend_movement, self.game_state.friend(), self.playground);
             }
 
             terminal.draw(|frame| {
@@ -147,19 +151,32 @@ impl App {
         }
 
         let friend_widget = if !self.game_state.friend().is_asleep() {
-            FriendWidget::new(self.game_state.friend(), self.friend_movement.next_position())
+            FriendWidget::new(self.game_state.friend(), self.friend_movement.next_position(), self.playground)
         } else {
-            let friend_area = get_main_areas(frame.area())[1]; // index 1, because the center area is where our friend 'lives'.
-            let location = Location::new(
-                friend_area.width as u32 / 2,
-                friend_area.height as u32 / 2,
-            );
-            FriendWidget::new(self.game_state.friend(), location)
+            FriendWidget::new(self.game_state.friend(), self.sleep_drawing_location(), self.playground)
         };
 
 
         frame.render_widget(friend_widget.get_widget(), middle_area);
         frame.render_stateful_widget(actions_widget(), right_area, &mut self.actions_widget_state);
+    }
+    
+    fn sleep_drawing_location(&self) -> Location {
+        let mut center = Location {
+            x: self.playground.width as u32 / 2,
+            y: self.playground.height as u32 / 2,
+        };
+
+        let sprite_width = match self.game_state.friend().growth_stage() {
+            GrowthStage::Egg => 10,
+            GrowthStage::Baby => 10,
+            GrowthStage::Kid => 15,
+            GrowthStage::Adult => 25,
+        };
+
+        center.x -= sprite_width / 2;
+        center.y -= sprite_width / 2;
+        center
     }
 }
 
@@ -185,33 +202,22 @@ fn get_main_areas(area: Rect) -> [Rect; 3] {
 }
 
 
-/// updates the movement of the creature based on its growth stage
-///
-/// ## parameters
+/// Updates the movement of the creature based on its growth stage.
+/// <br>
+/// ## parameters:
 /// * `movement` - The movement that should be modified.
 /// * `friend` - The friend that will be used to check the growth stage.
-fn update_friend_movement(movement: &mut MovementWrapper, friend: &Friend, max_xy: (u32, u32)) {
-    *movement = get_movement_wrapper(&friend.growth_stage(), max_xy);
+/// * `area` - The area where the creature walks around in, used to set movement boundaries.
+fn update_friend_movement(movement: &mut MovementWrapper, friend: &Friend, area: Rect) {
+    let shape = friend.get_pixel_vector();
+    *movement = get_movement_wrapper(&friend.growth_stage(), area, shape);
 }
 
-/// Gets the width and height of the area the friend will move around in. The friend should always
-/// stay within these boundaries.
-///
-/// ## Parameters:
-/// * `terminal` - The `ratatui::DefaultTerminal` that should be used to draw the game to.
-///
-/// ## Returns:
-/// A `(u32, u32)` tuple where the width and height are ordered as: (width, height)
-fn get_friend_boundaries(terminal: &mut DefaultTerminal) -> (u32, u32) {
-    let frame_area = terminal.get_frame().area();
-    let [_, middle_area, _] = get_main_areas(frame_area);
-    (middle_area.width as u32, middle_area.height as u32)
-}
-
-fn get_movement_wrapper(growth_stage: &GrowthStage, max_xy: (u32, u32)) -> MovementWrapper {
+fn get_movement_wrapper(growth_stage: &GrowthStage, area: Rect, friend_shape: PixelVectorShape) -> MovementWrapper {
+    let center = Location::new(area.width as u32 / 2, area.height as u32 / 2);
     match growth_stage {
-        GrowthStage::Egg => MovementWrapper::EggHop(EggHopMovement::new(Location::new(40, 20))),
-        GrowthStage::Baby => MovementWrapper::SmallSteps(SmallStepsMovement::new(Location::new(40, 20))),
-        _ => MovementWrapper::DvdBounce(DvdBounceMovement::new(Location::new(23, 11), max_xy.0, max_xy.1)),
+        GrowthStage::Egg => MovementWrapper::EggHop(EggHopMovement::new(center)),
+        GrowthStage::Baby => MovementWrapper::SmallSteps(SmallStepsMovement::new(center)),
+        _ => MovementWrapper::DvdBounce(DvdBounceMovement::new(center, area, friend_shape)),
     }
 }

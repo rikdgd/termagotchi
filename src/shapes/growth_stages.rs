@@ -21,15 +21,3 @@ impl PixelImage for GrowthStageShapes {
         }
     }
 }
-
-impl Shape for GrowthStageShapes {
-    fn draw(&self, painter: &mut Painter) {
-        for pixel in self.pixels() {
-            painter.paint(
-                pixel.x as usize, 
-                pixel.y as usize, 
-                pixel.color
-            );
-        }
-    }
-}

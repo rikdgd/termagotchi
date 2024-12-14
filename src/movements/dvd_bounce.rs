@@ -1,37 +1,61 @@
-use super::movement::{Movement, Location};
+use super::movement::Movement;
+use rand;
 use chrono::Utc;
+use rand::Rng;
+use ratatui::layout::Rect;
+use crate::shapes::PixelVectorShape;
+use crate::utils::location::Location;
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct DvdBounceMovement {
     location: Location,
     x_direction_toggle: bool,
     y_direction_toggle: bool,
-    max_x: u32,
-    max_y: u32,
+    area: Rect,
     last_update: i64,
+    friend_shape: PixelVectorShape,
 }
 impl DvdBounceMovement {
-    pub fn new(start_location: Location, max_x: u32, max_y: u32) -> Self {
+    pub fn new(start_location: Location, area: Rect, friend_shape: PixelVectorShape) -> Self {
+        let mut rng = rand::thread_rng();
+        let x_rng = rng.gen_range(-30..=30);
+        let y_rng = rng.gen_range(-30..=30);
+        
+        let new_x = (start_location.x as i32 + x_rng) as u32;
+        let new_y = (start_location.y as i32 + y_rng) as u32;
+        
+        let location = Location {
+            x: new_x - 12, // -12 to account for sprite dimensions (25x25)
+            y: new_y - 12,
+        };
+        
         Self {
-            location: start_location,
+            location,
             x_direction_toggle: true,
             y_direction_toggle: true,
-            max_x,
-            max_y,
+            area,
             last_update: Utc::now().timestamp_millis(),
+            friend_shape,
         }
     }
 
     fn update_state(&mut self) {
+        let (shape_width, shape_height) = self.friend_shape.get_dimensions();
+
         let now = Utc::now().timestamp_millis();
-        
+
         if now - self.last_update > 500 {
             self.last_update = now;
             
-            if self.location.x <= 0 || self.location.x >= self.max_x {
+            if self.location.x <= self.area.left() as u32
+                || self.location.x > self.area.right() as u32 - shape_width
+            {
                 self.x_direction_toggle = !self.x_direction_toggle;
             }
-            if self.location.y <= 0 || self.location.y >= self.max_y {
+            
+            if self.location.y <= self.area.top() as u32
+                || self.location.y > self.area.bottom() as u32 - shape_height
+            {
                 self.y_direction_toggle = !self.y_direction_toggle;
             }
 
