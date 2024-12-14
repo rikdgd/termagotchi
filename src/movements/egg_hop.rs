@@ -1,5 +1,6 @@
-use super::movement::{Movement, Location};
+use super::movement::Movement;
 use chrono::Utc;
+use crate::utils::location::Location;
 
 #[derive(Debug, Copy, Clone, PartialEq)]
 pub struct EggHopMovement {
@@ -31,7 +32,7 @@ impl Movement for EggHopMovement {
         self.try_update_state();
         
         if self.is_grounded {
-            self.start_location.clone()
+            self.start_location
         } else {
             let mut location = self.start_location;
             location.y += 1;

@@ -6,7 +6,7 @@ use ratatui::widgets::canvas::{Canvas, Context};
 use crate::friend::Friend;
 use crate::friend::ShapeWrapper;
 use crate::shapes::{PixelImage, PixelVectorShape};
-use crate::movements::Location;
+use crate::utils::location::Location;
 use ratatui::layout::Rect;
 
 pub struct FriendWidget<'a> {

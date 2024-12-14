@@ -8,7 +8,7 @@ use crate::game_state::GameState;
 use crate::movements::{Movement, MovementWrapper, EggHopMovement, SmallStepsMovement, DvdBounceMovement};
 use crate::friend::{Friend, GrowthStage};
 use crate::widgets::{stats_widget, FriendWidget, actions_widget};
-use crate::movements::Location;
+use crate::utils::location::Location;
 use crate::layouts;
 use crate::food::Food;
 use crate::shapes::creatures::CreatureShapes;
@@ -189,20 +189,22 @@ fn get_main_areas(area: Rect) -> [Rect; 3] {
 }
 
 
-/// updates the movement of the creature based on its growth stage
-///
-/// ## parameters
+/// Updates the movement of the creature based on its growth stage.
+/// <br>
+/// ## parameters:
 /// * `movement` - The movement that should be modified.
 /// * `friend` - The friend that will be used to check the growth stage.
+/// * `area` - The area where the creature walks around in, used to set movement boundaries.
 fn update_friend_movement(movement: &mut MovementWrapper, friend: &Friend, area: Rect) {
     let shape = friend.get_pixel_vector();
     *movement = get_movement_wrapper(&friend.growth_stage(), area, shape);
 }
 
 fn get_movement_wrapper(growth_stage: &GrowthStage, area: Rect, friend_shape: PixelVectorShape) -> MovementWrapper {
+    let center = Location::new(area.width as u32 / 2, area.height as u32 / 2);
     match growth_stage {
-        GrowthStage::Egg => MovementWrapper::EggHop(EggHopMovement::new(Location::new(60, 35))),
-        GrowthStage::Baby => MovementWrapper::SmallSteps(SmallStepsMovement::new(Location::new(40, 20))),
+        GrowthStage::Egg => MovementWrapper::EggHop(EggHopMovement::new(center)),
+        GrowthStage::Baby => MovementWrapper::SmallSteps(SmallStepsMovement::new(center)),
         _ => MovementWrapper::DvdBounce(DvdBounceMovement::new(Location::new(23, 11), area, friend_shape)),
     }
 }

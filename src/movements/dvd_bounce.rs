@@ -1,7 +1,8 @@
-use super::movement::{Movement, Location};
+use super::movement::Movement;
 use chrono::Utc;
 use ratatui::layout::Rect;
 use crate::shapes::PixelVectorShape;
+use crate::utils::location::Location;
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct DvdBounceMovement {

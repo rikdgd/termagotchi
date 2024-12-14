@@ -1,7 +1,6 @@
 use chrono::Utc;
-use crate::movements::{Location, Movement};
-
-
+use crate::movements::Movement;
+use crate::utils::location::Location;
 
 #[derive(Debug, Copy, Clone, PartialEq)]
 pub struct SmallStepsMovement {

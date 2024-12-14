@@ -1,7 +1,8 @@
+use crate::utils::location::Location;
 use super::{
-    EggHopMovement, 
-    SmallStepsMovement, 
-    DvdBounceMovement
+    DvdBounceMovement,
+    EggHopMovement,
+    SmallStepsMovement
 };
 
 
@@ -23,21 +24,6 @@ impl<'a> Movement for MovementWrapper {
             MovementWrapper::EggHop(movement) => movement.next_position(),
             MovementWrapper::SmallSteps(movement) => movement.next_position(),
             MovementWrapper::DvdBounce(movement) => movement.next_position(),
-        }
-    }
-}
-
-
-#[derive(Debug, Copy, Clone, PartialEq)]
-pub struct Location {
-    pub x: u32,
-    pub y: u32,
-}
-impl Location {
-    pub fn new(x: u32, y: u32) -> Self {
-        Self {
-            x, 
-            y,
         }
     }
 }
