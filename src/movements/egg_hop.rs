@@ -11,8 +11,14 @@ pub struct EggHopMovement {
 
 impl EggHopMovement {
     pub fn new(start_location: Location) -> Self {
+        // Sprite has a resolution of 10x10 pixels.
+        let updated_location = Location {
+            x: start_location.x - 5,
+            y: start_location.y - 5
+        };
+        
         Self {
-            start_location,
+            start_location: updated_location,
             is_grounded: true,
             last_update: Utc::now().timestamp_millis(),
         }
