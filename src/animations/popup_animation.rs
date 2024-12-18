@@ -12,6 +12,7 @@ use super::animation::Animation;
 pub struct PopupAnimation {
     is_running: bool,
     animation: Box<dyn Animation>,
+    area: Rect,
 }
 
 impl PopupAnimation {
@@ -19,6 +20,7 @@ impl PopupAnimation {
         Self {
             is_running: true,
             animation,
+            area: Rect::new(0, 0, 50, 30),
         }
     }
 
@@ -27,17 +29,14 @@ impl PopupAnimation {
     /// ## parameters: 
     /// * `frame` - The `ratatui::Frame` to render the PopupAnimation on
     pub fn render(&mut self, frame: &mut Frame) {
-        let area = self.get_popup_rect(frame);
         let next_animation_frame =
             if let Some(animation_frame) = self.animation.next_frame() {
-                // TODO: Use a 'playground' here to?
-                let area = self.get_popup_rect(frame);
-                
-                // animation_frame.translate(
-                //     area.width as i32 / 2, 
-                //     area.height as i32 / 2,
-                // )
-                animation_frame
+                animation_frame.translate(
+                    self.area.width as i32 / 2, 
+                    self.area.height as i32 / 2,
+                ).translate(
+                        -7, -7      // Account for the animation sprite dimensions
+                )
             } else {
                 self.is_running = false;
                 PixelVectorShape::new(Vec::new())
@@ -45,12 +44,15 @@ impl PopupAnimation {
 
         let canvas = Canvas::default()
             .block(Block::bordered())
+            .x_bounds([0.0, f64::from(self.area.width)])
+            .y_bounds([0.0, f64::from(self.area.height)])
             .paint(|ctx| {
                 ctx.draw(&next_animation_frame)
             });
-
-        frame.render_widget(Clear, area); // Clear out the background behind the popup.
-        frame.render_widget(canvas, area);
+        
+        let popup_area = self.get_popup_rect(frame);
+        frame.render_widget(Clear, popup_area); // Clear out the background behind the popup.
+        frame.render_widget(canvas, popup_area);
     }
 
     /// Returns if the animation is still running, can be used to 
