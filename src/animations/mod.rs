@@ -1,4 +1,6 @@
-mod egg_hop;
-mod pixel_animation;
+mod popup_animation;
+mod animation;
+pub mod food_animations;
 
-pub use pixel_animation::PixelAnimation;
+pub use animation::Animation;
+pub use popup_animation::PopupAnimation;

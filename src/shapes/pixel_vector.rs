@@ -106,6 +106,12 @@ impl Shape for PixelVectorShape {
     }
 }
 
+impl PixelImage for PixelVectorShape {
+    fn pixels(&self) -> Vec<Pixel> {
+        self.0.clone()
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use ratatui::prelude::Color;
