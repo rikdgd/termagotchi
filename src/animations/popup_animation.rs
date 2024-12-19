@@ -31,11 +31,13 @@ impl PopupAnimation {
     pub fn render(&mut self, frame: &mut Frame) {
         let next_animation_frame =
             if let Some(animation_frame) = self.animation.next_frame() {
+                let (frame_width, frame_height) = animation_frame.get_dimensions();
                 animation_frame.translate(
                     self.area.width as i32 / 2, 
                     self.area.height as i32 / 2,
-                ).translate(
-                        -7, -7      // Account for the animation sprite dimensions
+                ).translate( // Account for the animation sprite dimensions
+                        frame_width as i32 / 2 * -1,
+                        frame_height as i32 / 2 * -1,
                 )
             } else {
                 self.is_running = false;
