@@ -188,21 +188,26 @@ impl App {
     }
 
     fn set_food_animation(&mut self, food: Food) {
+        let dimensions = (15, 15);
+        
         match food {
             Food::Soup => {
-                self.popup_animation = Some(PopupAnimation::new(Box::new(FoodAnimation::new(
-                    FoodAnimationFrames::Soup,
-                ))))
+                self.popup_animation = Some(PopupAnimation::new(
+                    Box::new(FoodAnimation::new(FoodAnimationFrames::Soup)),
+                    dimensions,
+                ))
             },
             Food::Fries => {
-                self.popup_animation = Some(PopupAnimation::new(Box::new(FoodAnimation::new(
-                    FoodAnimationFrames::Fries,
-                ))))
+                self.popup_animation = Some(PopupAnimation::new(
+                    Box::new(FoodAnimation::new(FoodAnimationFrames::Fries)),
+                    dimensions,
+                ))
             },
             Food::Burger => {
-                self.popup_animation = Some(PopupAnimation::new(Box::new(FoodAnimation::new(
-                    FoodAnimationFrames::Burger,
-                ))))
+                self.popup_animation = Some(PopupAnimation::new(
+                    Box::new(FoodAnimation::new(FoodAnimationFrames::Burger)),
+                    dimensions,
+                ))
             },
         }
     }

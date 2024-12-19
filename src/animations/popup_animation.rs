@@ -12,14 +12,21 @@ use super::animation::Animation;
 pub struct PopupAnimation {
     is_running: bool,
     animation: Box<dyn Animation>,
+    animation_dimensions: (u16, u16),
     area: Rect,
 }
 
 impl PopupAnimation {
-    pub fn new(animation: Box<dyn Animation>) -> Self {
+    /// Creates a new `PopupAnimation` that plays the given animation.
+    /// <br>
+    /// ## parameters:
+    /// * `animation` - The Boxed Animation that should be played in the PopupAnimation.
+    /// * `animation_dimensions` - The dimensions of the animations. These are used to center the animation on the screen.
+    pub fn new(animation: Box<dyn Animation>, animation_dimensions: (u16, u16)) -> Self {
         Self {
             is_running: true,
             animation,
+            animation_dimensions,
             area: Rect::new(0, 0, 50, 30),
         }
     }
@@ -31,13 +38,12 @@ impl PopupAnimation {
     pub fn render(&mut self, frame: &mut Frame) {
         let next_animation_frame =
             if let Some(animation_frame) = self.animation.next_frame() {
-                let (frame_width, frame_height) = animation_frame.get_dimensions();
                 animation_frame.translate(
                     self.area.width as i32 / 2, 
                     self.area.height as i32 / 2,
                 ).translate( // Account for the animation sprite dimensions
-                        frame_width as i32 / 2 * -1,
-                        frame_height as i32 / 2 * -1,
+                     self.animation_dimensions.0 as i32 / 2 * -1,
+                     self.animation_dimensions.1 as i32 / 2 * -1,
                 )
             } else {
                 self.is_running = false;
