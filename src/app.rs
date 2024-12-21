@@ -7,7 +7,7 @@ use ratatui::crossterm::event::{self, Event, KeyCode, KeyEventKind, poll};
 use crate::game_state::GameState;
 use crate::movements::{Movement, MovementWrapper, EggHopMovement, SmallStepsMovement, DvdBounceMovement};
 use crate::friend::{Friend, GrowthStage};
-use crate::widgets::{stats_widget, FriendWidget, actions_widget};
+use crate::widgets::{stats_widget, FriendWidget, actions_widget, StatsWidget};
 use crate::utils::location::Location;
 use crate::layouts;
 use crate::food::Food;
@@ -126,19 +126,17 @@ impl App {
     fn draw_main(&mut self, frame: &mut Frame) {
         let frame_area = frame.area();
         let [left_area, middle_area, right_area] = get_main_areas(frame_area);
-
-        let stats_widget = stats_widget(&left_area, self.game_state.friend());
-        for gauge in stats_widget {
-            frame.render_widget(gauge.0, gauge.1);
-        }
-
+        
+        let canvas_stats = StatsWidget::new(self.game_state.friend());
+        
         let friend_widget = if !self.game_state.friend().is_asleep() {
             FriendWidget::new(self.game_state.friend(), self.friend_movement.next_position(), self.playground)
         } else {
             FriendWidget::new(self.game_state.friend(), self.sleep_drawing_location(), self.playground)
         };
-
-
+        
+        
+        frame.render_widget(canvas_stats.get_widget(), left_area);
         frame.render_widget(friend_widget.get_widget(), middle_area);
         frame.render_stateful_widget(actions_widget(), right_area, &mut self.actions_widget_state);
     }
