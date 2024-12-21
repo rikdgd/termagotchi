@@ -106,6 +106,12 @@ impl Shape for PixelVectorShape {
     }
 }
 
+impl PixelImage for PixelVectorShape {
+    fn pixels(&self) -> Vec<Pixel> {
+        self.0.clone()
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use ratatui::prelude::Color;
@@ -145,5 +151,42 @@ mod tests {
         assert_eq!(distributed_res, distributed_pixels_dimensions);
         assert_eq!(single_pixel_res, single_pixel_dimensions);
         assert_eq!(no_pixel_res, no_pixel_dimensions);
+    }
+    
+    #[test]
+    fn translate_pixel_vector() {
+        let single_pixel = PixelVectorShape::new(vec![
+            Pixel {x: 10, y: 10, color: Color::Black},
+        ]);
+        let multi_pixel_shape = PixelVectorShape::new(vec![
+            Pixel {x: 10, y: 10, color: Color::Black},
+            Pixel {x: 11, y: 10, color: Color::Black},
+            Pixel {x: 10, y: 11, color: Color::Black},
+            Pixel {x: 11, y: 11, color: Color::Black},
+        ]);
+        
+        
+        let normal_move_res = single_pixel.clone().translate(-5, 3);
+        let expected_normal = PixelVectorShape::new(vec![
+            Pixel {x: 5, y: 13, color: Color::Black},
+        ]);
+        
+        let move_out_bounds_res = single_pixel.translate(-20, -2);
+        let expected_out_bounds = PixelVectorShape::new(vec![
+            Pixel {x: 0, y: 8, color: Color::Black},
+        ]);
+        
+        let multi_pixel_res = multi_pixel_shape.translate(20, -3);
+        let expected_multi_pixel = PixelVectorShape::new(vec![
+            Pixel {x: 30, y: 7, color: Color::Black},
+            Pixel {x: 31, y: 7, color: Color::Black},
+            Pixel {x: 30, y: 8, color: Color::Black},
+            Pixel {x: 31, y: 8, color: Color::Black},
+        ]);
+        
+        
+        assert_eq!(normal_move_res, expected_normal);
+        assert_eq!(move_out_bounds_res, expected_out_bounds);
+        assert_eq!(multi_pixel_res, expected_multi_pixel);
     }
 }
