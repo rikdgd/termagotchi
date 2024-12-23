@@ -67,10 +67,9 @@ impl<'a> StatsWidget<'a> {
     fn calc_required_symbols(stat: &Stat) -> u8 {
         match stat.value() {
             0 => 0,
-            1..=25 => 1,
-            26..=50 => 2,
-            51..=75 => 3,
-            _ => 4,
+            1..=33 => 1,
+            34..=66 => 2,
+            _ => 3,
         }
     }
 }
@@ -100,10 +99,10 @@ mod test {
         
         assert_eq!(result_20, 1);
         assert_eq!(result_0, 0);
-        assert_eq!(result_100, 4);
-        assert_eq!(result_76, 4);
-        assert_eq!(result_51, 3);
-        assert_eq!(result_26, 2);
+        assert_eq!(result_100, 3);
+        assert_eq!(result_76, 3);
+        assert_eq!(result_51, 2);
+        assert_eq!(result_26, 1);
         assert_eq!(result_1, 1);
     }
 }
