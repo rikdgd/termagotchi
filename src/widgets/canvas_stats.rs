@@ -24,47 +24,44 @@ impl<'a> StatsWidget<'a> {
     pub fn new(friend: &'a Friend) -> Self {
         Self { 
             friend,
-            area: Rect::new(0, 0, 20, 100),
+            area: Rect::new(0, 0, 30, 100),
         }
     }
     
     pub fn get_widget(&self) -> impl Widget + 'a {
-        let canvas = Canvas::default()
+        Canvas::default()
             .block(Block::bordered().title("Stats"))
-            .x_bounds([0.0, 20.0])  // TODO: Get based of area
-            .y_bounds([0.0, 80.0])
-            .paint(|ctx|{
-                ctx.draw(&Line {
-                    x1: 0.0,
-                    y1: 10.0,
-                    x2: 10.0,
-                    y2: 10.0,
-                    color: Color::White,
-                });
-                
-                Self::draw_stats(ctx, self.friend);
-            });
-
-        canvas
+            .x_bounds([0.0, f64::from(self.area.width)])
+            .y_bounds([0.0, f64::from(self.area.height)])
+            .paint(|ctx| Self::render_stats(ctx, self.friend))
     }
     
-    fn draw_stats(ctx: &mut Context, friend: &Friend) {
-        let food_draw = Self::calc_required_symbols(friend.food());
-        let joy_draw = Self::calc_required_symbols(friend.joy());
-        let energy_draw = Self::calc_required_symbols(friend.energy());
-        let waste_draw = Self::calc_required_symbols(friend.waste_level());
+    fn render_stats(ctx: &mut Context, friend: &Friend) {
+        Self::draw_stat(ctx, StatShape::Food, friend.food());
+        Self::draw_stat(ctx, StatShape::Joy, friend.joy());
+        Self::draw_stat(ctx, StatShape::Sleep, friend.energy());
+        Self::draw_stat(ctx, StatShape::Waste, friend.waste_level());
+    }
+    
+    fn draw_stat(ctx: &mut Context, shape: StatShape, stat: &Stat) {
+        let count = Self::calc_required_symbols(stat);
         
-        for i in 0..food_draw {
-            let shape = PixelVectorShape::from_pixel_image(&StatShape::Food)
+        let draw_row = match shape {
+            StatShape::Food => 0,
+            StatShape::Joy => 1,
+            StatShape::Sleep => 2,
+            StatShape::Waste => 3,
+        };
+        
+        for i in 0..count {
+            let shape = PixelVectorShape::from_pixel_image(&shape)
                 .translate(
                     (i * STAT_SHAPE_WIDTH) as i32,
-                    0,
+                    (draw_row * STAT_SHAPE_WIDTH) as i32,
                 );
             
             ctx.draw(&shape);
         }
-        
-        todo!()
     }
     
     fn calc_required_symbols(stat: &Stat) -> u8 {
