@@ -1,8 +1,7 @@
 use ratatui::{
-    style::Color,
     layout::Rect,
     widgets::{
-        canvas::{Canvas, Line},
+        canvas::Canvas,
         Block,
         Widget
     },
