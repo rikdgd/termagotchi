@@ -13,25 +13,24 @@ use crate::utils::Stat;
 
 
 const STAT_SHAPE_WIDTH: u8 = 10;
+const AREA: Rect = Rect::new(0, 0, 30, 100);
 
 
 pub struct StatsWidget<'a> {
     friend: &'a Friend,
-    area: Rect,
 }
 impl<'a> StatsWidget<'a> {
     pub fn new(friend: &'a Friend) -> Self {
         Self { 
             friend,
-            area: Rect::new(0, 0, 30, 100),
         }
     }
     
     pub fn get_widget(&self) -> impl Widget + 'a {
         Canvas::default()
             .block(Block::bordered().title("Stats"))
-            .x_bounds([0.0, f64::from(self.area.width)])
-            .y_bounds([0.0, f64::from(self.area.height)])
+            .x_bounds([0.0, f64::from(AREA.width)])
+            .y_bounds([0.0, f64::from(AREA.height)])
             .paint(|ctx| Self::render_stats(ctx, self.friend))
     }
     
@@ -53,10 +52,12 @@ impl<'a> StatsWidget<'a> {
         };
         
         for i in 0..count {
+            let y_move = AREA.height - (draw_row * (STAT_SHAPE_WIDTH + 2)) as u16 - STAT_SHAPE_WIDTH as u16;
+                        
             let shape = PixelVectorShape::from_pixel_image(&shape)
                 .translate(
                     (i * STAT_SHAPE_WIDTH) as i32,
-                    (draw_row * STAT_SHAPE_WIDTH) as i32,
+                    y_move as i32,
                 );
             
             ctx.draw(&shape);
