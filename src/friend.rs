@@ -83,25 +83,29 @@ impl Friend {
     
     fn update_stats(&mut self, now: i64) {
         let minute_millis = 1000 * 60;
+        
+        let food_offset_minutes = 14;
+        let energy_offset_minutes = 12;
+        let joy_offset_minutes = 16;
 
         // Use while loops instead of if statements to account for loading from file
         // when we might have been away for more than a single minute.
-        while now - self.last_time_lower_food >= 7 * minute_millis {
+        while now - self.last_time_lower_food >= food_offset_minutes * minute_millis {
             self.food.subtract(1);
-            self.last_time_lower_food += 7 * minute_millis;
+            self.last_time_lower_food += food_offset_minutes * minute_millis;
         }
 
-        while now - self.last_time_lower_energy >= 6 * minute_millis {
+        while now - self.last_time_lower_energy >= energy_offset_minutes * minute_millis {
             match self.asleep {
                 true => self.energy.add(3),
                 false => self.energy.subtract(1),
             }
-            self.last_time_lower_energy += 6 * minute_millis;
+            self.last_time_lower_energy += energy_offset_minutes * minute_millis;
         }
 
-        while now - self.last_time_lower_joy >= 8 * minute_millis {
+        while now - self.last_time_lower_joy >= joy_offset_minutes * minute_millis {
             self.joy.subtract(1);
-            self.last_time_lower_joy += 8 * minute_millis;
+            self.last_time_lower_joy += joy_offset_minutes * minute_millis;
         }
 
         if self.waste_level.value() >= 100 && self.full_waste_since == None {
