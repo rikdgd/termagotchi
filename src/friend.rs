@@ -34,12 +34,12 @@ pub struct Friend {
     food: Stat,
     joy: Stat,
     energy: Stat,
-    waste_level: Stat,
+    health: Stat,
     last_time_lower_food: i64,
     last_time_lower_joy: i64,
     last_time_lower_energy: i64,
-    last_time_increase_waste: i64,
-    full_waste_since: Option<i64>,
+    last_time_increase_health: i64,
+    full_health_since: Option<i64>,
     shape: CreatureShapes,
     growth_stage: GrowthStage,
     asleep: bool,
@@ -55,12 +55,12 @@ impl Friend {
             food: Stat::new(50).unwrap(),
             joy: Stat::new(50).unwrap(),
             energy: Stat::new(50).unwrap(),
-            waste_level: Stat::new(50).unwrap(),
+            health: Stat::new(50).unwrap(),
             last_time_lower_food: now,
             last_time_lower_joy: now,
             last_time_lower_energy: now,
-            last_time_increase_waste: now,
-            full_waste_since: None,
+            last_time_increase_health: now,
+            full_health_since: None,
             shape,
             growth_stage: GrowthStage::Egg,
             asleep: false,
@@ -108,11 +108,11 @@ impl Friend {
             self.last_time_lower_joy += joy_offset_minutes * minute_millis;
         }
 
-        if self.waste_level.value() >= 100 && self.full_waste_since == None {
-            self.full_waste_since = Some(now);
+        if self.health.value() >= 100 && self.full_health_since == None {
+            self.full_health_since = Some(now);
         }
-        if self.waste_level.value() < 100 && self.full_waste_since != None {
-            self.full_waste_since = None;
+        if self.health.value() < 100 && self.full_health_since != None {
+            self.full_health_since = None;
         }
     }
 
@@ -132,9 +132,9 @@ impl Friend {
             self.alive = false;
         }
         
-        if let Some(time) = self.full_waste_since {
-            // If the waste level has been maxed out for 2 hours.
-            if self.waste_level.value() >= 100 && now - time > 1000 * 60 * 60 * 2 {
+        if let Some(time) = self.full_health_since {
+            // If the health level has been maxed out for 2 hours.
+            if self.health.value() >= 100 && now - time > 1000 * 60 * 60 * 2 {
                 self.alive = false;
             }
         }
@@ -165,7 +165,7 @@ impl Friend {
         }
         
         self.food.add(food.points());
-        self.waste_level.add(food.points() / 2);
+        self.health.add(food.points() / 2);
     }
 
     pub fn toggle_sleep(&mut self) {
@@ -180,9 +180,9 @@ impl Friend {
         }
     }
 
-    pub fn poop(&mut self) {
+    pub fn take_medicine(&mut self) {
         if self.growth_stage != GrowthStage::Egg {
-            self.waste_level.subtract(50);
+            self.health.subtract(50);
         }
     }
 
@@ -202,8 +202,8 @@ impl Friend {
         &self.energy
     }
 
-    pub fn waste_level(&self) -> &Stat {
-        &self.waste_level
+    pub fn health(&self) -> &Stat {
+        &self.health
     }
     
     pub fn growth_stage(&self) -> GrowthStage {

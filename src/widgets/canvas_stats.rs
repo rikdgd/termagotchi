@@ -38,7 +38,7 @@ impl<'a> StatsWidget<'a> {
         Self::draw_stat(ctx, StatShape::Food, friend.food());
         Self::draw_stat(ctx, StatShape::Joy, friend.joy());
         Self::draw_stat(ctx, StatShape::Sleep, friend.energy());
-        Self::draw_stat(ctx, StatShape::Waste, friend.waste_level());
+        Self::draw_stat(ctx, StatShape::Health, friend.health());
     }
     
     fn draw_stat(ctx: &mut Context, shape: StatShape, stat: &Stat) {
@@ -48,7 +48,7 @@ impl<'a> StatsWidget<'a> {
             StatShape::Food => 0,
             StatShape::Joy => 1,
             StatShape::Sleep => 2,
-            StatShape::Waste => 3,
+            StatShape::Health => 3,
         };
         
         for i in 0..count {

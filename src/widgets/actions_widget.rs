@@ -6,7 +6,7 @@ pub const ITEMS: [&str; 4] = [
     "Eat", 
     "Play", 
     "Sleep",
-    "Poop",
+    "Medicine",
 ];
 
 pub fn actions_widget() -> List<'static> {
