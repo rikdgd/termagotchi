@@ -59,7 +59,7 @@ impl App {
             layouts::draw_new_friend_layout(terminal, &mut game_state)?;
         }
 
-        let previous_growth_stage = game_state.friend_clone().growth_stage();
+        let previous_growth_stage = game_state.friend().growth_stage();
 
         let friend_movement = get_movement_wrapper(
             &game_state.friend().growth_stage(),
@@ -168,7 +168,7 @@ impl App {
                                         }
                                     },
                                     "Sleep" => self.game_state.friend_mut().toggle_sleep(),
-                                    "Poop" => {
+                                    "Medicine" => {
                                         if !self.game_state.friend().is_asleep() {
                                             self.game_state.friend_mut().take_medicine();
                                         }
