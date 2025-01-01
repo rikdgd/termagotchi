@@ -113,17 +113,13 @@ impl Friend {
                 self.health.subtract(1);
                 self.health_decrease_time_left -= health_offset_minutes;
             }
+            self.last_time_lower_health += health_offset_minutes;
         }
     }
 
     fn update_alive_status(&mut self) {
-        let stats_sum = 
-            self.food.value() + 
-            self.joy.value() + 
-            self.energy.value() + 
-            self.health.value();
-        
-        if stats_sum < 20 {
+        let stats_sum = self.food.value() + self.joy.value() + self.energy.value();
+        if stats_sum < 15 {
             self.alive = false;
         }
         
@@ -133,7 +129,7 @@ impl Friend {
                 counter += 1;
             }
         }
-        if counter >= 3 {
+        if counter >= 2 {
             self.alive = false;
         }
     }
@@ -163,7 +159,7 @@ impl Friend {
         }
         
         self.food.add(food.points());
-        self.health_decrease_time_left += (food.points() / 5) as i64 * MINUTE_MILLIS;
+        self.health_decrease_time_left += (food.points() / 3) as i64 * MINUTE_MILLIS;
     }
 
     pub fn toggle_sleep(&mut self) {
@@ -175,7 +171,7 @@ impl Friend {
     pub fn play(&mut self) {
         if self.growth_stage != GrowthStage::Egg {
             self.joy.add(30);
-            self.health_decrease_time_left += 6 * MINUTE_MILLIS;
+            self.health_decrease_time_left += 10 * MINUTE_MILLIS;
         }
     }
 
