@@ -7,7 +7,7 @@ use ratatui::crossterm::event::{self, Event, KeyCode, KeyEventKind, poll};
 use crate::game_state::GameState;
 use crate::movements::{Movement, MovementWrapper, EggHopMovement, SmallStepsMovement, DvdBounceMovement};
 use crate::friend::{Friend, GrowthStage};
-use crate::widgets::{stats_widget, FriendWidget, actions_widget, StatsWidget};
+use crate::widgets::{FriendWidget, actions_widget, StatsWidget};
 use crate::utils::location::Location;
 use crate::layouts;
 use crate::food::Food;
@@ -59,7 +59,7 @@ impl App {
             layouts::draw_new_friend_layout(terminal, &mut game_state)?;
         }
 
-        let previous_growth_stage = game_state.friend_clone().growth_stage();
+        let previous_growth_stage = game_state.friend().growth_stage();
 
         let friend_movement = get_movement_wrapper(
             &game_state.friend().growth_stage(),
@@ -168,9 +168,9 @@ impl App {
                                         }
                                     },
                                     "Sleep" => self.game_state.friend_mut().toggle_sleep(),
-                                    "Poop" => {
+                                    "Medicine" => {
                                         if !self.game_state.friend().is_asleep() {
-                                            self.game_state.friend_mut().poop();
+                                            self.game_state.friend_mut().take_medicine();
                                         }
                                     },
                                     _ => ()

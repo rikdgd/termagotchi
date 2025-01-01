@@ -7,7 +7,7 @@ pub enum StatShape {
     Food,
     Joy,
     Sleep,
-    Waste,
+    Health,
 }
 impl PixelImage for StatShape {
     fn pixels(&self) -> Vec<Pixel> {
@@ -16,7 +16,7 @@ impl PixelImage for StatShape {
             StatShape::Food => load_embedded_sprite!("../../assets/stat_symbols/eat.png", color),
             StatShape::Joy => load_embedded_sprite!("../../assets/stat_symbols/heart.png", color),
             StatShape::Sleep => load_embedded_sprite!("../../assets/stat_symbols/zz.png", color),
-            StatShape::Waste => load_embedded_sprite!("../../assets/stat_symbols/toilet_paper.png", color),
+            StatShape::Health => load_embedded_sprite!("../../assets/stat_symbols/health.png", color),
         }
     }
 }
