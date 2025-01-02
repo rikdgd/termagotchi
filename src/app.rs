@@ -15,7 +15,7 @@ use crate::shapes::creatures::CreatureShapes;
 use crate::shapes::PixelVectorShape;
 use crate::utils::ColorWrapper;
 use crate::animations::PopupAnimation;
-use crate::animations::food_animations::{FoodAnimation, FoodAnimationFrames};
+use crate::animations::food_animation::{FoodAnimation, FoodAnimationFrames};
 
 /// This struct holds most logic for actually running the app. It is able to run the Termagotchi app
 /// using a `ratatui::DefaultTerminal` and keeps track of: game state, widget states, movements and animations.
