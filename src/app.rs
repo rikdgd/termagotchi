@@ -159,8 +159,8 @@ impl App {
                                     "Eat" => {
                                         if !self.game_state.friend().is_asleep() {
                                             let food = Food::new_random();
-                                            self.game_state.friend_mut().eat(&food);
                                             self.set_food_animation(food);
+                                            self.game_state.friend_mut().eat(food);
                                         }
                                     },
                                     "Play" => {
@@ -171,8 +171,8 @@ impl App {
                                     "Sleep" => self.game_state.friend_mut().toggle_sleep(),
                                     "Medicine" => {
                                         if !self.game_state.friend().is_asleep() {
-                                            self.game_state.friend_mut().take_medicine();
                                             self.set_health_animation();
+                                            self.game_state.friend_mut().take_medicine();
                                         }
                                     },
                                     _ => ()
