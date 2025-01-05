@@ -16,7 +16,7 @@ use crate::shapes::PixelVectorShape;
 use crate::utils::ColorWrapper;
 use crate::animations::PopupAnimation;
 use crate::animations::food_animation::{FoodAnimation, FoodAnimationFrames};
-use crate::animations::health_animation::HealthAnimation;
+use crate::animations::{HealthAnimation, JoyAnimation};
 
 /// This struct holds most logic for actually running the app. It is able to run the Termagotchi app
 /// using a `ratatui::DefaultTerminal` and keeps track of: game state, widget states, movements and animations.
@@ -167,6 +167,7 @@ impl App {
                                     },
                                     "Play" => {
                                         if is_awake && is_not_egg {
+                                            self.set_joy_animation();
                                             self.game_state.friend_mut().play();
                                         }
                                     },
@@ -217,6 +218,17 @@ impl App {
         
         self.popup_animation = Some(PopupAnimation::new(
             Box::new(HealthAnimation::new()),
+            (15, 15)
+        ))
+    }
+    
+    fn set_joy_animation(&mut self) {
+        if self.game_state.friend().joy().is_max() {
+            return;
+        }
+        
+        self.popup_animation = Some(PopupAnimation::new(
+            Box::new(JoyAnimation::new()),
             (15, 15)
         ))
     }
