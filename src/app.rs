@@ -155,22 +155,28 @@ impl App {
                         KeyCode::Enter => {
                             if let Some(action) = self.actions_widget_state.selected() {
                                 let action = actions_widget::ITEMS[action];
+                                let is_awake = !self.game_state.friend().is_asleep();
+                                let is_not_egg = self.game_state.friend().growth_stage() != GrowthStage::Egg;
                                 match action {
                                     "Eat" => {
-                                        if !self.game_state.friend().is_asleep() {
+                                        if is_awake && is_not_egg {
                                             let food = Food::new_random();
                                             self.set_food_animation(food);
                                             self.game_state.friend_mut().eat(food);
                                         }
                                     },
                                     "Play" => {
-                                        if !self.game_state.friend().is_asleep() {
+                                        if is_awake && is_not_egg {
                                             self.game_state.friend_mut().play();
                                         }
                                     },
-                                    "Sleep" => self.game_state.friend_mut().toggle_sleep(),
+                                    "Sleep" => {
+                                        if is_not_egg {
+                                            self.game_state.friend_mut().toggle_sleep()
+                                        }
+                                    },
                                     "Medicine" => {
-                                        if !self.game_state.friend().is_asleep() {
+                                        if is_awake && is_not_egg {
                                             self.set_health_animation();
                                             self.game_state.friend_mut().take_medicine();
                                         }
