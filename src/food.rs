@@ -2,6 +2,7 @@ use rand::prelude::*;
 
 const FOOD_COUNT: u8 = 3;
 
+#[derive(Debug, Copy, Clone, PartialEq)]
 pub enum Food {
     Soup,
     Fries,

@@ -15,7 +15,8 @@ use crate::shapes::creatures::CreatureShapes;
 use crate::shapes::PixelVectorShape;
 use crate::utils::ColorWrapper;
 use crate::animations::PopupAnimation;
-use crate::animations::food_animations::{FoodAnimation, FoodAnimationFrames};
+use crate::animations::food_animation::{FoodAnimation, FoodAnimationFrames};
+use crate::animations::{HealthAnimation, JoyAnimation};
 
 /// This struct holds most logic for actually running the app. It is able to run the Termagotchi app
 /// using a `ratatui::DefaultTerminal` and keeps track of: game state, widget states, movements and animations.
@@ -154,22 +155,30 @@ impl App {
                         KeyCode::Enter => {
                             if let Some(action) = self.actions_widget_state.selected() {
                                 let action = actions_widget::ITEMS[action];
+                                let is_awake = !self.game_state.friend().is_asleep();
+                                let is_not_egg = self.game_state.friend().growth_stage() != GrowthStage::Egg;
                                 match action {
                                     "Eat" => {
-                                        if !self.game_state.friend().is_asleep() {
+                                        if is_awake && is_not_egg {
                                             let food = Food::new_random();
-                                            self.game_state.friend_mut().eat(&food);
                                             self.set_food_animation(food);
+                                            self.game_state.friend_mut().eat(food);
                                         }
                                     },
                                     "Play" => {
-                                        if !self.game_state.friend().is_asleep() {
+                                        if is_awake && is_not_egg {
+                                            self.set_joy_animation();
                                             self.game_state.friend_mut().play();
                                         }
                                     },
-                                    "Sleep" => self.game_state.friend_mut().toggle_sleep(),
+                                    "Sleep" => {
+                                        if is_not_egg {
+                                            self.game_state.friend_mut().toggle_sleep()
+                                        }
+                                    },
                                     "Medicine" => {
-                                        if !self.game_state.friend().is_asleep() {
+                                        if is_awake && is_not_egg {
+                                            self.set_health_animation();
                                             self.game_state.friend_mut().take_medicine();
                                         }
                                     },
@@ -186,28 +195,42 @@ impl App {
     }
 
     fn set_food_animation(&mut self, food: Food) {
-        let dimensions = (15, 15);
-        
-        match food {
-            Food::Soup => {
-                self.popup_animation = Some(PopupAnimation::new(
-                    Box::new(FoodAnimation::new(FoodAnimationFrames::Soup)),
-                    dimensions,
-                ))
-            },
-            Food::Fries => {
-                self.popup_animation = Some(PopupAnimation::new(
-                    Box::new(FoodAnimation::new(FoodAnimationFrames::Fries)),
-                    dimensions,
-                ))
-            },
-            Food::Burger => {
-                self.popup_animation = Some(PopupAnimation::new(
-                    Box::new(FoodAnimation::new(FoodAnimationFrames::Burger)),
-                    dimensions,
-                ))
-            },
+        if self.game_state.friend().food().is_max() {
+            return;
         }
+        
+        let frames = match food {
+            Food::Soup => FoodAnimationFrames::Soup,
+            Food::Fries => FoodAnimationFrames::Fries,
+            Food::Burger => FoodAnimationFrames::Burger,
+        };
+
+        self.popup_animation = Some(PopupAnimation::new(
+            Box::new(FoodAnimation::new(frames)),
+            (15, 15),
+        ))
+    }
+    
+    fn set_health_animation(&mut self) {
+        if self.game_state.friend().health().is_max() {
+            return;
+        }
+        
+        self.popup_animation = Some(PopupAnimation::new(
+            Box::new(HealthAnimation::new()),
+            (15, 15)
+        ))
+    }
+    
+    fn set_joy_animation(&mut self) {
+        if self.game_state.friend().joy().is_max() {
+            return;
+        }
+        
+        self.popup_animation = Some(PopupAnimation::new(
+            Box::new(JoyAnimation::new()),
+            (15, 15)
+        ))
     }
     
     fn sleep_drawing_location(&self) -> Location {
