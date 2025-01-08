@@ -5,9 +5,13 @@ use crate::friend::Friend;
 use crate::game_state::GameState;
 use crate::widgets::new_friend_widget::{new_friend_dialog, new_friend_name_input};
 
-/// Draws the widget that allows the user to create a new GameState, for example when their friend has died. <br>
-/// Updates the old GameState to the new one using a mutable reference _old_state_.
-pub fn draw_new_friend_layout(terminal: &mut DefaultTerminal, old_state: &mut GameState) -> std::io::Result<()> {
+/// Draws the widget that allows the user to create a new GameState, used when there is no save file to be found.
+/// <br>
+/// ## parameters:
+/// * `terminal` - The `ratatui::DefaultTerminal` to draw the layout onto.
+/// ## returns:
+/// A newly generated `GameState`.
+pub fn draw_new_friend_layout(terminal: &mut DefaultTerminal) -> std::io::Result<GameState> {
     let mut new_name_input = String::new();
 
     loop {
@@ -41,14 +45,10 @@ pub fn draw_new_friend_layout(terminal: &mut DefaultTerminal, old_state: &mut Ga
         }
     }
 
-    // Generate a random new friend shape and set the new GameState
-    let new_friend_shape = CreatureShapes::new_random();    
-    *old_state = GameState::new(
+    Ok(GameState::new(
         Friend::new(
             &new_name_input,
-            new_friend_shape
+            CreatureShapes::new_random()
         )
-    );
-
-    Ok(())
+    ))
 }

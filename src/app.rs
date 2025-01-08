@@ -55,9 +55,7 @@ impl App {
             game_state = state;
 
         } else {
-            let friend = Friend::new("temp friend", CreatureShapes::Duck(ColorWrapper::Red));
-            game_state = GameState::new(friend);    // Create a temporary GameState, this will never be used.
-            layouts::draw_new_friend_layout(terminal, &mut game_state)?;
+            game_state = layouts::draw_new_friend_layout(terminal)?;
         }
 
         let previous_growth_stage = game_state.friend().growth_stage();
@@ -88,7 +86,7 @@ impl App {
         while self.is_running {
             self.game_state.update();
             if !self.game_state.friend().alive() {
-                layouts::draw_new_friend_layout(terminal, &mut self.game_state)?;
+                layouts::friend_death_layout(terminal, &mut self.game_state);
             }
 
             if self.previous_growth_stage != self.game_state.friend().growth_stage() {
