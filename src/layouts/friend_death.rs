@@ -1,5 +1,6 @@
 use ratatui::DefaultTerminal;
 use crate::game_state::GameState;
+use crate::widgets::friend_death_widget::death_canvas;
 
 /// This layout is used whenever the users pet has died. It will display a short death message<br>
 /// and allow the user to create a new friend. This method will do this by modifying the old<br>

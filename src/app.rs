@@ -50,7 +50,7 @@ impl App {
         let actions_widget_state = ListState::default();
         let playground = Rect::new(0, 0, 150, 100);
 
-        let mut game_state: GameState;
+        let game_state: GameState;
         if let Ok(state) = GameState::read_from_file() {
             game_state = state;
 
