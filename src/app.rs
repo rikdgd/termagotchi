@@ -11,9 +11,7 @@ use crate::widgets::{FriendWidget, actions_widget, StatsWidget};
 use crate::utils::location::Location;
 use crate::layouts;
 use crate::food::Food;
-use crate::shapes::creatures::CreatureShapes;
 use crate::shapes::PixelVectorShape;
-use crate::utils::ColorWrapper;
 use crate::animations::PopupAnimation;
 use crate::animations::food_animation::{FoodAnimation, FoodAnimationFrames};
 use crate::animations::{HealthAnimation, JoyAnimation};
@@ -86,7 +84,7 @@ impl App {
         while self.is_running {
             self.game_state.update();
             if !self.game_state.friend().alive() {
-                layouts::friend_death_layout(terminal, &mut self.game_state);
+                layouts::friend_death_layout(terminal, &mut self.game_state)?;
             }
 
             if self.previous_growth_stage != self.game_state.friend().growth_stage() {
@@ -94,7 +92,7 @@ impl App {
 
                 update_friend_movement(&mut self.friend_movement, self.game_state.friend(), self.playground);
             }
-
+            
             terminal.draw(|frame| {
                 self.draw_main(frame);
 
