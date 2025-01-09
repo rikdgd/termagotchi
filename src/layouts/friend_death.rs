@@ -10,7 +10,7 @@ use crate::widgets::friend_death_widget::death_canvas;
 use crate::widgets::new_friend_widget::new_friend_name_input;
 
 /// This layout is used whenever the users pet has died. It will display a short death message<br>
-/// and allow the user to create a new friend. This method will do this by modifying the old<br>
+/// and allow the user to create a new pet. This method will do this by modifying the old<br>
 /// game state.
 /// <br>
 /// ## paramters:
