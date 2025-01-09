@@ -6,8 +6,7 @@ use ratatui::layout::{Constraint, Layout};
 use crate::friend::Friend;
 use crate::game_state::GameState;
 use crate::shapes::creatures::CreatureShapes;
-use crate::widgets::friend_death_widget::death_canvas;
-use crate::widgets::new_friend_widget::new_friend_name_input;
+use crate::widgets::friend_death_widget::{death_canvas, name_input};
 
 /// This layout is used whenever the users pet has died. It will display a short death message<br>
 /// and allow the user to create a new pet. This method will do this by modifying the old<br>
@@ -30,7 +29,7 @@ pub fn friend_death_layout(terminal: &mut DefaultTerminal, game_state: &mut Game
             
             
             frame.render_widget(death_canvas(), canvas_area);
-            frame.render_widget(new_friend_name_input(&mut name_buffer), input_area);
+            frame.render_widget(name_input(&mut name_buffer), input_area);
         })?;
 
         if poll(Duration::from_millis(100))? {
