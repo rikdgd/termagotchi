@@ -25,7 +25,7 @@ pub fn draw_new_friend_layout(terminal: &mut DefaultTerminal) -> std::io::Result
                 .areas(frame_area);
 
             frame.render_widget(new_friend_dialog(), dialog_area);
-            frame.render_widget(new_friend_name_input(&mut new_name_input), input_area);
+            frame.render_widget(new_friend_name_input(&new_name_input), input_area);
         })?;
 
         if poll(Duration::from_millis(100))? {

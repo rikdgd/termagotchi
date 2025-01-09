@@ -1,4 +1,3 @@
-use ratatui::widgets::canvas::{Painter, Shape};
 use serde::{Deserialize, Serialize};
 use crate::shapes::PixelImage;
 use crate::utils::{ColorWrapper, Pixel, sprite_management::load_sprite};

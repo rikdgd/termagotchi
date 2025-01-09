@@ -1,5 +1,4 @@
 use super::movement::Movement;
-use rand;
 use chrono::Utc;
 use rand::Rng;
 use ratatui::layout::Rect;

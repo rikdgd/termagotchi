@@ -29,7 +29,7 @@ pub fn friend_death_layout(terminal: &mut DefaultTerminal, game_state: &mut Game
             
             
             frame.render_widget(death_canvas(), canvas_area);
-            frame.render_widget(name_input(&mut name_buffer), input_area);
+            frame.render_widget(name_input(&name_buffer), input_area);
         })?;
 
         if poll(Duration::from_millis(100))? {

@@ -23,7 +23,7 @@ pub fn death_canvas() -> impl Widget + 'static {
         })
 }
 
-pub fn name_input<'a>(input: &'a str) -> impl Widget + 'a {
+pub fn name_input(input: &str) -> impl Widget + '_ {
     let text = vec![
         Line::from(input.bold()),
     ];

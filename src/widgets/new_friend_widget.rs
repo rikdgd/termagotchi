@@ -18,7 +18,7 @@ pub fn new_friend_dialog<'a>() -> impl Widget + 'a {
         .wrap(Wrap { trim: true })
 }
 
-pub fn new_friend_name_input<'a>(input: &'a str) -> impl Widget + 'a {
+pub fn new_friend_name_input(input: &str) -> impl Widget + '_ {
     let text = vec![
         Line::from(input.bold()),
     ];
