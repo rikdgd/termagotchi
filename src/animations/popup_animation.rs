@@ -42,8 +42,8 @@ impl PopupAnimation {
                     self.area.width as i32 / 2, 
                     self.area.height as i32 / 2,
                 ).translate( // Account for the animation sprite dimensions
-                     self.animation_dimensions.0 as i32 / 2 * -1,
-                     self.animation_dimensions.1 as i32 / 2 * -1,
+                             -(self.animation_dimensions.0 as i32 / 2),
+                             -(self.animation_dimensions.1 as i32 / 2),
                 )
             } else {
                 self.is_running = false;

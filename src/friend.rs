@@ -5,6 +5,7 @@ use chrono::Utc;
 use crate::shapes::creatures::CreatureShapes;
 use crate::shapes::{GrowthStageShapes, PixelVectorShape};
 
+const MINUTE_MILLIS: i64 = 1000 * 60;
 
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub enum GrowthStage {
@@ -34,12 +35,12 @@ pub struct Friend {
     food: Stat,
     joy: Stat,
     energy: Stat,
-    waste_level: Stat,
+    health: Stat,
     last_time_lower_food: i64,
     last_time_lower_joy: i64,
     last_time_lower_energy: i64,
-    last_time_increase_waste: i64,
-    full_waste_since: Option<i64>,
+    last_time_lower_health: i64,
+    health_decrease_time_left: i64,
     shape: CreatureShapes,
     growth_stage: GrowthStage,
     asleep: bool,
@@ -55,12 +56,12 @@ impl Friend {
             food: Stat::new(50).unwrap(),
             joy: Stat::new(50).unwrap(),
             energy: Stat::new(50).unwrap(),
-            waste_level: Stat::new(50).unwrap(),
+            health: Stat::new(50).unwrap(),
             last_time_lower_food: now,
             last_time_lower_joy: now,
             last_time_lower_energy: now,
-            last_time_increase_waste: now,
-            full_waste_since: None,
+            last_time_lower_health: now,
+            health_decrease_time_left: 0,
             shape,
             growth_stage: GrowthStage::Egg,
             asleep: false,
@@ -77,49 +78,53 @@ impl Friend {
         
         if self.growth_stage != GrowthStage::Egg {
             self.update_stats(now);
-            self.update_alive_status(now);
+            self.update_alive_status();
         }
     }
     
     fn update_stats(&mut self, now: i64) {
-        let minute_millis = 1000 * 60;
+        let food_offset_minutes = 14 * MINUTE_MILLIS;
+        let energy_offset_minutes = 12 * MINUTE_MILLIS;
+        let joy_offset_minutes = 16 * MINUTE_MILLIS;
+        let health_offset_minutes = MINUTE_MILLIS;
 
         // Use while loops instead of if statements to account for loading from file
         // when we might have been away for more than a single minute.
-        while now - self.last_time_lower_food >= 7 * minute_millis {
+        while now - self.last_time_lower_food >= food_offset_minutes {
             self.food.subtract(1);
-            self.last_time_lower_food += 7 * minute_millis;
+            self.last_time_lower_food += food_offset_minutes;
         }
 
-        while now - self.last_time_lower_energy >= 6 * minute_millis {
+        while now - self.last_time_lower_energy >= energy_offset_minutes {
             match self.asleep {
                 true => self.energy.add(3),
                 false => self.energy.subtract(1),
             }
-            self.last_time_lower_energy += 6 * minute_millis;
+            self.last_time_lower_energy += energy_offset_minutes;
         }
 
-        while now - self.last_time_lower_joy >= 8 * minute_millis {
+        while now - self.last_time_lower_joy >= joy_offset_minutes {
             self.joy.subtract(1);
-            self.last_time_lower_joy += 8 * minute_millis;
+            self.last_time_lower_joy += joy_offset_minutes;
         }
-
-        if self.waste_level.value() >= 100 && self.full_waste_since == None {
-            self.full_waste_since = Some(now);
-        }
-        if self.waste_level.value() < 100 && self.full_waste_since != None {
-            self.full_waste_since = None;
+        
+        while now - self.last_time_lower_health >= health_offset_minutes {
+            if self.health_decrease_time_left >= health_offset_minutes {
+                self.health.subtract(1);
+                self.health_decrease_time_left -= health_offset_minutes;
+            }
+            self.last_time_lower_health += health_offset_minutes;
         }
     }
 
-    fn update_alive_status(&mut self, now: i64) {
-        let stats_sum = self.food.value() + self.joy.value() + self.energy.value();
+    fn update_alive_status(&mut self) {
+        let stats_sum = self.food.value() + self.joy.value() + self.health.value();
         if stats_sum < 15 {
             self.alive = false;
         }
         
         let mut counter: u8 = 0;
-        for stat in [self.food.value(), self.joy.value(), self.energy.value()] {
+        for stat in [self.food.value(), self.joy.value(), self.energy.value(), self.health.value()] {
             if stat == 0 {
                 counter += 1;
             }
@@ -128,17 +133,14 @@ impl Friend {
             self.alive = false;
         }
         
-        if let Some(time) = self.full_waste_since {
-            // If the waste level has been maxed out for 2 hours.
-            if self.waste_level.value() >= 100 && now - time > 1000 * 60 * 60 * 2 {
-                self.alive = false;
-            }
+        if self.health.value() == 0 {
+            self.alive = false;
         }
     }
 
     fn update_growth_stage(&mut self, now: i64) {
         let growth_delay = match self.growth_stage {
-            GrowthStage::Egg => Some(300000),    // 5 minutes
+            GrowthStage::Egg => Some(300000),     // 5 minutes
             GrowthStage::Baby => Some(18000000),  // 5 hours
             GrowthStage::Kid => Some(86400000),   // 24 hours
             GrowthStage::Adult => None,
@@ -155,13 +157,13 @@ impl Friend {
         &self.name
     }
 
-    pub fn eat(&mut self, food: &Food) {
+    pub fn eat(&mut self, food: Food) {
         if self.growth_stage == GrowthStage::Egg {
             return;
         }
         
         self.food.add(food.points());
-        self.waste_level.add(food.points() / 2);
+        self.health_decrease_time_left += (food.points() / 3) as i64 * MINUTE_MILLIS;
     }
 
     pub fn toggle_sleep(&mut self) {
@@ -173,12 +175,13 @@ impl Friend {
     pub fn play(&mut self) {
         if self.growth_stage != GrowthStage::Egg {
             self.joy.add(30);
+            self.health_decrease_time_left += 10 * MINUTE_MILLIS;
         }
     }
 
-    pub fn poop(&mut self) {
+    pub fn take_medicine(&mut self) {
         if self.growth_stage != GrowthStage::Egg {
-            self.waste_level.subtract(50);
+            self.health.add(40);
         }
     }
 
@@ -198,8 +201,8 @@ impl Friend {
         &self.energy
     }
 
-    pub fn waste_level(&self) -> &Stat {
-        &self.waste_level
+    pub fn health(&self) -> &Stat {
+        &self.health
     }
     
     pub fn growth_stage(&self) -> GrowthStage {

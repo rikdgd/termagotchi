@@ -8,6 +8,7 @@ use crate::friend::ShapeWrapper;
 use crate::shapes::{PixelImage, PixelVectorShape};
 use crate::utils::location::Location;
 use ratatui::layout::Rect;
+use crate::animations::{Animation, SleepingAnimation};
 
 pub struct FriendWidget<'a> {
     friend: &'a Friend,
@@ -36,10 +37,18 @@ impl<'a> FriendWidget<'a> {
                 // TODO: Create simple background
                 // ctx.draw(&background or something);
                 // ctx.layer();
-
+                
                 match self.friend.get_shape_wrapper() {
                     ShapeWrapper::Growing(shape) => draw_shape_at_location(ctx, &shape, &self.friend_location),
                     ShapeWrapper::Adult(shape) => draw_shape_at_location(ctx, &shape, &self.friend_location),
+                };
+                
+                if self.friend.is_asleep() {
+                    let mut sleep_animation = SleepingAnimation::new(self.friend_location);
+                    
+                    if let Some(frame) = sleep_animation.next_frame() {
+                        ctx.draw(&frame);
+                    }
                 }
             });
         

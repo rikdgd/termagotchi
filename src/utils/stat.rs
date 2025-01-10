@@ -53,4 +53,12 @@ impl Stat {
             "value not between 0 and 100",
         ))
     }
+    
+    pub fn is_max(&self) -> bool {
+        self.0 == 100 
+    }
+    
+    pub fn is_min(&self) -> bool {
+        self.0 == 0
+    }
 }

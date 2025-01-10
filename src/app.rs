@@ -7,15 +7,14 @@ use ratatui::crossterm::event::{self, Event, KeyCode, KeyEventKind, poll};
 use crate::game_state::GameState;
 use crate::movements::{Movement, MovementWrapper, EggHopMovement, SmallStepsMovement, DvdBounceMovement};
 use crate::friend::{Friend, GrowthStage};
-use crate::widgets::{stats_widget, FriendWidget, actions_widget};
+use crate::widgets::{FriendWidget, actions_widget, StatsWidget};
 use crate::utils::location::Location;
 use crate::layouts;
 use crate::food::Food;
-use crate::shapes::creatures::CreatureShapes;
 use crate::shapes::PixelVectorShape;
-use crate::utils::ColorWrapper;
 use crate::animations::PopupAnimation;
-use crate::animations::food_animations::{FoodAnimation, FoodAnimationFrames};
+use crate::animations::food_animation::{FoodAnimation, FoodAnimationFrames};
+use crate::animations::{HealthAnimation, JoyAnimation};
 
 /// This struct holds most logic for actually running the app. It is able to run the Termagotchi app
 /// using a `ratatui::DefaultTerminal` and keeps track of: game state, widget states, movements and animations.
@@ -49,17 +48,15 @@ impl App {
         let actions_widget_state = ListState::default();
         let playground = Rect::new(0, 0, 150, 100);
 
-        let mut game_state: GameState;
+        let game_state: GameState;
         if let Ok(state) = GameState::read_from_file() {
             game_state = state;
 
         } else {
-            let friend = Friend::new("temp friend", CreatureShapes::Duck(ColorWrapper::Red));
-            game_state = GameState::new(friend);    // Create a temporary GameState, this will never be used.
-            layouts::draw_new_friend_layout(terminal, &mut game_state)?;
+            game_state = layouts::draw_new_friend_layout(terminal)?;
         }
 
-        let previous_growth_stage = game_state.friend_clone().growth_stage();
+        let previous_growth_stage = game_state.friend().growth_stage();
 
         let friend_movement = get_movement_wrapper(
             &game_state.friend().growth_stage(),
@@ -87,7 +84,7 @@ impl App {
         while self.is_running {
             self.game_state.update();
             if !self.game_state.friend().alive() {
-                layouts::draw_new_friend_layout(terminal, &mut self.game_state)?;
+                layouts::friend_death_layout(terminal, &mut self.game_state)?;
             }
 
             if self.previous_growth_stage != self.game_state.friend().growth_stage() {
@@ -95,7 +92,7 @@ impl App {
 
                 update_friend_movement(&mut self.friend_movement, self.game_state.friend(), self.playground);
             }
-
+            
             terminal.draw(|frame| {
                 self.draw_main(frame);
 
@@ -126,19 +123,17 @@ impl App {
     fn draw_main(&mut self, frame: &mut Frame) {
         let frame_area = frame.area();
         let [left_area, middle_area, right_area] = get_main_areas(frame_area);
-
-        let stats_widget = stats_widget(&left_area, self.game_state.friend());
-        for gauge in stats_widget {
-            frame.render_widget(gauge.0, gauge.1);
-        }
-
+        
+        let canvas_stats = StatsWidget::new(self.game_state.friend());
+        
         let friend_widget = if !self.game_state.friend().is_asleep() {
             FriendWidget::new(self.game_state.friend(), self.friend_movement.next_position(), self.playground)
         } else {
             FriendWidget::new(self.game_state.friend(), self.sleep_drawing_location(), self.playground)
         };
-
-
+        
+        
+        frame.render_widget(canvas_stats.get_widget(), left_area);
         frame.render_widget(friend_widget.get_widget(), middle_area);
         frame.render_stateful_widget(actions_widget(), right_area, &mut self.actions_widget_state);
     }
@@ -156,23 +151,31 @@ impl App {
                         KeyCode::Enter => {
                             if let Some(action) = self.actions_widget_state.selected() {
                                 let action = actions_widget::ITEMS[action];
+                                let is_awake = !self.game_state.friend().is_asleep();
+                                let is_not_egg = self.game_state.friend().growth_stage() != GrowthStage::Egg;
                                 match action {
                                     "Eat" => {
-                                        if !self.game_state.friend().is_asleep() {
+                                        if is_awake && is_not_egg {
                                             let food = Food::new_random();
-                                            self.game_state.friend_mut().eat(&food);
                                             self.set_food_animation(food);
+                                            self.game_state.friend_mut().eat(food);
                                         }
                                     },
                                     "Play" => {
-                                        if !self.game_state.friend().is_asleep() {
+                                        if is_awake && is_not_egg {
+                                            self.set_joy_animation();
                                             self.game_state.friend_mut().play();
                                         }
                                     },
-                                    "Sleep" => self.game_state.friend_mut().toggle_sleep(),
-                                    "Poop" => {
-                                        if !self.game_state.friend().is_asleep() {
-                                            self.game_state.friend_mut().poop();
+                                    "Sleep" => {
+                                        if is_not_egg {
+                                            self.game_state.friend_mut().toggle_sleep()
+                                        }
+                                    },
+                                    "Medicine" => {
+                                        if is_awake && is_not_egg {
+                                            self.set_health_animation();
+                                            self.game_state.friend_mut().take_medicine();
                                         }
                                     },
                                     _ => ()
@@ -188,28 +191,42 @@ impl App {
     }
 
     fn set_food_animation(&mut self, food: Food) {
-        let dimensions = (15, 15);
-        
-        match food {
-            Food::Soup => {
-                self.popup_animation = Some(PopupAnimation::new(
-                    Box::new(FoodAnimation::new(FoodAnimationFrames::Soup)),
-                    dimensions,
-                ))
-            },
-            Food::Fries => {
-                self.popup_animation = Some(PopupAnimation::new(
-                    Box::new(FoodAnimation::new(FoodAnimationFrames::Fries)),
-                    dimensions,
-                ))
-            },
-            Food::Burger => {
-                self.popup_animation = Some(PopupAnimation::new(
-                    Box::new(FoodAnimation::new(FoodAnimationFrames::Burger)),
-                    dimensions,
-                ))
-            },
+        if self.game_state.friend().food().is_max() {
+            return;
         }
+        
+        let frames = match food {
+            Food::Soup => FoodAnimationFrames::Soup,
+            Food::Fries => FoodAnimationFrames::Fries,
+            Food::Burger => FoodAnimationFrames::Burger,
+        };
+
+        self.popup_animation = Some(PopupAnimation::new(
+            Box::new(FoodAnimation::new(frames)),
+            (15, 15),
+        ))
+    }
+    
+    fn set_health_animation(&mut self) {
+        if self.game_state.friend().health().is_max() {
+            return;
+        }
+        
+        self.popup_animation = Some(PopupAnimation::new(
+            Box::new(HealthAnimation::new()),
+            (15, 15)
+        ))
+    }
+    
+    fn set_joy_animation(&mut self) {
+        if self.game_state.friend().joy().is_max() {
+            return;
+        }
+        
+        self.popup_animation = Some(PopupAnimation::new(
+            Box::new(JoyAnimation::new()),
+            (15, 15)
+        ))
     }
     
     fn sleep_drawing_location(&self) -> Location {

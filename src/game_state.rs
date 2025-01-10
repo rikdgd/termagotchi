@@ -56,10 +56,6 @@ impl GameState {
     pub fn friend(&self) -> &Friend {
         &self.friend
     }
-    
-    pub fn friend_clone(&self) -> Friend {
-        self.friend.clone()
-    }
 
     pub fn friend_mut(&mut self) -> &mut Friend {
         &mut self.friend

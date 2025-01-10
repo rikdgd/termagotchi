@@ -1,11 +1,10 @@
 use crate::shapes::PixelImage;
 use crate::utils::{ColorWrapper, Pixel, sprite_management::load_sprite};
-use ratatui::widgets::canvas::{Painter, Shape};
 use serde::{Deserialize, Serialize};
 use rand::Rng;
 use crate::load_embedded_sprite;
 
-const NUM_SHAPES: u32 = 4;
+const NUM_SHAPES: u32 = 6;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub enum CreatureShapes {
@@ -13,6 +12,8 @@ pub enum CreatureShapes {
     Turtle(ColorWrapper),
     Spider(ColorWrapper),
     Snail(ColorWrapper),
+    Fish(ColorWrapper),
+    Mouse(ColorWrapper),
 }
 
 
@@ -23,6 +24,8 @@ impl PixelImage for CreatureShapes {
             CreatureShapes::Turtle(color) => load_embedded_sprite!("../../assets/turtle.png", color),
             CreatureShapes::Spider(color) => load_embedded_sprite!("../../assets/spider.png", color),
             CreatureShapes::Snail(color) => load_embedded_sprite!("../../assets/snail.png", color),
+            CreatureShapes::Fish(color) => load_embedded_sprite!("../../assets/fish.png", color),
+            CreatureShapes::Mouse(color) => load_embedded_sprite!("../../assets/mouse.png", color),
         }
     }
 }
@@ -36,7 +39,9 @@ impl CreatureShapes {
             0 => CreatureShapes::Duck(color),
             1 => CreatureShapes::Turtle(color),
             2 => CreatureShapes::Spider(color),
-            _ => CreatureShapes::Snail(color),
+            3 => CreatureShapes::Snail(color),
+            4 => CreatureShapes::Fish(color),
+            _ => CreatureShapes::Mouse(color),
         }
     }
     
@@ -46,6 +51,8 @@ impl CreatureShapes {
             CreatureShapes::Turtle(color) => color.clone(),
             CreatureShapes::Spider(color) => color.clone(),
             CreatureShapes::Snail(color) => color.clone(),
+            CreatureShapes::Fish(color) => color.clone(),
+            CreatureShapes::Mouse(color) => color.clone(),
         }
     }
 }
