@@ -11,9 +11,7 @@ use crate::widgets::{FriendWidget, actions_widget, StatsWidget};
 use crate::utils::location::Location;
 use crate::layouts;
 use crate::food::Food;
-use crate::shapes::creatures::CreatureShapes;
 use crate::shapes::PixelVectorShape;
-use crate::utils::ColorWrapper;
 use crate::animations::PopupAnimation;
 use crate::animations::food_animation::{FoodAnimation, FoodAnimationFrames};
 use crate::animations::{HealthAnimation, JoyAnimation};
@@ -50,14 +48,12 @@ impl App {
         let actions_widget_state = ListState::default();
         let playground = Rect::new(0, 0, 150, 100);
 
-        let mut game_state: GameState;
+        let game_state: GameState;
         if let Ok(state) = GameState::read_from_file() {
             game_state = state;
 
         } else {
-            let friend = Friend::new("temp friend", CreatureShapes::Duck(ColorWrapper::Red));
-            game_state = GameState::new(friend);    // Create a temporary GameState, this will never be used.
-            layouts::draw_new_friend_layout(terminal, &mut game_state)?;
+            game_state = layouts::draw_new_friend_layout(terminal)?;
         }
 
         let previous_growth_stage = game_state.friend().growth_stage();
@@ -88,7 +84,7 @@ impl App {
         while self.is_running {
             self.game_state.update();
             if !self.game_state.friend().alive() {
-                layouts::draw_new_friend_layout(terminal, &mut self.game_state)?;
+                layouts::friend_death_layout(terminal, &mut self.game_state)?;
             }
 
             if self.previous_growth_stage != self.game_state.friend().growth_stage() {
@@ -96,7 +92,7 @@ impl App {
 
                 update_friend_movement(&mut self.friend_movement, self.game_state.friend(), self.playground);
             }
-
+            
             terminal.draw(|frame| {
                 self.draw_main(frame);
 
