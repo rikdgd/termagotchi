@@ -44,6 +44,7 @@ pub struct Friend {
     shape: CreatureShapes,
     growth_stage: GrowthStage,
     asleep: bool,
+    asleep_since: Option<i64>,
     alive: bool,
     time_created: i64,
 }
@@ -65,6 +66,7 @@ impl Friend {
             shape,
             growth_stage: GrowthStage::Egg,
             asleep: false,
+            asleep_since: None,
             alive: true,
             time_created: now,
         }
@@ -78,6 +80,7 @@ impl Friend {
         
         if self.growth_stage != GrowthStage::Egg {
             self.update_stats(now);
+            self.update_asleep_status(now);
             self.update_alive_status();
         }
     }
@@ -114,6 +117,24 @@ impl Friend {
                 self.health_decrease_time_left -= health_offset_minutes;
             }
             self.last_time_lower_health += health_offset_minutes;
+        }
+    }
+    
+    /// Updates the sleeping state of the Friend. This will wake the friend up after it has been asleep
+    /// for to long so the player cannot just let it sleep forever.
+    /// <br>
+    /// ## parameters:
+    /// * `now` - The current time, used to determine the time elapsed since the friend fell asleep.
+    fn update_asleep_status(&mut self, now: i64) {
+        if !self.asleep {
+            return;
+        }
+        
+        if let Some(start_sleeping) = self.asleep_since {
+            if now - start_sleeping > MINUTE_MILLIS * 60 * 12 {
+                self.asleep = false;
+                self.asleep_since = None;
+            }
         }
     }
 
@@ -169,6 +190,13 @@ impl Friend {
     pub fn toggle_sleep(&mut self) {
         if self.growth_stage != GrowthStage::Egg {
             self.asleep = !self.asleep;
+        }
+        
+        if self.asleep {
+            let now = Utc::now().timestamp_millis();
+            self.asleep_since = Some(now);
+        } else {
+            self.asleep_since = None;
         }
     }
     
