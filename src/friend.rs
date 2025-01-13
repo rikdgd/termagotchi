@@ -86,9 +86,9 @@ impl Friend {
     }
     
     fn update_stats(&mut self, now: i64) {
-        let food_offset_minutes = 14 * MINUTE_MILLIS;
-        let energy_offset_minutes = 12 * MINUTE_MILLIS;
-        let joy_offset_minutes = 16 * MINUTE_MILLIS;
+        let food_offset_minutes = 16 * MINUTE_MILLIS;
+        let energy_offset_minutes = 14 * MINUTE_MILLIS;
+        let joy_offset_minutes = 18 * MINUTE_MILLIS;
         let health_offset_minutes = MINUTE_MILLIS;
 
         // Use while loops instead of if statements to account for loading from file
