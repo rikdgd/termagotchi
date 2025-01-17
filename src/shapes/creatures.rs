@@ -34,7 +34,7 @@ impl PixelImage for CreatureShapes {
 
 impl CreatureShapes {
     pub fn new_random() -> Self {
-        let color = ColorWrapper::new_random(false);
+        let color = ColorWrapper::new_random();
         let mut rng = rand::thread_rng();
         
         match rng.gen_range(0..NUM_SHAPES) {
