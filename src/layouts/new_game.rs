@@ -3,15 +3,18 @@ use ratatui::{crossterm::event::{self, Event, KeyCode, KeyEventKind, poll}, layo
 use crate::shapes::creatures::CreatureShapes;
 use crate::friend::Friend;
 use crate::game_state::GameState;
-use crate::widgets::new_friend_widget::{new_friend_dialog, new_friend_name_input};
+use crate::widgets::new_game_widget::{new_game_dialog, new_game_name_input};
 
-/// Draws the widget that allows the user to create a new GameState, used when there is no save file to be found.
+/// Draws the widget that allows the user to create a new `GameState`, used when there is no save file to be found.
+/// <br>
+/// The widget will tell the user some basics about the application, and prompt them for a name for their first pet.
 /// <br>
 /// ## parameters:
 /// * `terminal` - The `ratatui::DefaultTerminal` to draw the layout onto.
+/// <br><br>
 /// ## returns:
 /// A newly generated `GameState`.
-pub fn draw_new_friend_layout(terminal: &mut DefaultTerminal) -> std::io::Result<GameState> {
+pub fn draw_new_game_layout(terminal: &mut DefaultTerminal) -> std::io::Result<GameState> {
     let mut new_name_input = String::new();
 
     loop {
@@ -24,8 +27,8 @@ pub fn draw_new_friend_layout(terminal: &mut DefaultTerminal) -> std::io::Result
             ])
                 .areas(frame_area);
 
-            frame.render_widget(new_friend_dialog(), dialog_area);
-            frame.render_widget(new_friend_name_input(&new_name_input), input_area);
+            frame.render_widget(new_game_dialog(), dialog_area);
+            frame.render_widget(new_game_name_input(&new_name_input), input_area);
         })?;
 
         if poll(Duration::from_millis(100))? {

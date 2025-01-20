@@ -34,6 +34,7 @@ impl ColorWrapper {
         }
     }
     
+    /// Generates a random variant of `ColorWrapper`, excluding Black and White.
     pub fn new_random() -> Self {
         let mut rng = thread_rng();
         match rng.gen_range(0..NUM_COLORS - 2) {

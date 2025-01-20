@@ -53,7 +53,7 @@ impl App {
             game_state = state;
 
         } else {
-            game_state = layouts::draw_new_friend_layout(terminal)?;
+            game_state = layouts::draw_new_game_layout(terminal)?;
         }
 
         let previous_growth_stage = game_state.friend().growth_stage();
