@@ -18,11 +18,10 @@ pub fn new_game_dialog<'a>() -> impl Widget + 'a {
         Line::from("In order to exit the game you should ALWAYS press 'q'."),
         Line::from("Stopping the game otherwise will make it unable to save your progress."),
         Line::from(""),
-        Line::from("To start, what should your first pet be called? Enter a name and then press 'Enter' to continue"),
+        Line::from("To start, what should your first pet be called? Enter a name and then press 'Enter' to continue."),
     ];
     Paragraph::new(text)
-        .block(Block::bordered().title("new friend"))
-        // .style(Style::new().white().on_black())
+        .block(Block::bordered())
         .alignment(Alignment::Center)
         .wrap(Wrap { trim: true })
 }
@@ -32,7 +31,7 @@ pub fn new_game_name_input(input: &str) -> impl Widget + '_ {
         Line::from(input.bold()),
     ];
     Paragraph::new(text)
-        .block(Block::bordered().title("enter name:"))
+        .block(Block::bordered().title("Enter pet name:"))
         .alignment(Alignment::Center)
         .wrap(Wrap { trim: true })
 }
