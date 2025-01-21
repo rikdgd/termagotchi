@@ -197,7 +197,7 @@ impl App {
         
         let frames = match food {
             Food::Soup => FoodAnimationFrames::Soup,
-            Food::Fries => FoodAnimationFrames::Fries,
+            Food::Cookie => FoodAnimationFrames::Cookie,
             Food::Burger => FoodAnimationFrames::Burger,
         };
 

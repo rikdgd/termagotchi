@@ -51,7 +51,7 @@ impl Animation for FoodAnimation {
 #[derive(Debug, Copy, Clone, PartialEq)]
 pub enum FoodAnimationFrames {
     Soup,
-    Fries,
+    Cookie,
     Burger,
 }
 impl FoodAnimationFrames {
@@ -63,11 +63,11 @@ impl FoodAnimationFrames {
                 load_embedded_sprite!("../../assets/food/soup2.png", ColorWrapper::White),
                 load_embedded_sprite!("../../assets/food/soup3.png", ColorWrapper::White),
             ],
-            FoodAnimationFrames::Fries => [
-                load_embedded_sprite!("../../assets/food/fries.png", ColorWrapper::White),
-                load_embedded_sprite!("../../assets/food/fries1.png", ColorWrapper::White),
-                load_embedded_sprite!("../../assets/food/fries2.png", ColorWrapper::White),
-                load_embedded_sprite!("../../assets/food/fries3.png", ColorWrapper::White),
+            FoodAnimationFrames::Cookie => [
+                load_embedded_sprite!("../../assets/food/cookie.png", ColorWrapper::White),
+                load_embedded_sprite!("../../assets/food/cookie1.png", ColorWrapper::White),
+                load_embedded_sprite!("../../assets/food/cookie2.png", ColorWrapper::White),
+                load_embedded_sprite!("../../assets/food/cookie3.png", ColorWrapper::White),
             ],
             FoodAnimationFrames::Burger => [
                 load_embedded_sprite!("../../assets/food/burger.png", ColorWrapper::White),
