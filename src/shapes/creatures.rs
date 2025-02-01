@@ -4,7 +4,7 @@ use serde::{Deserialize, Serialize};
 use rand::Rng;
 use crate::load_embedded_sprite;
 
-const NUM_SHAPES: u32 = 7;
+const NUM_SHAPES: u32 = 8;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub enum CreatureShapes {
@@ -15,6 +15,7 @@ pub enum CreatureShapes {
     Fish(ColorWrapper),
     Mouse(ColorWrapper),
     Frog(ColorWrapper),
+    Squid(ColorWrapper),
 }
 
 
@@ -28,6 +29,7 @@ impl PixelImage for CreatureShapes {
             CreatureShapes::Fish(color) => load_embedded_sprite!("../../assets/fish.png", color),
             CreatureShapes::Mouse(color) => load_embedded_sprite!("../../assets/mouse.png", color),
             CreatureShapes::Frog(color) => load_embedded_sprite!("../../assets/frog.png", color),
+            CreatureShapes::Squid(color) => load_embedded_sprite!("../../assets/squid.png", color),
         }
     }
 }
@@ -44,7 +46,8 @@ impl CreatureShapes {
             3 => CreatureShapes::Snail(color),
             4 => CreatureShapes::Fish(color),
             5 => CreatureShapes::Mouse(color),
-            _ => CreatureShapes::Frog(color),
+            6 => CreatureShapes::Frog(color),
+            _ => CreatureShapes::Squid(color),
         }
     }
     
@@ -57,6 +60,7 @@ impl CreatureShapes {
             CreatureShapes::Fish(color) => *color,
             CreatureShapes::Mouse(color) => *color,
             CreatureShapes::Frog(color) => *color,
+            CreatureShapes::Squid(color)  => *color,
         }
     }
 }
