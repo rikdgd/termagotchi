@@ -1,9 +1,10 @@
 [package]
 name = "termagotchi"
-version = "0.7.0"
+version = "1.0.0"
 edition = "2021"
 authors = ["Rik de Goede <rik.dgd@gmail.com>"]
 description = "A tamagotchi that runs in your terminal."
+license = "MIT"
 
 [dependencies]
 ratatui = "0.29.0"
