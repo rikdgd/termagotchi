@@ -15,8 +15,7 @@ pub fn new_game_dialog<'a>() -> impl Widget + 'a {
         Line::from("You can raise a stat by performing the appropriate action."),
         Line::from("To navigate the 'actions' menu, use the 'Up' and 'Down' keys on your keyboard. Press 'Enter' to perform the action."),
         Line::from(""),
-        Line::from("In order to exit the game you should ALWAYS press 'q'."),
-        Line::from("Stopping the game otherwise will make it unable to save your progress."),
+        Line::from("If you want to close the game you can press 'q', or you can always just close the terminal."),
         Line::from(""),
         Line::from("To start, what should your first pet be called? Enter a name and then press 'Enter' to continue."),
     ];
