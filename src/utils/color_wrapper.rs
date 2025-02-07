@@ -3,15 +3,17 @@ use serde::{Deserialize, Serialize};
 use rand::prelude::*;
 
 
-const NUM_COLORS: u32 = 7;
+const NUM_COLORS: u32 = 9;
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Serialize, Deserialize)]
 pub enum ColorWrapper {
-    Cyan,
-    LightMagenta,
     Red,
     Green,
     Blue,
+    Cyan,
+    LightMagenta,
+    Yellow,
+    LightRed,
     White,
     Black,
 }
@@ -19,36 +21,30 @@ pub enum ColorWrapper {
 impl ColorWrapper {
     pub fn get_ratatui_color(&self) -> Color {
         match self {
+            ColorWrapper::Red => Color::Red,
+            ColorWrapper::Green => Color::LightGreen,
+            ColorWrapper::Blue => Color::LightBlue,
             ColorWrapper::Cyan => Color::Cyan,
             ColorWrapper::LightMagenta => Color::LightMagenta,
-            ColorWrapper::Red => Color::Red,
-            ColorWrapper::Green => Color::Green,
-            ColorWrapper::Blue => Color::Blue,
+            ColorWrapper::Yellow => Color::Yellow,
+            ColorWrapper::LightRed => Color::LightRed,
+            
             ColorWrapper::White => Color::White,
             ColorWrapper::Black => Color::Black,
         }
     }
     
-    pub fn new_random(use_black_white: bool) -> Self {
+    /// Generates a random variant of `ColorWrapper`, excluding Black and White.
+    pub fn new_random() -> Self {
         let mut rng = thread_rng();
-        if use_black_white {
-            match rng.gen_range(0..NUM_COLORS) {
-                0 => ColorWrapper::Cyan,
-                1 => ColorWrapper::LightMagenta,
-                2 => ColorWrapper::Red,
-                3 => ColorWrapper::Green,
-                4 => ColorWrapper::Blue,
-                5 => ColorWrapper::Black,
-                _ => ColorWrapper::White,
-            }
-        } else {
-            match rng.gen_range(0..NUM_COLORS - 2) {
-                0 => ColorWrapper::Cyan,
-                1 => ColorWrapper::LightMagenta,
-                2 => ColorWrapper::Red,
-                3 => ColorWrapper::Green,
-                _ => ColorWrapper::Blue,
-            }
+        match rng.gen_range(0..NUM_COLORS - 2) {
+            0 => ColorWrapper::Red,
+            1 => ColorWrapper::Green,
+            2 => ColorWrapper::Blue,
+            3 => ColorWrapper::Cyan,
+            4 => ColorWrapper::LightMagenta,
+            5 => ColorWrapper::Yellow,
+            _ => ColorWrapper::LightRed,
         }
     }
 }

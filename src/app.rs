@@ -53,7 +53,7 @@ impl App {
             game_state = state;
 
         } else {
-            game_state = layouts::draw_new_friend_layout(terminal)?;
+            game_state = layouts::draw_new_game_layout(terminal)?;
         }
 
         let previous_growth_stage = game_state.friend().growth_stage();
@@ -159,23 +159,27 @@ impl App {
                                             let food = Food::new_random();
                                             self.set_food_animation(food);
                                             self.game_state.friend_mut().eat(food);
+                                            self.game_state.store_to_file()?;
                                         }
                                     },
                                     "Play" => {
                                         if is_awake && is_not_egg {
                                             self.set_joy_animation();
                                             self.game_state.friend_mut().play();
+                                            self.game_state.store_to_file()?;
                                         }
                                     },
                                     "Sleep" => {
                                         if is_not_egg {
-                                            self.game_state.friend_mut().toggle_sleep()
+                                            self.game_state.friend_mut().toggle_sleep();
+                                            self.game_state.store_to_file()?;
                                         }
                                     },
                                     "Medicine" => {
                                         if is_awake && is_not_egg {
                                             self.set_health_animation();
                                             self.game_state.friend_mut().take_medicine();
+                                            self.game_state.store_to_file()?;
                                         }
                                     },
                                     _ => ()
@@ -197,7 +201,7 @@ impl App {
         
         let frames = match food {
             Food::Soup => FoodAnimationFrames::Soup,
-            Food::Fries => FoodAnimationFrames::Fries,
+            Food::Cookie => FoodAnimationFrames::Cookie,
             Food::Burger => FoodAnimationFrames::Burger,
         };
 

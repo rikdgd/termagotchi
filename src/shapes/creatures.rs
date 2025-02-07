@@ -4,7 +4,7 @@ use serde::{Deserialize, Serialize};
 use rand::Rng;
 use crate::load_embedded_sprite;
 
-const NUM_SHAPES: u32 = 6;
+const NUM_SHAPES: u32 = 8;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub enum CreatureShapes {
@@ -14,6 +14,8 @@ pub enum CreatureShapes {
     Snail(ColorWrapper),
     Fish(ColorWrapper),
     Mouse(ColorWrapper),
+    Frog(ColorWrapper),
+    Squid(ColorWrapper),
 }
 
 
@@ -26,13 +28,15 @@ impl PixelImage for CreatureShapes {
             CreatureShapes::Snail(color) => load_embedded_sprite!("../../assets/snail.png", color),
             CreatureShapes::Fish(color) => load_embedded_sprite!("../../assets/fish.png", color),
             CreatureShapes::Mouse(color) => load_embedded_sprite!("../../assets/mouse.png", color),
+            CreatureShapes::Frog(color) => load_embedded_sprite!("../../assets/frog.png", color),
+            CreatureShapes::Squid(color) => load_embedded_sprite!("../../assets/squid.png", color),
         }
     }
 }
 
 impl CreatureShapes {
     pub fn new_random() -> Self {
-        let color = ColorWrapper::new_random(false);
+        let color = ColorWrapper::new_random();
         let mut rng = rand::thread_rng();
         
         match rng.gen_range(0..NUM_SHAPES) {
@@ -41,18 +45,22 @@ impl CreatureShapes {
             2 => CreatureShapes::Spider(color),
             3 => CreatureShapes::Snail(color),
             4 => CreatureShapes::Fish(color),
-            _ => CreatureShapes::Mouse(color),
+            5 => CreatureShapes::Mouse(color),
+            6 => CreatureShapes::Frog(color),
+            _ => CreatureShapes::Squid(color),
         }
     }
     
     pub fn get_color(&self) -> ColorWrapper {
         match self {
-            CreatureShapes::Duck(color) => color.clone(),
-            CreatureShapes::Turtle(color) => color.clone(),
-            CreatureShapes::Spider(color) => color.clone(),
-            CreatureShapes::Snail(color) => color.clone(),
-            CreatureShapes::Fish(color) => color.clone(),
-            CreatureShapes::Mouse(color) => color.clone(),
+            CreatureShapes::Duck(color) => *color,
+            CreatureShapes::Turtle(color) => *color,
+            CreatureShapes::Spider(color) => *color,
+            CreatureShapes::Snail(color) => *color,
+            CreatureShapes::Fish(color) => *color,
+            CreatureShapes::Mouse(color) => *color,
+            CreatureShapes::Frog(color) => *color,
+            CreatureShapes::Squid(color)  => *color,
         }
     }
 }
