@@ -8,7 +8,8 @@
 * (short) animations
 * UTC based time system, no need to keep the app running.
 
----
+<br>
+
 ## How to play
 There is only one goal in Termagotchi, keeping your pet alive as long as possible. All you have to do is to make sure you check on your friend regularly and give it what it needs. 
 
@@ -18,12 +19,14 @@ When performing an action, it's corresponding "stat" is updated. Not all stats w
 
 Want to exit the game? Simply press **"q"** on your keyboard. You can also just close the terminal at any moment, Termagotchi saves its state after every action you perform.
 
+<br>
 ### Growing
 When you first start the game you will notice that your pet will start off as an egg. It takes a couple of minutes before the egg will hatch, but then you'll have your very own Termagotchi. 
 
 Every pet starts off looking the same, and it will take some time before you are able to see their true shape. Give it a day and you will finally see what your pet looks like.
 
----
+<br>
+
 ## How to build
 If you don't have the Rust tool chain installed (`rustc`, `cargo`, ... ), you should do that first at: https://www.rust-lang.org/tools/install
 
@@ -35,7 +38,8 @@ After doing so, you can simply clone the project, and when inside the project's 
 `cargo build --release`
 The binary can then be found in: `{project_dir}/target/release/`
 
----
+<br>
+
 ## Save file
 The binary will create a save file called: `save-file.txt` in its current directory. If it ever gets moved, or the binary moves, the game will think there is no save file available and create a new one (in its current directory). 
 
