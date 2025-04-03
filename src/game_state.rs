@@ -49,8 +49,9 @@ impl GameState {
     }
 
     pub fn update(&mut self) {
-        self.last_update_time = Utc::now().timestamp_millis();
-        self.friend.update_state();
+        let now =Utc::now().timestamp_millis();
+        self.last_update_time = now;
+        self.friend.update_state(now);
     }
     
     pub fn friend(&self) -> &Friend {
