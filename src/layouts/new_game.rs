@@ -11,7 +11,8 @@ use crate::widgets::new_game_widget::{new_game_dialog, new_game_name_input};
 /// <br>
 /// ## parameters:
 /// * `terminal` - The `ratatui::DefaultTerminal` to draw the layout onto.
-/// <br><br>
+/// 
+/// <br>
 /// ## returns:
 /// A newly generated `GameState`.
 pub fn draw_new_game_layout(terminal: &mut DefaultTerminal) -> std::io::Result<GameState> {

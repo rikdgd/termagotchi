@@ -73,14 +73,12 @@ impl Friend {
     }
 
     /// Updates this Friend's state for each minute passed since last update <br>
-    pub fn update_state(&mut self) {
-        let now = Utc::now().timestamp_millis();
-
+    pub fn update_state(&mut self, now: i64) {
         self.update_growth_stage(now);
         
         if self.growth_stage != GrowthStage::Egg {
             self.update_stats(now);
-            self.update_asleep_status(now);
+            // self.update_asleep_status(now);
             self.update_alive_status();
         }
     }
@@ -104,6 +102,8 @@ impl Friend {
                 false => self.energy.subtract(1),
             }
             self.last_time_lower_energy += energy_offset_minutes;
+            
+            self.update_asleep_status(now);
         }
 
         while now - self.last_time_lower_joy >= joy_offset_minutes {
@@ -124,7 +124,7 @@ impl Friend {
     /// for to long so the player cannot just let it sleep forever.
     /// <br>
     /// ## parameters:
-    /// * `now` - The current time, used to determine the time elapsed since the friend fell asleep.
+    /// * `now` - The current utc time in millis, used to determine the time elapsed since the friend fell asleep.
     fn update_asleep_status(&mut self, now: i64) {
         if !self.asleep {
             return;
@@ -188,9 +188,11 @@ impl Friend {
     }
 
     pub fn toggle_sleep(&mut self) {
-        if self.growth_stage != GrowthStage::Egg {
-            self.asleep = !self.asleep;
+        if self.growth_stage == GrowthStage::Egg {
+            return;
         }
+
+        self.asleep = !self.asleep;
         
         if self.asleep {
             let now = Utc::now().timestamp_millis();
@@ -266,4 +268,57 @@ impl Friend {
 pub enum ShapeWrapper {
     Growing(GrowthStageShapes),
     Adult(CreatureShapes),
+}
+
+
+#[cfg(test)]
+mod tests {
+    use chrono::Utc;
+    use crate::friend::{Friend, GrowthStage, MINUTE_MILLIS};
+    use crate::shapes::creatures::CreatureShapes;
+    use crate::utils::{ColorWrapper, Stat};
+
+    #[test]
+    fn friend_auto_wakeup_test() {
+        let max_sleep_time = MINUTE_MILLIS * 60 * 12;
+        let now = Utc::now().timestamp_millis();
+        let mut friend = Friend::new(
+            "test-friend", 
+            CreatureShapes::Squid(ColorWrapper::Green)
+        );
+        
+        friend.growth_stage = GrowthStage::Adult;
+        friend.food = Stat::new(100).unwrap();
+        friend.joy = Stat::new(100).unwrap();
+        friend.energy = Stat::new(100).unwrap();
+        friend.health = Stat::new(100).unwrap();
+        friend.toggle_sleep();
+        
+        friend.update_state(now + max_sleep_time + 100);
+        
+        assert!(!friend.asleep);
+        assert_eq!(None, friend.asleep_since);
+    }
+    
+    #[test]
+    fn lower_energy_after_auto_wakeup() {
+        let max_sleep_time = MINUTE_MILLIS * 60 * 12;
+        let now = Utc::now().timestamp_millis();
+        let mut friend = Friend::new(
+            "test-friend",
+            CreatureShapes::Squid(ColorWrapper::Green)
+        );
+
+        friend.food = Stat::new(100).unwrap();
+        friend.joy = Stat::new(100).unwrap();
+        friend.energy = Stat::new(100).unwrap();
+        friend.health = Stat::new(100).unwrap();
+        friend.toggle_sleep();
+        
+        friend.update_state(now + 10 * max_sleep_time); // Make sure the termagotchi energy is at zero.
+        
+        assert!(!friend.asleep);
+        assert_eq!(None, friend.asleep_since);
+        assert_eq!(0, friend.energy.value());
+    }
 }
