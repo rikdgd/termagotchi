@@ -1,4 +1,3 @@
-use std::ptr::from_mut;
 use std::time::Duration;
 use ratatui::{Frame, DefaultTerminal};
 use ratatui::widgets::ListState;
@@ -16,7 +15,6 @@ use crate::shapes::PixelVectorShape;
 use crate::animations::PopupAnimation;
 use crate::animations::food_animation::{FoodAnimation, FoodAnimationFrames};
 use crate::animations::{HealthAnimation, JoyAnimation};
-use crate::utils::file_logging::log_to_file;
 
 /// This struct holds most logic for actually running the app. It is able to run the Termagotchi app
 /// using a `ratatui::DefaultTerminal` and keeps track of: game state, widget states, movements and animations.
@@ -48,13 +46,7 @@ pub struct App {
 impl App {
     pub fn new(terminal: &mut DefaultTerminal) -> std::io::Result<Self> {
         let actions_widget_state = ListState::default();
-        let frame = terminal.get_frame();
-        let frame_area = frame.area();
-        let [_, mut playground, _] = get_main_areas(frame_area);
-        playground.x = 0;
-        playground.y = 0;
-        playground.width *= 2;
-        playground.height *= 4;
+        let playground = Self::get_playground(terminal);
 
         let game_state: GameState;
         if let Ok(state) = GameState::read_from_file() {
@@ -120,6 +112,20 @@ impl App {
         }
         
         Ok(())
+    }
+    
+    /// Gets the area where the creature will reside in based on the terminal size.
+    /// ## parameters:
+    /// * `terminal` - The terminal that will be used to render the application.
+    fn get_playground(terminal: &mut DefaultTerminal) -> Rect {
+        let frame = terminal.get_frame();
+        let frame_area = frame.area();
+        let [_, mut playground, _] = get_main_areas(frame_area);
+        playground.x = 0;
+        playground.y = 0;
+        playground.width *= 2;
+        playground.height *= 4;
+        playground
     }
     
     /// Saves the game's state to a file by calling `GameState::store_to_file()`.
