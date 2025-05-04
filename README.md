@@ -20,7 +20,8 @@ When performing an action, it's corresponding "stat" is updated. Not all stats w
 Want to exit the game? Simply press **"q"** on your keyboard. You can also just close the terminal at any moment, Termagotchi saves its state after every action you perform.
 
 <br>
-## Growing
+
+### Growing
 When you first start the game you will notice that your pet will start off as an egg. It takes a couple of minutes before the egg will hatch, but then you'll have your very own Termagotchi. 
 
 Every pet starts off looking the same, and it will take some time before you are able to see their true shape. Give it a day and you will finally see what your pet looks like.
