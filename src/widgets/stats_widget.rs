@@ -1,10 +1,8 @@
 use ratatui::{
-    crossterm::event::{self, Event, KeyCode, KeyEventKind},
-    layout::{Constraint, Direction, Layout},
+    layout::Direction,
     style::{Color, Style, Stylize},
     text::Line,
     widgets::{Bar, BarChart, BarGroup, Block},
-    DefaultTerminal, Frame,
 };
 use crate::friend::Friend;
 use crate::utils::Stat;
@@ -40,7 +38,7 @@ impl<'a> StatsWidgetManager<'a> {
     pub fn get_widget(&self) -> BarChart {
         let title = Line::from("Stats").centered();
         BarChart::default()
-            .block(Block::new().title(title))
+            .block(Block::bordered().title(title))
             .data(BarGroup::default().bars(&self.bars))
             .bar_width(1)
             .bar_gap(0)
@@ -52,7 +50,7 @@ impl<'a> StatsWidgetManager<'a> {
         let style = Self::stat_style(stat);
         Bar::default()
             .value(u64::from(stat.value()))
-            .label(Line::from("bar_label"))
+            // .label(Line::from("bar_label"))
             .text_value(stat_name.to_string())
             .style(style)
             .value_style(style.reversed())
@@ -60,8 +58,9 @@ impl<'a> StatsWidgetManager<'a> {
 
     /// create a yellow to red value based on the value (50-90)
     fn stat_style(stat: Stat) -> Style {
-        let green = stat.value() as u8;
-        let color = Color::Rgb(255, green, 0);
+        let green = (stat.value() * 2) as u8;
+        let red = 200 - green;
+        let color = Color::Rgb(red, green, 0);
         Style::new().fg(color)
     }
 }

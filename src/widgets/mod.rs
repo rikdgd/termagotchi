@@ -6,5 +6,6 @@ mod canvas_stats;
 pub mod friend_death_widget;
 
 pub use friend_widget::FriendWidget;
-pub use canvas_stats::StatsWidget;
+pub use canvas_stats::CanvasStatsWidget;
 pub use actions_widget::actions_widget;
+pub use stats_widget::StatsWidgetManager;

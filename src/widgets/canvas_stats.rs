@@ -16,10 +16,10 @@ const STAT_SHAPE_WIDTH: u8 = 10;
 const AREA: Rect = Rect::new(0, 0, 30, 100);
 
 
-pub struct StatsWidget<'a> {
+pub struct CanvasStatsWidget<'a> {
     friend: &'a Friend,
 }
-impl<'a> StatsWidget<'a> {
+impl<'a> CanvasStatsWidget<'a> {
     pub fn new(friend: &'a Friend) -> Self {
         Self { 
             friend,
@@ -77,7 +77,7 @@ impl<'a> StatsWidget<'a> {
 #[cfg(test)]
 mod test {
     use crate::utils::Stat;
-    use crate::widgets::StatsWidget;
+    use crate::widgets::CanvasStatsWidget;
 
     #[test]
     fn calc_required_stat_symbols() {
@@ -89,13 +89,13 @@ mod test {
         let stat_26 = Stat::new(26).unwrap();
         let stat_1 = Stat::new(1).unwrap();
 
-        let result_20 = StatsWidget::calc_required_symbols(&stat_20);
-        let result_0 = StatsWidget::calc_required_symbols(&stat_0);
-        let result_100 = StatsWidget::calc_required_symbols(&stat_100);
-        let result_76 = StatsWidget::calc_required_symbols(&stat_76);
-        let result_51 = StatsWidget::calc_required_symbols(&stat_51);
-        let result_26 = StatsWidget::calc_required_symbols(&stat_26);
-        let result_1 = StatsWidget::calc_required_symbols(&stat_1);
+        let result_20 = CanvasStatsWidget::calc_required_symbols(&stat_20);
+        let result_0 = CanvasStatsWidget::calc_required_symbols(&stat_0);
+        let result_100 = CanvasStatsWidget::calc_required_symbols(&stat_100);
+        let result_76 = CanvasStatsWidget::calc_required_symbols(&stat_76);
+        let result_51 = CanvasStatsWidget::calc_required_symbols(&stat_51);
+        let result_26 = CanvasStatsWidget::calc_required_symbols(&stat_26);
+        let result_1 = CanvasStatsWidget::calc_required_symbols(&stat_1);
         
         assert_eq!(result_20, 1);
         assert_eq!(result_0, 0);
