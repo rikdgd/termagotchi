@@ -8,6 +8,7 @@ use crate::friend::ShapeWrapper;
 use crate::shapes::{PixelImage, PixelVectorShape};
 use crate::utils::location::Location;
 use ratatui::layout::Rect;
+use ratatui::text::Line;
 use crate::animations::{Animation, SleepingAnimation};
 
 pub struct FriendWidget<'a> {
@@ -29,7 +30,7 @@ impl<'a> FriendWidget<'a> {
         let friend_widget_y_bounds = [0.0, f64::from(self.movement_area.height)];
         
         let canvas = Canvas::default()
-            .block(Block::bordered().title(self.title_string()))
+            .block(Block::bordered().title(Line::from(self.title_string()).centered()))
             .marker(Marker::Braille)
             .x_bounds(friend_widget_x_bounds)
             .y_bounds(friend_widget_y_bounds)
@@ -63,7 +64,7 @@ impl<'a> FriendWidget<'a> {
         let millis_alive = now - self.friend.time_created();
         let hours_alive = millis_alive / 1000 / 60 / 60;
         let name = self.friend.name();
-        format!("{name} - age: {hours_alive} hours")
+        format!("  {name}  |  Age: {hours_alive} hours  ")
     }
 }
 
