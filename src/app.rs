@@ -7,7 +7,7 @@ use ratatui::crossterm::event::{self, Event, KeyCode, KeyEventKind, poll};
 use crate::game_state::GameState;
 use crate::movements::{Movement, MovementWrapper, EggHopMovement, SmallStepsMovement, DvdBounceMovement};
 use crate::friend::{Friend, GrowthStage};
-use crate::widgets::{FriendWidget, actions_widget, StatsWidget};
+use crate::widgets::{FriendWidget, actions_widget, StatsWidgetGenerator};
 use crate::utils::location::Location;
 use crate::layouts;
 use crate::food::Food;
@@ -46,7 +46,7 @@ pub struct App {
 impl App {
     pub fn new(terminal: &mut DefaultTerminal) -> std::io::Result<Self> {
         let actions_widget_state = ListState::default();
-        let playground = Rect::new(0, 0, 150, 100);
+        let playground = Self::get_playground(terminal);
 
         let game_state: GameState;
         if let Ok(state) = GameState::read_from_file() {
@@ -114,6 +114,20 @@ impl App {
         Ok(())
     }
     
+    /// Gets the area where the creature will reside in based on the terminal size.
+    /// ## parameters:
+    /// * `terminal` - The terminal that will be used to render the application.
+    fn get_playground(terminal: &mut DefaultTerminal) -> Rect {
+        let frame = terminal.get_frame();
+        let frame_area = frame.area();
+        let [_, mut playground, _] = get_main_areas(frame_area);
+        playground.x = 0;
+        playground.y = 0;
+        playground.width *= 2;
+        playground.height *= 4;
+        playground
+    }
+    
     /// Saves the game's state to a file by calling `GameState::store_to_file()`.
     pub fn save_game(&mut self) -> std::io::Result<()> {
         self.game_state.store_to_file()
@@ -124,7 +138,7 @@ impl App {
         let frame_area = frame.area();
         let [left_area, middle_area, right_area] = get_main_areas(frame_area);
         
-        let canvas_stats = StatsWidget::new(self.game_state.friend());
+        let bar_stats = StatsWidgetGenerator::new(self.game_state.friend());
         
         let friend_widget = if !self.game_state.friend().is_asleep() {
             FriendWidget::new(self.game_state.friend(), self.friend_movement.next_position(), self.playground)
@@ -133,7 +147,7 @@ impl App {
         };
         
         
-        frame.render_widget(canvas_stats.get_widget(), left_area);
+        frame.render_widget(bar_stats.get_widget(), left_area);
         frame.render_widget(friend_widget.get_widget(), middle_area);
         frame.render_stateful_widget(actions_widget(), right_area, &mut self.actions_widget_state);
     }
