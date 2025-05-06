@@ -6,4 +6,4 @@ pub mod friend_death_widget;
 
 pub use friend_widget::FriendWidget;
 pub use actions_widget::actions_widget;
-pub use stats_widget::StatsWidgetManager;
+pub use stats_widget::StatsWidgetGenerator;

@@ -13,11 +13,11 @@ use crate::utils::Stat;
 /// * `friend` - A reference to the current Termagotchi pet, used to get the stats of the pet.
 /// * `bars` - The `ratatui::widgets::Bar` items that should be displayed in the widget, each corresponding
 /// a specific creature stat.
-pub struct StatsWidgetManager<'a> {
+pub struct StatsWidgetGenerator<'a> {
     friend: &'a Friend,
     bars: [Bar<'a>; 4],
 }
-impl<'a> StatsWidgetManager<'a> {
+impl<'a> StatsWidgetGenerator<'a> {
     pub fn new(friend: &'a Friend) -> Self {
         Self {
             friend,
@@ -69,7 +69,7 @@ impl<'a> StatsWidgetManager<'a> {
 mod tests {
     use ratatui::style::Color;
     use crate::utils::Stat;
-    use super::StatsWidgetManager;
+    use super::StatsWidgetGenerator;
     #[test]
     fn stat_bar_styling() {
         let stat_0 = Stat::new(0).unwrap();
@@ -77,10 +77,10 @@ mod tests {
         let stat_75 = Stat::new(75).unwrap();
         let stat_100 = Stat::new(100).unwrap();
 
-        let style_0 = StatsWidgetManager::stat_style(stat_0);
-        let style_15 = StatsWidgetManager::stat_style(stat_15);
-        let style_75 = StatsWidgetManager::stat_style(stat_75);
-        let style_100 = StatsWidgetManager::stat_style(stat_100);
+        let style_0 = StatsWidgetGenerator::stat_style(stat_0);
+        let style_15 = StatsWidgetGenerator::stat_style(stat_15);
+        let style_75 = StatsWidgetGenerator::stat_style(stat_75);
+        let style_100 = StatsWidgetGenerator::stat_style(stat_100);
 
         assert_eq!(style_0.fg.unwrap(), Color::Rgb(200, 0, 0));
         assert_eq!(style_15.fg.unwrap(), Color::Rgb(170, 30, 0));
