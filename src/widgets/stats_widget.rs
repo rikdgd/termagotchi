@@ -64,3 +64,27 @@ impl<'a> StatsWidgetManager<'a> {
         Style::new().fg(color)
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use ratatui::style::Color;
+    use crate::utils::Stat;
+    use super::StatsWidgetManager;
+    #[test]
+    fn stat_bar_styling() {
+        let stat_0 = Stat::new(0).unwrap();
+        let stat_15 = Stat::new(15).unwrap();
+        let stat_75 = Stat::new(75).unwrap();
+        let stat_100 = Stat::new(100).unwrap();
+
+        let style_0 = StatsWidgetManager::stat_style(stat_0);
+        let style_15 = StatsWidgetManager::stat_style(stat_15);
+        let style_75 = StatsWidgetManager::stat_style(stat_75);
+        let style_100 = StatsWidgetManager::stat_style(stat_100);
+
+        assert_eq!(style_0.fg.unwrap(), Color::Rgb(200, 0, 0));
+        assert_eq!(style_15.fg.unwrap(), Color::Rgb(170, 30, 0));
+        assert_eq!(style_75.fg.unwrap(), Color::Rgb(50, 150, 0));
+        assert_eq!(style_100.fg.unwrap(), Color::Rgb(0, 200, 0));
+    }
+}
