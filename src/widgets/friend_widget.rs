@@ -64,7 +64,7 @@ impl<'a> FriendWidget<'a> {
         let millis_alive = now - self.friend.time_created();
         let hours_alive = millis_alive / 1000 / 60 / 60;
         let name = self.friend.name();
-        format!("{name} - age: {hours_alive} hours")
+        format!("  {name}  |  Age: {hours_alive} hours  ")
     }
 }
 

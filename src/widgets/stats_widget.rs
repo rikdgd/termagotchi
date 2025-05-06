@@ -36,7 +36,7 @@ impl<'a> StatsWidgetManager<'a> {
     
     /// Returns the widget that can be rendered in the TUI with all the stats of the creature displayed.
     pub fn get_widget(&self) -> BarChart {
-        let title = Line::from("Stats").centered();
+        let title = Line::from(" Stats ").centered();
         BarChart::default()
             .block(Block::bordered().title(title))
             .data(BarGroup::default().bars(&self.bars))
