@@ -9,7 +9,6 @@ use chrono::Utc;
 pub fn log_to_file(message: &str) -> std::io::Result<()> {
     let mut log_file = OpenOptions::new()
         .create(true)
-        .write(true)
         .append(true)
         .open("./logs.txt")?;
 

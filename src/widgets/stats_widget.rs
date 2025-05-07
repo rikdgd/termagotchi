@@ -12,15 +12,13 @@ use crate::utils::Stat;
 /// ## Fields:
 /// * `friend` - A reference to the current Termagotchi pet, used to get the stats of the pet.
 /// * `bars` - The `ratatui::widgets::Bar` items that should be displayed in the widget, each corresponding
-/// a specific creature stat.
+///   a specific creature stat.
 pub struct StatsWidgetGenerator<'a> {
-    friend: &'a Friend,
     bars: [Bar<'a>; 4],
 }
 impl<'a> StatsWidgetGenerator<'a> {
     pub fn new(friend: &'a Friend) -> Self {
         Self {
-            friend,
             bars: Self::generate_stat_bars(friend),
         }
     }
