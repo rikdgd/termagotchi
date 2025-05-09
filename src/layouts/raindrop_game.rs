@@ -2,6 +2,7 @@ use std::time::Duration;
 use ratatui::crossterm::event;
 use ratatui::crossterm::event::{poll, Event, KeyCode};
 use ratatui::DefaultTerminal;
+use ratatui::layout::{Constraint, Layout};
 use crate::game_state::GameState;
 
 /// This function renders the *"Raindrop minigame"* onto the terminal and handles the user input to 
@@ -13,6 +14,12 @@ pub fn raindrop_minigame_layout(terminal: &mut DefaultTerminal, state: &mut Game
     loop {
         terminal.draw(|frame| {
             let frame_area = frame.area();
+            let [game_area, controls_area] = Layout::vertical([
+                Constraint::Percentage(80),
+                Constraint::Percentage(20),
+            ])
+                .areas(frame_area);
+            
             // TODO: Actually render and play the game.
         })?;
         

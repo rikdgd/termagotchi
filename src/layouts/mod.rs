@@ -4,3 +4,4 @@ mod raindrop_game;
 
 pub use new_game::draw_new_game_layout;
 pub use friend_death::friend_death_layout;
+pub use raindrop_game::raindrop_minigame_layout;
