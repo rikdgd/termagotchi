@@ -1,24 +1,110 @@
 use crate::friend::Friend;
-use crate::shapes::PixelImage;
-use crate::friend::ShapeWrapper;
+use crate::shapes::PixelVectorShape;
+use crate::friend::GrowthShapeWrapper;
+use crate::utils::location::Location;
+use ratatui::layout::Rect;
+use rand;
+use rand::Rng;
 
+#[derive(Debug, Clone)]
 pub struct GameWidgetManager {
-    player_x_location: u32,
-    score: u32,
-    friend_shape: Box<dyn PixelImage>,
+    game_state: RaindropGameState,
+    friend_shape: PixelVectorShape,
 }
 
 impl GameWidgetManager {
-    pub fn new(friend: &Friend) -> Self {
-        let shape: Box<dyn PixelImage> = match friend.get_shape_wrapper() {
-            ShapeWrapper::Growing(shape) => Box::new(shape),
-            ShapeWrapper::Adult(shape) => Box::new(shape),
+    pub fn new(friend: &Friend, game_area: Rect) -> Self {
+        let friend_shape = match friend.get_shape_wrapper() {
+            GrowthShapeWrapper::Growing(shape) => PixelVectorShape::from_pixel_image(&shape),
+            GrowthShapeWrapper::Adult(shape) => PixelVectorShape::from_pixel_image(&shape),
         };
         
         Self {
-            player_x_location: 0, // TODO: This should be the center of the screen, maybe just get it from the terminal.
-            score: 0,
-            friend_shape: shape,
+            game_state: RaindropGameState::new(game_area),
+            friend_shape,
         }
+    }
+}
+
+#[derive(Debug, Clone, PartialEq)]
+struct RaindropGameState {
+    score: u32,
+    health: u8,
+    player_x: u32,
+    drop_locations: Vec<Location>,
+    game_area: Rect,
+}
+impl RaindropGameState {
+    pub fn new(game_area: Rect) -> Self {
+        Self {
+            score: 0,
+            health: 5,
+            player_x: 50,   // TODO: Should be center of the screen/game-area
+            drop_locations: Vec::new(),
+            game_area,
+        }
+    }
+    
+    pub fn update_state(&mut self) {
+        todo!()
+    }
+    
+    /// Updates `self.drop_locations` by moving all existing drops down, and generating a random amount
+    /// of new drops. The drops are generated at random locations at the top of the screen.
+    fn update_drop_locations(&mut self) {
+        for drop in &mut self.drop_locations {
+            drop.y -= 10;
+        }
+        
+        let mut rng = rand::thread_rng();
+        
+        let new_drop_count = rng.gen_range(1..=5);
+        for _ in 0..new_drop_count {
+            let drop_x = rng.gen_range(0..self.game_area.width);
+            self.drop_locations.push(Location {
+                x: drop_x as u32,
+                y: self.game_area.height as u32,
+            });
+        }
+    }
+    
+    /// Checks if the player is colliding with a drop, and if so, removes some health points.
+    fn update_player_health(&mut self) {
+        for drop in &self.drop_locations {
+            if self.collides_with_player(drop) {
+                if self.health > 0 {
+                    self.health -= 1;
+                }
+            }
+        }
+    }
+    
+    /// Checks if a drop at the given location would collide with the player.
+    /// ## parameters:
+    /// * `drop_location` - The location of the drop that should be tested for player collision.
+    /// ## returns:
+    /// `true` when the drop at the given location collides with the player, `false` otherwise.
+    fn collides_with_player(&self, drop_location: &Location) -> bool {
+        let in_x_range = 
+            drop_location.x > self.player_x - 12 && 
+            drop_location.x < self.player_x + 12;
+        let in_y_range = drop_location.y <= 25;
+        
+        in_x_range && in_y_range
+    }
+    
+    /// Removes all the raindrops from `self.drop_locations` that are either outside of the screen,
+    /// or colliding with the player.
+    fn clean_drops(&mut self) {
+        let filter_res: Vec<&Location> = self.drop_locations.iter().filter(|drop| {
+            self.collides_with_player(drop) || drop.y == 0
+        }).collect();
+        
+        let mut new_drops = Vec::new();
+        for drop in filter_res {
+            new_drops.push(drop.clone());
+        }
+        
+        self.drop_locations = new_drops;
     }
 }

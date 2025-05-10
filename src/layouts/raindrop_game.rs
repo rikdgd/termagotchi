@@ -5,7 +5,7 @@ use ratatui::DefaultTerminal;
 use ratatui::layout::{Constraint, Layout};
 use crate::game_state::GameState;
 
-/// This function renders the *"Raindrop minigame"* onto the terminal and handles the user input to 
+/// This function renders the *"Raindrop"* minigame onto the terminal and handles the user input to 
 /// allow the user to actually play it.
 /// ## parameters:
 /// * `terminal` - The terminal to render the raindrop game onto.

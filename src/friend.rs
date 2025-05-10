@@ -239,21 +239,21 @@ impl Friend {
         self.growth_stage
     }
     
-    pub fn get_shape_wrapper(&self) -> ShapeWrapper {
+    pub fn get_shape_wrapper(&self) -> GrowthShapeWrapper {
         let color = self.shape.get_color();
         match self.growth_stage {
-            GrowthStage::Egg => ShapeWrapper::Growing(GrowthStageShapes::Egg(color)),
-            GrowthStage::Baby => ShapeWrapper::Growing(GrowthStageShapes::Baby(color)),
-            GrowthStage::Kid => ShapeWrapper::Growing(GrowthStageShapes::Kid(color)),
+            GrowthStage::Egg => GrowthShapeWrapper::Growing(GrowthStageShapes::Egg(color)),
+            GrowthStage::Baby => GrowthShapeWrapper::Growing(GrowthStageShapes::Baby(color)),
+            GrowthStage::Kid => GrowthShapeWrapper::Growing(GrowthStageShapes::Kid(color)),
 
-            GrowthStage::Adult => ShapeWrapper::Adult(self.shape.clone()),
+            GrowthStage::Adult => GrowthShapeWrapper::Adult(self.shape.clone()),
         }
     }
     
     pub fn get_pixel_vector(&self) -> PixelVectorShape {
         match self.get_shape_wrapper() {
-            ShapeWrapper::Growing(shape) => PixelVectorShape::from_pixel_image(&shape),
-            ShapeWrapper::Adult(shape) => PixelVectorShape::from_pixel_image(&shape),
+            GrowthShapeWrapper::Growing(shape) => PixelVectorShape::from_pixel_image(&shape),
+            GrowthShapeWrapper::Adult(shape) => PixelVectorShape::from_pixel_image(&shape),
         }
     }
     
@@ -265,7 +265,7 @@ impl Friend {
 }
 
 #[derive(Debug, Clone)]
-pub enum ShapeWrapper {
+pub enum GrowthShapeWrapper {
     Growing(GrowthStageShapes),
     Adult(CreatureShapes),
 }

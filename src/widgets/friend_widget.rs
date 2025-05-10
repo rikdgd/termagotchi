@@ -4,7 +4,7 @@ use ratatui::symbols::Marker;
 use ratatui::widgets::{Widget, Block};
 use ratatui::widgets::canvas::{Canvas, Context};
 use crate::friend::Friend;
-use crate::friend::ShapeWrapper;
+use crate::friend::GrowthShapeWrapper;
 use crate::shapes::{PixelImage, PixelVectorShape};
 use crate::utils::location::Location;
 use ratatui::layout::Rect;
@@ -40,8 +40,8 @@ impl<'a> FriendWidget<'a> {
                 // ctx.layer();
                 
                 match self.friend.get_shape_wrapper() {
-                    ShapeWrapper::Growing(shape) => draw_shape_at_location(ctx, &shape, &self.friend_location),
-                    ShapeWrapper::Adult(shape) => draw_shape_at_location(ctx, &shape, &self.friend_location),
+                    GrowthShapeWrapper::Growing(shape) => draw_shape_at_location(ctx, &shape, &self.friend_location),
+                    GrowthShapeWrapper::Adult(shape) => draw_shape_at_location(ctx, &shape, &self.friend_location),
                 };
                 
                 if self.friend.is_asleep() {
