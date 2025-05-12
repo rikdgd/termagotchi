@@ -5,6 +5,7 @@ use crate::utils::location::Location;
 use ratatui::layout::Rect;
 use rand;
 use rand::Rng;
+use std::time::SystemTime;
 
 #[derive(Debug, Clone)]
 pub struct GameWidgetManager {
@@ -24,6 +25,10 @@ impl GameWidgetManager {
             friend_shape,
         }
     }
+    
+    pub fn get_widget(&mut self) -> String {
+        todo!()
+    }
 }
 
 #[derive(Debug, Clone, PartialEq)]
@@ -33,6 +38,7 @@ struct RaindropGameState {
     player_x: u32,
     drop_locations: Vec<Location>,
     game_area: Rect,
+    last_update_time: SystemTime,
 }
 impl RaindropGameState {
     pub fn new(game_area: Rect) -> Self {
@@ -42,11 +48,24 @@ impl RaindropGameState {
             player_x: 50,   // TODO: Should be center of the screen/game-area
             drop_locations: Vec::new(),
             game_area,
+            last_update_time: SystemTime::now(),
         }
     }
     
+    /// Progresses `self` to the next frame. It will only actually do so if at least
+    /// x amount of time has passed since the last state update to limit the framerate.
     pub fn update_state(&mut self) {
-        todo!()
+        let millis_past = self.last_update_time
+            .elapsed()
+            .expect("Failed to calculate the elapsed time since last (raindrop)game state update.")
+            .as_millis();
+        
+        // Only update the game state at max 4 times a second
+        if millis_past >= 250 {
+            self.update_drop_locations();
+            self.update_player_health();
+            self.clean_drops();
+        } 
     }
     
     /// Updates `self.drop_locations` by moving all existing drops down, and generating a random amount
