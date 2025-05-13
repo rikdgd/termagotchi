@@ -1,38 +1,10 @@
-use crate::friend::Friend;
-use crate::shapes::PixelVectorShape;
-use crate::friend::GrowthShapeWrapper;
 use crate::utils::location::Location;
-use ratatui::layout::Rect;
-use rand;
-use rand::Rng;
 use std::time::SystemTime;
-
-#[derive(Debug, Clone)]
-pub struct GameWidgetManager {
-    game_state: RaindropGameState,
-    friend_shape: PixelVectorShape,
-}
-
-impl GameWidgetManager {
-    pub fn new(friend: &Friend, game_area: Rect) -> Self {
-        let friend_shape = match friend.get_shape_wrapper() {
-            GrowthShapeWrapper::Growing(shape) => PixelVectorShape::from_pixel_image(&shape),
-            GrowthShapeWrapper::Adult(shape) => PixelVectorShape::from_pixel_image(&shape),
-        };
-        
-        Self {
-            game_state: RaindropGameState::new(game_area),
-            friend_shape,
-        }
-    }
-    
-    pub fn get_widget(&mut self) -> String {
-        todo!()
-    }
-}
+use ratatui::layout::Rect;
+use rand::Rng;
 
 #[derive(Debug, Clone, PartialEq)]
-struct RaindropGameState {
+pub struct RaindropGameState {
     score: u32,
     health: u8,
     player_x: u32,

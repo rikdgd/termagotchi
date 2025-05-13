@@ -8,6 +8,7 @@ mod layouts;
 mod animations;
 mod movements;
 mod app;
+mod raindrop_game;
 
 use crate::app::App;
 
