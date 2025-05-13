@@ -1,7 +1,6 @@
 use crate::friend::Friend;
 use crate::shapes::PixelVectorShape;
 use crate::friend::GrowthShapeWrapper;
-use crate::shapes::PixelVectorShape;
 use ratatui::layout::Rect;
 use ratatui::widgets::{Widget, Block};
 use ratatui::widgets::canvas::{Canvas, Context};
