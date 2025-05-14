@@ -63,9 +63,3 @@ fn raindrop_shape(location: Location) -> PixelVectorShape {
     PixelVectorShape::new(pixels)
 }
 
-
-
-
-
-
-
