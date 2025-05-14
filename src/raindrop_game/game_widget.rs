@@ -1,6 +1,8 @@
 use crate::friend::Friend;
 use crate::shapes::PixelVectorShape;
 use crate::friend::GrowthShapeWrapper;
+use crate::utils::Pixel:
+use ratatui::prelude::Color;
 use ratatui::layout::Rect;
 use ratatui::widgets::{Widget, Block};
 use ratatui::widgets::canvas::{Canvas, Context};
@@ -47,8 +49,23 @@ impl GameWidgetManager {
     pub fn get_frame(&mut self) -> Option<PixelVectorShape> {
         self.game_state.update_state();
         // TODO: Create the necessary shapes
-
+        //
         todo!()
     }
 }
+
+fn raindrop_shape(location: Location) -> PixelVectorShape {
+    let pixels = vec![
+        Pixel::new(location.x, location.y, Color::White),
+        Pixel::new(location.x, location.y + 1, Color::White),
+    ];
+
+    PixelVectorShape::new(pixels)
+}
+
+
+
+
+
+
 
