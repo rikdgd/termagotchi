@@ -47,10 +47,25 @@ impl GameWidgetManager {
     }
 
     pub fn get_frame(&mut self) -> Option<PixelVectorShape> {
+        if self.game_state.health == 0 {
+            return None;
+        }
+        
         self.game_state.update_state();
-        // TODO: Create the necessary shapes
-        //
-        todo!()
+                
+        // Add the friend as shape to use the shape as the base for the frame, and relocate 
+        // it to a proper location.
+        let mut frame_shape = self.friend_shape.clone().translate(
+            self.game_state.player_x as i32,
+            30,
+        );
+        
+        // Merge each drop image into the frame shape
+        for drop in &self.game_state.drop_locations {
+            frame_shape.merge(raindrop_shape(*drop));
+        }
+        
+        Some(frame_shape)
     }
 }
 

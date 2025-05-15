@@ -60,6 +60,10 @@ impl PixelVectorShape {
             _ => (0, 0),
         }
     }
+    
+    pub fn merge(&mut self, mut other: Self) {
+        self.0.append(&mut other.0);
+    }
 
     /// Checks if the previously stored lowest x/y position is lower than the next position.
     /// If `previous_min` ends up being higher than `new_pos`, `previous_min`'s value is set to 

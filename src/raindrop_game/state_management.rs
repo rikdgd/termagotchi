@@ -5,11 +5,11 @@ use rand::Rng;
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct RaindropGameState {
-    score: u32,
-    health: u8,
-    player_x: u32,
-    drop_locations: Vec<Location>,
-    game_area: Rect,
+    pub score: u32,
+    pub health: u8,
+    pub player_x: u32,
+    pub drop_locations: Vec<Location>,
+    pub game_area: Rect,
     last_update_time: SystemTime,
 }
 impl RaindropGameState {
