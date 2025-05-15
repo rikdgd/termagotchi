@@ -37,6 +37,8 @@ impl RaindropGameState {
             self.update_drop_locations();
             self.update_player_health();
             self.clean_drops();
+            
+            self.last_update_time = SystemTime::now();
         } 
     }
     
