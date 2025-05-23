@@ -51,6 +51,7 @@ impl RaindropGameState {
         
         let mut rng = rand::thread_rng();
         
+        // TODO: Instead of random amount, do it based of score / survival time
         let new_drop_count = rng.gen_range(1..=5);
         for _ in 0..new_drop_count {
             let drop_x = rng.gen_range(0..self.game_area.width);

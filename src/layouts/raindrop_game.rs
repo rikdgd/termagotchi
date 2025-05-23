@@ -4,13 +4,16 @@ use ratatui::crossterm::event::{poll, Event, KeyCode};
 use ratatui::DefaultTerminal;
 use ratatui::layout::{Constraint, Layout};
 use crate::game_state::GameState;
+use crate::raindrop_game::game_widget::GameWidgetManager;
 
-/// This function renders the *"Raindrop"* minigame onto the terminal and handles the user input to 
+/// This function renders the **Raindrop minigame** onto the terminal and handles the user input to 
 /// allow the user to actually play it.
 /// ## parameters:
 /// * `terminal` - The terminal to render the raindrop game onto.
 /// * `state` - A mutable reference to the current game's state.
 pub fn raindrop_minigame_layout(terminal: &mut DefaultTerminal, state: &mut GameState) -> std::io::Result<()> {
+    let mut game_manager: Option<GameWidgetManager> = None;
+    
     loop {
         terminal.draw(|frame| {
             let frame_area = frame.area();
@@ -19,8 +22,13 @@ pub fn raindrop_minigame_layout(terminal: &mut DefaultTerminal, state: &mut Game
                 Constraint::Percentage(20),
             ])
                 .areas(frame_area);
+
+            if game_manager.is_none() {
+                game_manager = Some(GameWidgetManager::new(state.friend(), game_area));
+            }
             
-            // TODO: Actually render and play the game.
+            let manager = game_manager.as_mut().unwrap();
+            frame.render_widget(manager.get_widget(), game_area);
         })?;
         
         if poll(Duration::from_millis(100))? {

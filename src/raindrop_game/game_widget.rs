@@ -32,21 +32,30 @@ impl GameWidgetManager {
             game_area,
         }
     }
-    
+
+    /// Get the actual game widget to be rendered on the terminal. This will have its state updated
+    /// automatically.
     pub fn get_widget(&mut self) -> impl Widget + '_ {
+        let frame = self.get_frame().unwrap();
+        
         let canvas = Canvas::default()
             .block(Block::bordered().title(Line::from("Score: x").centered()))
             .marker(Marker::Braille)
             .x_bounds([0.0, f64::from(self.game_area.width)])
             .y_bounds([0.0, f64::from(self.game_area.height)])
-            .paint(|ctx| {
-                // TODO: Draw the actual game state
+            .paint(move |ctx| {
+                ctx.draw(&frame);
             });
         
         canvas 
     }
-
-    pub fn get_frame(&mut self) -> Option<PixelVectorShape> {
+    
+    /// Get the next frame of the game as a `PixelVectorShape`, this automatically progresses the 
+    /// game's state.
+    /// ## Returns:
+    /// This method returns a `PixelVectorShape` containing the entire game frame. If the players 
+    /// health is 0, the game ends and `None` is returned as there are no more frames to generate.
+    fn get_frame(&mut self) -> Option<PixelVectorShape> {
         if self.game_state.health == 0 {
             return None;
         }
@@ -69,6 +78,12 @@ impl GameWidgetManager {
     }
 }
 
+/// This function is used to get a shape representing a raindrop on the correct location of the 
+/// screen.
+/// ## Parameters:
+/// * `location` - The location where the raindrop should be drawn on screen.
+/// ## Returns:
+/// A `PixelVectorShape` representing a raindrop with it location updated to the given one.
 fn raindrop_shape(location: Location) -> PixelVectorShape {
     let pixels = vec![
         Pixel {
@@ -85,4 +100,3 @@ fn raindrop_shape(location: Location) -> PixelVectorShape {
 
     PixelVectorShape::new(pixels)
 }
-
