@@ -40,6 +40,7 @@ pub struct App {
     playground: Rect,
     popup_animation: Option<PopupAnimation>,
     allow_inputs: bool,
+    minigame_playing: bool,
     is_running: bool,
 }
 
@@ -72,6 +73,7 @@ impl App {
             playground,
             popup_animation: None,
             allow_inputs: true,
+            minigame_playing: false,
             is_running: true,
         })
     }
@@ -83,8 +85,15 @@ impl App {
     pub fn run(&mut self, terminal: &mut DefaultTerminal) -> std::io::Result<()> {
         while self.is_running {
             self.game_state.update();
+            
+            // If the pet has died, show the death screen.
             if !self.game_state.friend().alive() {
                 layouts::friend_death_layout(terminal, &mut self.game_state)?;
+            }
+            
+            if self.minigame_playing {
+                layouts::raindrop_minigame_layout(terminal, &mut self.game_state)?;
+                self.minigame_playing = false;
             }
 
             if self.previous_growth_stage != self.game_state.friend().growth_stage() {
@@ -178,9 +187,10 @@ impl App {
                                     },
                                     "Play" => {
                                         if is_awake && is_not_egg {
-                                            self.set_joy_animation();
-                                            self.game_state.friend_mut().play();
-                                            self.game_state.store_to_file()?;
+                                            // self.set_joy_animation();
+                                            // self.game_state.friend_mut().play();
+                                            // self.game_state.store_to_file()?;
+                                            self.minigame_playing = true;
                                         }
                                     },
                                     "Sleep" => {
