@@ -17,7 +17,7 @@ impl RaindropGameState {
         Self {
             score: 0,
             health: 5,
-            player_x: 50,   // TODO: Should be center of the screen/game-area
+            player_x: (game_area.width / 2) as u32,
             drop_locations: Vec::new(),
             game_area,
             last_update_time: SystemTime::now(),
@@ -100,5 +100,47 @@ impl RaindropGameState {
         }
         
         self.drop_locations = new_drops;
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use ratatui::layout::Rect;
+    use crate::raindrop_game::state_management::RaindropGameState;
+    use crate::utils::location::Location;
+
+    #[test]
+    fn player_starting_position() {
+        let game_width: u32 = 100;
+        let state = RaindropGameState::new(Rect::new(0, 0, game_width as u16, 100));
+        assert_eq!(state.player_x, game_width / 2);
+    }
+    
+    #[test]
+    fn collides_with_player() {
+        let game_state = RaindropGameState::new(Rect::new(0, 0, 100, 100));
+        
+        // Drops that should NOT collide with the player
+        let no_coll_drops = vec![
+            Location::new(0, 0),            // Bottom left corner
+            Location::new(100, 100),        // Top right corner
+            Location::new(50, 100),         // Same x as player, but to heigh on screen
+        ];
+        
+        // Drops that should collide with the player
+        let colliding_drops = vec![
+            Location::new(50, 0),
+            Location::new(60, 20),
+            Location::new(40, 15),
+        ];
+        
+        
+        for drop in no_coll_drops {
+            assert_eq!(game_state.collides_with_player(&drop), false);
+        }
+        
+        for drop in colliding_drops {
+            assert_eq!(game_state.collides_with_player(&drop), true);
+        }
     }
 }
