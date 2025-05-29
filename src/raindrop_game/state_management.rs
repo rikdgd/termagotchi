@@ -1,5 +1,4 @@
 use crate::utils::location::Location;
-use crate::utils::file_logging::log_object;
 use std::time::SystemTime;
 use ratatui::layout::Rect;
 use rand::Rng;
@@ -48,6 +47,7 @@ impl RaindropGameState {
     fn update_drop_locations(&mut self) {
         let mut updated_drops = Vec::new();
         
+        // Update the existing drops
         for drop in &mut self.drop_locations {
             if drop.y > 0 {
                 drop.y -= 1;
@@ -67,7 +67,6 @@ impl RaindropGameState {
             });
         }
         
-        log_object(&self.drop_locations).unwrap();
         self.drop_locations = updated_drops;
     }
     
@@ -139,8 +138,8 @@ mod tests {
         // Drops that should collide with the player
         let colliding_drops = vec![
             Location::new(50, 0),
-            Location::new(60, 20),
-            Location::new(40, 15),
+            Location::new(60, 1),
+            Location::new(40, 1),
         ];
         
         
@@ -151,5 +150,19 @@ mod tests {
         for drop in colliding_drops {
             assert_eq!(game_state.collides_with_player(&drop), true);
         }
+    }
+    
+    #[test]
+    fn update_drop_locations() {
+        let area = Rect::new(0, 0, 100, 100);
+        let mut game_state = RaindropGameState::new(area);
+        let test_drop_location = Location::new(50, 50);
+        
+        game_state.drop_locations.push(test_drop_location);     // This will remain at index 0
+        game_state.update_drop_locations();
+        
+        assert_eq!(game_state.drop_locations[0].x, test_drop_location.x);
+        assert_eq!(game_state.drop_locations[0].y, test_drop_location.y - 1);
+        assert!(game_state.drop_locations.len() > 1);   // Some additional drops should have been added.
     }
 }
