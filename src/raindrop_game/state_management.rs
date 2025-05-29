@@ -1,4 +1,5 @@
 use crate::utils::location::Location;
+use crate::utils::file_logging::log_object;
 use std::time::SystemTime;
 use ratatui::layout::Rect;
 use rand::Rng;
@@ -45,8 +46,13 @@ impl RaindropGameState {
     /// Updates `self.drop_locations` by moving all existing drops down, and generating a random amount
     /// of new drops. The drops are generated at random locations at the top of the screen.
     fn update_drop_locations(&mut self) {
+        let mut updated_drops = Vec::new();
+        
         for drop in &mut self.drop_locations {
-            drop.y -= 10;
+            if drop.y > 0 {
+                drop.y -= 1;
+                updated_drops.push(drop.clone());
+            }
         }
         
         let mut rng = rand::thread_rng();
@@ -55,11 +61,14 @@ impl RaindropGameState {
         let new_drop_count = rng.gen_range(1..=5);
         for _ in 0..new_drop_count {
             let drop_x = rng.gen_range(0..self.game_area.width);
-            self.drop_locations.push(Location {
+            updated_drops.push(Location {
                 x: drop_x as u32,
                 y: self.game_area.height as u32,
             });
         }
+        
+        log_object(&self.drop_locations).unwrap();
+        self.drop_locations = updated_drops;
     }
     
     /// Checks if the player is colliding with a drop, and if so, removes some health points.
@@ -82,7 +91,7 @@ impl RaindropGameState {
         let in_x_range = 
             drop_location.x > self.player_x - 12 && 
             drop_location.x < self.player_x + 12;
-        let in_y_range = drop_location.y <= 25;
+        let in_y_range = drop_location.y <= 1;
         
         in_x_range && in_y_range
     }
